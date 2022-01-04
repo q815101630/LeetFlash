@@ -21,12 +21,20 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://leetcode-cn.com/problems/*/",
-        "https://leetcode.com/problems/*/"
-      ],
+      "matches": ["https://leetcode-cn.com/problems/*/"],
       "run_at": "document_end",
       "js": ["contentScript.js"]
+    },
+    {
+      "matches": ["https://leetcode.com/problems/*/"],
+      "run_at": "document_start",
+      "js": ["inject.js", "contentScriptEN.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["*://*.leetcode.com/*"]
     }
   ]
 }

@@ -2,15 +2,18 @@ export interface SyncStorage {
   user?: User;
 }
 export interface LocalStorage {
-  questionInfo: QuestionInfo;
+  questionInfosEN?: QuestionInfo[];
+  questionInfosCN?: QuestionInfo[];
 }
 export interface QuestionInfo {
   id: string;
+  question_id: string;
   difficulty: string;
   title?: string;
   translatedTitle?: string;
   text?: string;
   translatedText?: string;
+  site: Site;
 }
 
 export interface Question {
@@ -24,21 +27,32 @@ export interface Question {
   status_memory: string;
   status_msg: string;
   status_runtime: string;
+  site: Site;
+}
+
+export enum languages {
+  CN,
+  EN,
+}
+export enum Site {
+  EN = "EN",
+  CN = "CN",
 }
 
 export interface User {
   email: string;
   uuid: string;
+  language: languages;
 }
 
 export type SyncStorageKeys = keyof SyncStorage;
 export type LocalStorageKeys = keyof LocalStorage;
 
-export const setStoredQuestionInfo = (
-  questionInfo: QuestionInfo
+export const setStoredQuestionInfosCN = (
+  questionInfosCN: QuestionInfo[]
 ): Promise<void> => {
   const vals: LocalStorage = {
-    questionInfo,
+    questionInfosCN,
   };
   return new Promise((resolve, reject) => {
     chrome.storage.local.set(vals, () => {
@@ -51,13 +65,42 @@ export const setStoredQuestionInfo = (
   });
 };
 
-export const getStoredQuestionInfo = (): Promise<QuestionInfo> => {
+export const getStoredQuestionInfosCN = (): Promise<QuestionInfo[]> => {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(["questionInfo"], (res: LocalStorage) => {
+    chrome.storage.local.get(["questionInfosCN"], (res: LocalStorage) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError.message);
       } else {
-        resolve(res.questionInfo);
+        resolve(res.questionInfosCN);
+      }
+    });
+  });
+};
+
+export const setStoredQuestionInfosEN = (
+  questionInfosEN: QuestionInfo[]
+): Promise<void> => {
+  const vals: LocalStorage = {
+    questionInfosEN,
+  };
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set(vals, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+export const getStoredQuestionInfosEN = (): Promise<QuestionInfo[]> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["questionInfosEN"], (res: LocalStorage) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(res.questionInfosEN);
       }
     });
   });

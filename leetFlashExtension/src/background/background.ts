@@ -1,8 +1,12 @@
 import {
-  getStoredQuestionInfo,
+  getStoredQuestionInfosEN,
+  getStoredQuestionInfosCN,
   getStoredUser,
+  languages,
   Question,
   QuestionInfo,
+  setStoredQuestionInfosEN,
+  setStoredQuestionInfosCN,
   setStoredUser,
 } from "../utils/storage";
 
@@ -25,8 +29,15 @@ chrome.runtime.onInstalled.addListener(() => {
   getStoredUser().then((user) => {
     if (!user) {
       chrome.runtime.openOptionsPage();
+      setStoredUser({
+        email: "",
+        uuid: "",
+        language: languages.EN,
+      });
     }
   });
+  setStoredQuestionInfosCN([]);
+  setStoredQuestionInfosEN([]);
 });
 
 // chrome.webRequest.onBeforeRequest.addListener(() => {
@@ -55,23 +66,32 @@ chrome.webRequest.onCompleted.addListener(
       fetch(details.url)
         .then((res) => res.json())
         .then((res: SubmissionResponse) => {
-          getStoredQuestionInfo().then(
-            ({
-              id,
-              difficulty,
-              title,
-              translatedTitle,
-              text,
-              translatedText,
-            }) => {
+          if (details.url.includes("leetcode.com")) {
+            getStoredQuestionInfosEN().then((questionInfos: QuestionInfo[]) => {
               console.log("background.ts:");
+
+              const currentQuestions = questionInfos.find(({ question_id }) => {
+                res.question_id === question_id;
+              });
+
+              const {
+                id,
+                difficulty,
+                title,
+                translatedTitle,
+                text,
+                translatedText,
+                site,
+              } = currentQuestions;
+
               console.log(
                 id,
                 difficulty,
                 title,
                 translatedTitle,
                 text,
-                translatedText
+                translatedText,
+                site
               );
               const question: Question = {
                 id,
@@ -84,6 +104,7 @@ chrome.webRequest.onCompleted.addListener(
                 status_memory: res.status_memory,
                 status_runtime: res.status_runtime,
                 status_msg: res.status_msg,
+                site,
               };
               getStoredUser().then((user) => {
                 if (user) {
@@ -92,8 +113,56 @@ chrome.webRequest.onCompleted.addListener(
                   chrome.runtime.openOptionsPage();
                 }
               });
-            }
-          );
+            });
+          } else {
+            getStoredQuestionInfosCN().then((questionInfos: QuestionInfo[]) => {
+              console.log("background.ts:");
+
+              const currentQuestions = questionInfos.find(({ question_id }) => {
+                res.question_id === question_id;
+              });
+
+              const {
+                id,
+                difficulty,
+                title,
+                translatedTitle,
+                text,
+                translatedText,
+                site,
+              } = currentQuestions;
+
+              console.log(
+                id,
+                difficulty,
+                title,
+                translatedTitle,
+                text,
+                translatedText,
+                site
+              );
+              const question: Question = {
+                id,
+                difficulty,
+                title,
+                translatedTitle,
+                text,
+                translatedText,
+                url: tabs[0].url,
+                status_memory: res.status_memory,
+                status_runtime: res.status_runtime,
+                status_msg: res.status_msg,
+                site,
+              };
+              getStoredUser().then((user) => {
+                if (user) {
+                  sendQuestionToServer(question, user);
+                } else {
+                  chrome.runtime.openOptionsPage();
+                }
+              });
+            });
+          }
         });
     });
   },

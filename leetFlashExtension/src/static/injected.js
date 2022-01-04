@@ -1,56 +1,75 @@
-// const XHR = XMLHttpRequest.prototype;
+//https://stackoverflow.com/questions/6831916/is-it-possible-to-monitor-http-traffic-in-chrome-using-an-extension/67390377#67390377
 
-// const open = XHR.open;
-// const send = XHR.send;
-// const setRequestHeader = XHR.setRequestHeader;
+const XHR = XMLHttpRequest.prototype;
 
-// XHR.open = function () {
-//   this._requestHeaders = {};
+const open = XHR.open;
+const send = XHR.send;
+const setRequestHeader = XHR.setRequestHeader;
 
-//   return open.apply(this, arguments);
-// };
+XHR.open = function () {
+  this._requestHeaders = {};
 
-// XHR.setRequestHeader = function (header, value) {
-//   this._requestHeaders[header] = value;
-//   return setRequestHeader.apply(this, arguments);
-// };
+  return open.apply(this, arguments);
+};
 
-// XHR.send = function () {
-//   this.addEventListener("load", function () {
-//     const url = this.responseURL;
-//     const responseHeaders = this.getAllResponseHeaders();
-//     console.log(url);
-//     try {
-//       if (this.responseType === "blob") {
-//         // GraphQL data is returned as a blob
-//         this.response.text().then((data) => {
-//           if (typeof data === "string") {
-//             console.log(data);
-//             // const parsedData = JSON.parse(data);
-//             // if (parsedData.data && "question" in parsedData.data) {
-//             //   console.log(parsedData.data.question);
-//             // }
-//           }
-//         });
-//       } else if (
-//         /^https:\/\/(leetcode-cn.com|leetcode.com)\/submissions\/detail\/.*\/check\/$/.test(
-//           url
-//         )
-//       ) {
-//         let responseBody;
-//         if (this.responseType === "" || this.responseType === "text") {
-//           responseBody = JSON.parse(this.responseText);
-//         } /* if (this.responseType === 'json') */ else {
-//           responseBody = this.response;
-//         }
-//         console.log(url);
-//         console.log(responseHeaders);
-//         console.log(responseBody);
-//       }
-//     } catch (err) {
-//       console.debug("Error reading or processing response.", err);
-//     }
-//   });
+XHR.setRequestHeader = function (header, value) {
+  this._requestHeaders[header] = value;
+  return setRequestHeader.apply(this, arguments);
+};
 
-//   return send.apply(this, arguments);
-// };
+function convertToPlain(html) {
+  // Create a new div element
+  var tempDivElement = document.createElement("div");
+
+  // Set the HTML content with the given value
+  tempDivElement.innerHTML = html;
+
+  // Retrieve the text property of the element
+  return tempDivElement.textContent || tempDivElement.innerText || "";
+}
+
+XHR.send = function () {
+  this.addEventListener("load", function () {
+    const url = this.responseURL;
+    const responseHeaders = this.getAllResponseHeaders();
+    try {
+      if (this.responseType === "blob") {
+        // GraphQL data is returned as a blob
+        this.response.text().then((data) => {
+          if (typeof data === "string") {
+            const parsedData = JSON.parse(data);
+            // execute when recieve questionData from GraphQL
+            if (parsedData.data && "question" in parsedData.data) {
+              const question_id = parsedData.data.question.questionId;
+              const title = parsedData.data.question.title;
+              const text = convertToPlain(
+                parsedData.data.question.content
+              ).replace(/\n/g, " ");
+              const id = parsedData.data.question.questionFrontendId;
+              const difficulty =
+                parsedData.data.question.difficulty.toLowerCase();
+
+              const questionInfo = {
+                question_id,
+                title,
+                text,
+                id,
+                difficulty,
+              };
+
+              window.dispatchEvent(
+                new CustomEvent("getQuestionInfoFromEN", {
+                  detail: questionInfo,
+                })
+              );
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.debug("Error reading or processing response.", err);
+    }
+  });
+
+  return send.apply(this, arguments);
+};

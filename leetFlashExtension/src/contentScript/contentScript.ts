@@ -8,7 +8,14 @@
 // (document.head || document.documentElement).appendChild(s);
 
 import { Message, MessageType } from "../utils/messages";
-import { QuestionInfo, setStoredQuestionInfo } from "../utils/storage";
+import {
+  getStoredQuestionInfosEN,
+  getStoredQuestionInfosCN,
+  QuestionInfo,
+  setStoredQuestionInfosCN,
+  setStoredQuestionInfosEN,
+  Site,
+} from "../utils/storage";
 
 const QUESTION_TITLE_EN = "[data-cy='question-title']";
 const QUESTION_TITLE_CN = "[data-cypress='QuestionTitle']";
@@ -17,18 +24,8 @@ const DIFFICULTY_EN = "[diff]";
 const DIFFICULTY_CN = "[data-degree]";
 const CONTENT_EN = "[class*=question-content]";
 const CONTENT_CN = "[class*=content] .notranslate";
-
+const QUESTION_ID = "[data-question-id]";
 console.log("contentScript.ts");
-
-// Extract question data from LeetCode page
-// chrome.runtime.onMessage.addListener(
-//   (msg: Message, sender, sendResponse: Function) => {
-//     console.log(msg);
-//     if (msg.msg === MessageType.GET_QUESTION_INFO) {
-
-//     }
-//   }
-// );
 
 let titleElement: Element;
 let contentElement: any;
@@ -49,13 +46,19 @@ function myMain(evt) {
       (document.querySelector(CONTENT_CN) &&
         document.querySelector(DIFFICULTY_CN) &&
         document.querySelector(QUESTION_TITLE_CN) &&
-        document.querySelector('meta[property="og:site_name"]'))
+        document.querySelector('meta[property="og:site_name"]') &&
+        document.querySelector(QUESTION_ID))
     ) {
       clearInterval(jsInitChecktimer);
       // DO YOUR STUFF HERE.
 
-      /* leetcode.com */
-      if (!Boolean(document.querySelector('meta[property="og:site_name"]'))) {
+      /* leetcode.com
+       * this is moved to contenrScriptEN.ts
+       * Never run
+       */
+      if (
+        false /* !Boolean(document.querySelector('meta[property="og:site_name"]')) */
+      ) {
         // title and content must be English
         titleElement = document.querySelector(QUESTION_TITLE_EN);
         contentElement = document.querySelector(CONTENT_EN).firstElementChild;
@@ -63,11 +66,14 @@ function myMain(evt) {
           .replace(/\n/g, " ")
           .split("Example")[0]
           .trim();
+
         difficultyTag = document.querySelector(DIFFICULTY_EN) as HTMLElement;
         difficulty = difficultyTag.innerText;
         isEN = true;
       } else {
-        /* leetcode-cn.com */
+        /* leetcode-cn.com
+         * always run
+         */
         // title and content may be English or Chinese
         titleElement =
           document.querySelector(QUESTION_TITLE_CN).firstElementChild;
@@ -91,19 +97,50 @@ function myMain(evt) {
           isEN = true;
         }
       }
+
+      const question_id = document
+        .querySelector(QUESTION_ID)
+        .getAttribute("data-question-id");
+
       const [id, name] = titleElement.innerHTML.split(SEPARATOR_TOKEN);
 
       const questionInfo: QuestionInfo = {
         id: id.trim(),
+        question_id: question_id.trim(),
         difficulty: difficulty,
         title: isEN ? name.trim() : undefined,
         translatedTitle: isEN ? undefined : name.trim(),
         text: isEN ? content : undefined,
         translatedText: isEN ? undefined : content,
+        site: Site.CN,
       };
       console.log("questionInfo");
       console.log(questionInfo);
-      setStoredQuestionInfo(questionInfo);
+      getStoredQuestionInfosCN().then((storedQuestionInfo) => {
+        console.log(storedQuestionInfo);
+        let currentQuestions: QuestionInfo;
+        if (isEN) {
+          currentQuestions = storedQuestionInfo.find((q) => {
+            return q.question_id === questionInfo.question_id && q.title;
+          });
+        } else {
+          currentQuestions = storedQuestionInfo.find((q) => {
+            return (
+              q.question_id === questionInfo.question_id && q.translatedTitle
+            );
+          });
+        }
+        if (!currentQuestions) {
+          setStoredQuestionInfosCN([...storedQuestionInfo, questionInfo]).then(
+            () => {
+              getStoredQuestionInfosCN().then((storedQuestionInfo) => {
+                console.log("save success");
+                console.log(storedQuestionInfo);
+              });
+            }
+          );
+        }
+      });
     }
   }
 }
