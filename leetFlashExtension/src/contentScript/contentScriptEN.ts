@@ -1,29 +1,34 @@
+import { MessageType } from "../utils/messages";
 import {
-  getStoredQuestionInfosEN,
+  getStoredQuestionInfo,
   QuestionInfo,
-  setStoredQuestionInfosEN,
+  setStoredQuestionInfo,
 } from "../utils/storage";
 
-window.addEventListener(
-  "getQuestionInfoFromEN",
-  (data: any) => {
-    const questionInfo: QuestionInfo = data.detail;
-    console.log(questionInfo);
-    getStoredQuestionInfosEN().then((storedQuestionInfo) => {
-      const currentQuestions = storedQuestionInfo.find((q) => {
-        return q.question_id === questionInfo.question_id && q.title;
-      });
-      if (!currentQuestions) {
-        setStoredQuestionInfosEN([...storedQuestionInfo, questionInfo]).then(
-          () => {
-            getStoredQuestionInfosEN().then((storedQuestionInfo) => {
-              console.log("save success");
-              console.log(storedQuestionInfo);
-            });
-          }
-        );
-      }
+const handleEvent = (data: any) => {
+  const questionInfo: QuestionInfo = data.detail;
+  console.log(questionInfo);
+  getStoredQuestionInfo().then((storedQuestionInfo) => {
+    const currentQuestions = storedQuestionInfo.find((q) => {
+      return q.question_id === questionInfo.question_id && q.title;
     });
-  },
-  false
-);
+    if (!currentQuestions) {
+      setStoredQuestionInfo([...storedQuestionInfo, questionInfo]).then(() => {
+        getStoredQuestionInfo().then((storedQuestionInfo) => {
+          console.log("save success");
+          console.log(storedQuestionInfo);
+        });
+      });
+    }
+  });
+};
+
+const handleSubmitIncrement = () => {
+  chrome.runtime.sendMessage(MessageType.SUBMIT, () => {});
+};
+
+window.addEventListener("getQuestionInfoFromEN", handleEvent, false);
+window.addEventListener("submitBtnHit", handleSubmitIncrement, false);
+window.addEventListener("beforeunload", function (event) {
+  window.removeEventListener("getQuestionInfoFromEN", handleEvent);
+});

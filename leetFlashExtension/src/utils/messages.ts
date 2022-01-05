@@ -1,5 +1,6 @@
 export enum MessageType {
-    GET_QUESTION_INFO,
+  GET_QUESTION_INFO,
+  SUBMIT
 }
 
 export interface Message {

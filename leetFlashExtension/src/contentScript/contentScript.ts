@@ -9,22 +9,20 @@
 
 import { Message, MessageType } from "../utils/messages";
 import {
-  getStoredQuestionInfosEN,
-  getStoredQuestionInfosCN,
+  getStoredQuestionInfo,
   QuestionInfo,
-  setStoredQuestionInfosCN,
-  setStoredQuestionInfosEN,
-  Site,
+  setStoredQuestionInfo,
 } from "../utils/storage";
 
 const QUESTION_TITLE_EN = "[data-cy='question-title']";
+const DIFFICULTY_EN = "[diff]";
+const CONTENT_EN = "[class*=question-content]";
 const QUESTION_TITLE_CN = "[data-cypress='QuestionTitle']";
 const SEPARATOR_TOKEN = ". ";
-const DIFFICULTY_EN = "[diff]";
 const DIFFICULTY_CN = "[data-degree]";
-const CONTENT_EN = "[class*=question-content]";
 const CONTENT_CN = "[class*=content] .notranslate";
-const QUESTION_ID = "[data-question-id]";
+const QUESTION_ID = "[name='question']";
+const SUBMIT_BTN = "[data-cypress='SubmitCode']";
 console.log("contentScript.ts");
 
 let titleElement: Element;
@@ -39,6 +37,10 @@ function myMain(evt) {
   var jsInitChecktimer = setInterval(checkForJS_Finish, 111);
 
   function checkForJS_Finish() {
+    // if (document.querySelector(SUBMIT_BTN)) {
+    //   chrome.runtime.sendMessage(MessageType.INCREMENT_SUBMIT);
+    // }
+
     if (
       (document.querySelector(CONTENT_EN) &&
         document.querySelector(DIFFICULTY_EN) &&
@@ -100,7 +102,7 @@ function myMain(evt) {
 
       const question_id = document
         .querySelector(QUESTION_ID)
-        .getAttribute("data-question-id");
+        .getAttribute("value");
 
       const [id, name] = titleElement.innerHTML.split(SEPARATOR_TOKEN);
 
@@ -112,11 +114,10 @@ function myMain(evt) {
         translatedTitle: isEN ? undefined : name.trim(),
         text: isEN ? content : undefined,
         translatedText: isEN ? undefined : content,
-        site: Site.CN,
       };
       console.log("questionInfo");
       console.log(questionInfo);
-      getStoredQuestionInfosCN().then((storedQuestionInfo) => {
+      getStoredQuestionInfo().then((storedQuestionInfo) => {
         console.log(storedQuestionInfo);
         let currentQuestions: QuestionInfo;
         if (isEN) {
@@ -131,9 +132,9 @@ function myMain(evt) {
           });
         }
         if (!currentQuestions) {
-          setStoredQuestionInfosCN([...storedQuestionInfo, questionInfo]).then(
+          setStoredQuestionInfo([...storedQuestionInfo, questionInfo]).then(
             () => {
-              getStoredQuestionInfosCN().then((storedQuestionInfo) => {
+              getStoredQuestionInfo().then((storedQuestionInfo) => {
                 console.log("save success");
                 console.log(storedQuestionInfo);
               });
@@ -144,3 +145,9 @@ function myMain(evt) {
     }
   }
 }
+
+const handleSubmitIncrement = () => {
+  console.log("handling Submit at contentScript");
+  chrome.runtime.sendMessage(MessageType.SUBMIT, () => {});
+};
+window.addEventListener("submitBtnHit", handleSubmitIncrement, false);

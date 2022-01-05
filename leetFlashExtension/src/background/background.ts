@@ -1,20 +1,22 @@
 import {
-  getStoredQuestionInfosEN,
-  getStoredQuestionInfosCN,
+  findOneQuestionInfo,
+  getStoredQuestionInfo,
   getStoredUser,
   languages,
   Question,
   QuestionInfo,
-  setStoredQuestionInfosEN,
-  setStoredQuestionInfosCN,
+  setStoredQuestionInfo,
   setStoredUser,
+  getIsAllowed,
+  setIsAllowed,
 } from "../utils/storage";
-
+import { debounce } from "ts-debounce";
 import { sendQuestionToServer } from "../utils/api";
+import { MessageType } from "../utils/messages";
 const SUBMIT_FILTERS = {
   urls: [
-    "*://leetcode.com/submissions/detail/*/check/",
-    "*://leetcode-cn.com/submissions/detail/*/check/",
+    "https://leetcode.com/submissions/detail/*/check/",
+    "https://leetcode-cn.com/submissions/detail/*/check/",
   ],
 };
 
@@ -36,8 +38,8 @@ chrome.runtime.onInstalled.addListener(() => {
       });
     }
   });
-  setStoredQuestionInfosCN([]);
-  setStoredQuestionInfosEN([]);
+  setIsAllowed(true);
+  setStoredQuestionInfo([]);
 });
 
 // chrome.webRequest.onBeforeRequest.addListener(() => {
@@ -60,111 +62,97 @@ chrome.runtime.onInstalled.addListener(() => {
 //   });
 // }, SUBMIT_FILTERS);
 
-chrome.webRequest.onCompleted.addListener(
-  (details: chrome.webRequest.WebResponseCacheDetails) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      fetch(details.url)
-        .then((res) => res.json())
-        .then((res: SubmissionResponse) => {
-          if (details.url.includes("leetcode.com")) {
-            getStoredQuestionInfosEN().then((questionInfos: QuestionInfo[]) => {
-              console.log("background.ts:");
+async function getCurrentTab() {
+  let queryOptions = { active: true, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
 
-              const currentQuestions = questionInfos.find(({ question_id }) => {
-                res.question_id === question_id;
+const getJSON = async (url: string) => {
+  return fetch(url)
+    .then((response) => response.json())
+    .then((responseJson) => {
+      return responseJson;
+    });
+};
+let questionInfo: QuestionInfo;
+
+let timesRequest = 0;
+let timesQuery = 0;
+
+const onCompleteHandler = async ({
+  url,
+}: chrome.webRequest.WebResponseCacheDetails) => {
+  console.log("86 86 86 86");
+  getIsAllowed().then((isAllowed) => {
+    console.log("isAllowed " + isAllowed);
+    if (isAllowed) {
+      setIsAllowed(false).then(async () => {
+        timesRequest += 1;
+        console.log("timesRequest " + timesRequest);
+
+        const questionUrl = (await getCurrentTab()).url;
+
+        timesQuery += 1;
+        console.log("timesQuery " + timesQuery);
+        const res: SubmissionResponse = await getJSON(url);
+
+        questionInfo = await findOneQuestionInfo(res.question_id);
+        console.log("QuestionInfo from GraphQL or front-end");
+        console.log(questionInfo);
+        const {
+          id,
+          question_id,
+          difficulty,
+          title,
+          translatedTitle,
+          text,
+          translatedText,
+        } = questionInfo;
+
+        const question: Question = {
+          id,
+          question_id,
+          url: questionUrl,
+          difficulty,
+          title,
+          translatedTitle,
+          text,
+          translatedText,
+          status_memory: res.status_memory,
+          status_runtime: res.status_runtime,
+          status_msg: res.status_msg,
+        };
+        console.log("Final question to send:");
+        console.log(question);
+        getStoredUser().then((user) => {
+          if (user && user.uuid) {
+            console.log("found user and start sending");
+            sendQuestionToServer(question, user)
+              .then(() => {
+                setIsAllowed(true);
+              })
+              .catch(() => {
+                setIsAllowed(true);
               });
-
-              const {
-                id,
-                difficulty,
-                title,
-                translatedTitle,
-                text,
-                translatedText,
-                site,
-              } = currentQuestions;
-
-              console.log(
-                id,
-                difficulty,
-                title,
-                translatedTitle,
-                text,
-                translatedText,
-                site
-              );
-              const question: Question = {
-                id,
-                difficulty,
-                title,
-                translatedTitle,
-                text,
-                translatedText,
-                url: tabs[0].url,
-                status_memory: res.status_memory,
-                status_runtime: res.status_runtime,
-                status_msg: res.status_msg,
-                site,
-              };
-              getStoredUser().then((user) => {
-                if (user) {
-                  sendQuestionToServer(question, user);
-                } else {
-                  chrome.runtime.openOptionsPage();
-                }
-              });
-            });
           } else {
-            getStoredQuestionInfosCN().then((questionInfos: QuestionInfo[]) => {
-              console.log("background.ts:");
-
-              const currentQuestions = questionInfos.find(({ question_id }) => {
-                res.question_id === question_id;
-              });
-
-              const {
-                id,
-                difficulty,
-                title,
-                translatedTitle,
-                text,
-                translatedText,
-                site,
-              } = currentQuestions;
-
-              console.log(
-                id,
-                difficulty,
-                title,
-                translatedTitle,
-                text,
-                translatedText,
-                site
-              );
-              const question: Question = {
-                id,
-                difficulty,
-                title,
-                translatedTitle,
-                text,
-                translatedText,
-                url: tabs[0].url,
-                status_memory: res.status_memory,
-                status_runtime: res.status_runtime,
-                status_msg: res.status_msg,
-                site,
-              };
-              getStoredUser().then((user) => {
-                if (user) {
-                  sendQuestionToServer(question, user);
-                } else {
-                  chrome.runtime.openOptionsPage();
-                }
-              });
+            console.log("Need to set up User information");
+            chrome.runtime.openOptionsPage(() => {
+              setIsAllowed(true);
             });
           }
         });
-    });
-  },
-  SUBMIT_FILTERS
-);
+      });
+    }
+  });
+};
+
+const handleSubmitBtnHit = (msg: any, sender: any, sendResponse: Function) => {
+  if (msg == MessageType.SUBMIT) {
+    sendResponse();
+  }
+};
+chrome.webRequest.onCompleted.addListener(onCompleteHandler, SUBMIT_FILTERS);
+chrome.runtime.onMessage.addListener(handleSubmitBtnHit);
+
+//chrome.runtime.onMessage.addListener(debounce(handleSubmitBtnHit, 3000));

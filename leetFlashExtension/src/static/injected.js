@@ -37,31 +37,33 @@ XHR.send = function () {
         // GraphQL data is returned as a blob
         this.response.text().then((data) => {
           if (typeof data === "string") {
-            const parsedData = JSON.parse(data);
-            // execute when recieve questionData from GraphQL
-            if (parsedData.data && "question" in parsedData.data) {
-              const question_id = parsedData.data.question.questionId;
-              const title = parsedData.data.question.title;
-              const text = convertToPlain(
-                parsedData.data.question.content
-              ).replace(/\n/g, " ");
-              const id = parsedData.data.question.questionFrontendId;
-              const difficulty =
-                parsedData.data.question.difficulty.toLowerCase();
+            if (data) {
+              const parsedData = JSON.parse(data);
+              // execute when recieve questionData from GraphQL
+              if (parsedData.data && "question" in parsedData.data) {
+                const question_id = parsedData.data.question.questionId;
+                const title = parsedData.data.question.title;
+                const text = convertToPlain(
+                  parsedData.data.question.content
+                ).replace(/\n/g, " ");
+                const id = parsedData.data.question.questionFrontendId;
+                const difficulty =
+                  parsedData.data.question.difficulty?.toLowerCase();
 
-              const questionInfo = {
-                question_id,
-                title,
-                text,
-                id,
-                difficulty,
-              };
+                const questionInfo = {
+                  question_id,
+                  title,
+                  text,
+                  id,
+                  difficulty,
+                };
 
-              window.dispatchEvent(
-                new CustomEvent("getQuestionInfoFromEN", {
-                  detail: questionInfo,
-                })
-              );
+                window.dispatchEvent(
+                  new CustomEvent("getQuestionInfoFromEN", {
+                    detail: questionInfo,
+                  })
+                );
+              }
             }
           }
         });

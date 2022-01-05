@@ -23,18 +23,22 @@
     {
       "matches": ["https://leetcode-cn.com/problems/*/"],
       "run_at": "document_end",
-      "js": ["contentScript.js"]
+      "js": ["contentScript.js", "injectCN.js"]
     },
     {
       "matches": ["https://leetcode.com/problems/*/"],
       "run_at": "document_start",
-      "js": ["inject.js", "contentScriptEN.js"]
+      "js": ["contentScriptEN.js", "injectEN.js"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["injected.js"],
+      "resources": ["injected.js", "submitBtnInjectEN.js"],
       "matches": ["*://*.leetcode.com/*"]
+    },
+    {
+      "resources": ["submitBtnInjectCN.js"],
+      "matches": ["*://*.leetcode-cn.com/*"]
     }
   ]
 }
