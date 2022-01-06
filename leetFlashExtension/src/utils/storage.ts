@@ -4,6 +4,7 @@ export interface SyncStorage {
 export interface LocalStorage {
   questionInfos: QuestionInfo[];
   isAllowed?: boolean;
+  onlyVisitor: false;
 }
 export interface QuestionInfo {
   id: string;
@@ -13,6 +14,16 @@ export interface QuestionInfo {
   translatedTitle?: string;
   text?: string;
   translatedText?: string;
+}
+
+export interface UserPerformance {
+  today_ac_count: number;
+  today_num_question: number;
+  avg_memory_percent: number;
+  avg_time_percent: number;
+  num_easy: number;
+  num_medium: number;
+  num_hard: number;
 }
 
 export interface Question {
@@ -29,7 +40,7 @@ export interface Question {
   status_runtime: string;
 }
 
-export enum languages {
+export enum Languages {
   CN,
   EN,
 }
@@ -37,7 +48,7 @@ export enum languages {
 export interface User {
   email: string;
   uuid: string;
-  language: languages;
+  performance: UserPerformance;
 }
 
 export type SyncStorageKeys = keyof SyncStorage;
@@ -55,7 +66,7 @@ export const setIsAllowed = (isAllowed: boolean): Promise<void> => {
   });
 };
 
-export const getIsAllowed = () => {
+export const getIsAllowed = (): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(["isAllowed"], (res: LocalStorage) => {
       resolve(res.isAllowed);
@@ -63,10 +74,67 @@ export const getIsAllowed = () => {
   });
 };
 
+export const setStoredOnlyVisitor = (onlyVisitor: boolean): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({ onlyVisitor }, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+export const getStoredOnlyVisitor = (): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["onlyVisitor"], (res: LocalStorage) => {
+      resolve(res.onlyVisitor);
+    });
+  });
+};
+
+export const incrementEasyCnt = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+      const { user } = res;
+      user.performance.num_easy += 1;
+      console.log("incrementEasyCnt " + user.performance.num_easy);
+      setStoredUser(user)
+        .then(() => resolve())
+        .catch((err) => reject(err));
+    });
+  });
+};
+
+export const incrementHardCnt = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+      const { user } = res;
+      user.performance.num_hard += 1;
+      setStoredUser(user)
+        .then(() => resolve())
+        .catch((err) => reject(err));
+    });
+  });
+};
+
+export const incrementMediumCnt = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+      const { user } = res;
+      user.performance.num_medium += 1;
+      setStoredUser(user)
+        .then(() => resolve())
+        .catch((err) => reject(err));
+    });
+  });
+};
+
 export const setStoredQuestionInfo = (
   questionInfos: QuestionInfo[]
 ): Promise<void> => {
-  const vals: LocalStorage = {
+  const vals = {
     questionInfos,
   };
   return new Promise((resolve, reject) => {
@@ -127,6 +195,40 @@ export const getStoredUser = (): Promise<User> => {
         reject(chrome.runtime.lastError.message);
       } else {
         resolve(res.user);
+      }
+    });
+  });
+};
+
+export const todayACIncrement = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+      if (chrome.runtime.lastError) {
+        console.log(chrome.runtime.lastError.message);
+        reject(chrome.runtime.lastError.message);
+      } else {
+        const user = res.user;
+        if (user) {
+          user.performance.today_ac_count += 1;
+          setStoredUser(user).then(() => resolve());
+        }
+      }
+    });
+  });
+};
+
+export const todayTotalIncrement = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+      if (chrome.runtime.lastError) {
+        console.log(chrome.runtime.lastError.message);
+        reject(chrome.runtime.lastError.message);
+      } else {
+        const user = res.user;
+        if (user) {
+          user.performance.today_num_question += 1;
+          setStoredUser(user).then(() => resolve());
+        }
       }
     });
   });

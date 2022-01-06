@@ -118,20 +118,12 @@ function myMain(evt) {
       console.log("questionInfo");
       console.log(questionInfo);
       getStoredQuestionInfo().then((storedQuestionInfo) => {
-        console.log(storedQuestionInfo);
-        let currentQuestions: QuestionInfo;
-        if (isEN) {
-          currentQuestions = storedQuestionInfo.find((q) => {
-            return q.question_id === questionInfo.question_id && q.title;
-          });
-        } else {
-          currentQuestions = storedQuestionInfo.find((q) => {
-            return (
-              q.question_id === questionInfo.question_id && q.translatedTitle
-            );
-          });
-        }
-        if (!currentQuestions) {
+        let curQuestionIdx: number;
+
+        curQuestionIdx = storedQuestionInfo.findIndex((q) => {
+          return q.question_id === questionInfo.question_id;
+        });
+        if (curQuestionIdx === -1) {
           setStoredQuestionInfo([...storedQuestionInfo, questionInfo]).then(
             () => {
               getStoredQuestionInfo().then((storedQuestionInfo) => {
@@ -140,6 +132,22 @@ function myMain(evt) {
               });
             }
           );
+        } else {
+          if (storedQuestionInfo[curQuestionIdx].title) {
+            storedQuestionInfo[curQuestionIdx].translatedTitle =
+              questionInfo.translatedTitle;
+            storedQuestionInfo[curQuestionIdx].translatedText =
+              questionInfo.translatedText;
+          } else {
+            storedQuestionInfo[curQuestionIdx].title = questionInfo.title;
+            storedQuestionInfo[curQuestionIdx].text = questionInfo.text;
+          }
+          setStoredQuestionInfo(storedQuestionInfo).then(() => {
+            getStoredQuestionInfo().then((storedQuestionInfo) => {
+              console.log("update success");
+              console.log(storedQuestionInfo);
+            });
+          });
         }
       });
     }

@@ -9,13 +9,24 @@ const handleEvent = (data: any) => {
   const questionInfo: QuestionInfo = data.detail;
   console.log(questionInfo);
   getStoredQuestionInfo().then((storedQuestionInfo) => {
-    const currentQuestions = storedQuestionInfo.find((q) => {
-      return q.question_id === questionInfo.question_id && q.title;
+    const currentQuestionIdx = storedQuestionInfo.findIndex((q) => {
+      return q.question_id === questionInfo.question_id;
     });
-    if (!currentQuestions) {
+    if (currentQuestionIdx === -1) {
       setStoredQuestionInfo([...storedQuestionInfo, questionInfo]).then(() => {
         getStoredQuestionInfo().then((storedQuestionInfo) => {
           console.log("save success");
+          console.log(storedQuestionInfo);
+        });
+      });
+    } else {
+      storedQuestionInfo[currentQuestionIdx].title = questionInfo.title;
+      storedQuestionInfo[currentQuestionIdx].text = questionInfo.text;
+
+
+      setStoredQuestionInfo(storedQuestionInfo).then(() => {
+        getStoredQuestionInfo().then((storedQuestionInfo) => {
+          console.log("update success");
           console.log(storedQuestionInfo);
         });
       });

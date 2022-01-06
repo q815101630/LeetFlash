@@ -40,7 +40,11 @@ XHR.send = function () {
             if (data) {
               const parsedData = JSON.parse(data);
               // execute when recieve questionData from GraphQL
-              if (parsedData.data && "question" in parsedData.data) {
+              if (
+                parsedData.data &&
+                "question" in parsedData.data &&
+                !parsedData.data.question.nextChallengePairs
+              ) {
                 const question_id = parsedData.data.question.questionId;
                 const title = parsedData.data.question.title;
                 const text = convertToPlain(

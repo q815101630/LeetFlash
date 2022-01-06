@@ -1,14 +1,13 @@
 import { Question, User } from "./storage";
 
-const SEND_QUESTION_API = "https://localhost:3000/api/add-question/";
+const SEND_QUESTION_API = "http://localhost:3000/api/user/add-question/";
 
 export const sendQuestionToServer = (
   question: Question,
   user: User
 ): Promise<void> => {
   const body = {
-    question,
-    user,
+    ...question,
   };
   return new Promise((resolve, reject) => {
     fetch(`${SEND_QUESTION_API}${user.email}`, {
@@ -20,7 +19,7 @@ export const sendQuestionToServer = (
       body: JSON.stringify(body),
     })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 200 || res.status === 201) {
           resolve();
         } else {
           reject(res.statusText);
