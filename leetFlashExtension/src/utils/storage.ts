@@ -3,8 +3,8 @@ export interface SyncStorage {
 }
 export interface LocalStorage {
   questionInfos: QuestionInfo[];
-  isAllowed?: boolean;
   onlyVisitor: false;
+  date: string;
 }
 export interface QuestionInfo {
   id: string;
@@ -80,25 +80,25 @@ export interface User {
 export type SyncStorageKeys = keyof SyncStorage;
 export type LocalStorageKeys = keyof LocalStorage;
 
-export const setIsAllowed = (isAllowed: boolean): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.set({ isAllowed }, () => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError.message);
-      } else {
-        resolve();
-      }
-    });
-  });
-};
+// export const setIsAllowed = (isAllowed: boolean): Promise<void> => {
+//   return new Promise((resolve, reject) => {
+//     chrome.storage.local.set({ isAllowed }, () => {
+//       if (chrome.runtime.lastError) {
+//         reject(chrome.runtime.lastError.message);
+//       } else {
+//         resolve();
+//       }
+//     });
+//   });
+// };
 
-export const getIsAllowed = (): Promise<boolean> => {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get(["isAllowed"], (res: LocalStorage) => {
-      resolve(res.isAllowed);
-    });
-  });
-};
+// export const getIsAllowed = (): Promise<boolean> => {
+//   return new Promise((resolve, reject) => {
+//     chrome.storage.local.get(["isAllowed"], (res: LocalStorage) => {
+//       resolve(res.isAllowed);
+//     });
+//   });
+// };
 
 export const setStoredOnlyVisitor = (onlyVisitor: boolean): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -164,7 +164,7 @@ export const addQuestionToSet = (
   return new Promise((resolve, reject) => {
     getStoredUser().then((user) => {
       let tempSet: Set<string>;
-      console.log(user.performance.finishedEasy);
+      // console.log(user.performance.finishedEasy);
       if (question_type === "easy") {
         tempSet = new Set(user.performance.finishedEasy);
         tempSet.add(question_id);
@@ -258,7 +258,7 @@ export const todayACIncrement = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(["user"], (res: SyncStorage) => {
       if (chrome.runtime.lastError) {
-        console.log(chrome.runtime.lastError.message);
+        // console.log(chrome.runtime.lastError.message);
         reject(chrome.runtime.lastError.message);
       } else {
         const user = res.user;
@@ -275,7 +275,7 @@ export const todayTotalIncrement = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(["user"], (res: SyncStorage) => {
       if (chrome.runtime.lastError) {
-        console.log(chrome.runtime.lastError.message);
+        // console.log(chrome.runtime.lastError.message);
         reject(chrome.runtime.lastError.message);
       } else {
         const user = res.user;
@@ -295,6 +295,31 @@ export const clearTodayPerformance = (): Promise<void> => {
       setStoredUser(user)
         .then(() => resolve())
         .catch((err) => reject(err));
+    });
+  });
+};
+
+export const setDate = (date: Date): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const dateJSON = date.toJSON();
+    chrome.storage.local.set({ date: dateJSON }, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+export const getDate = (): Promise<Date> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["date"], (res: LocalStorage) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(new Date(res.date));
+      }
     });
   });
 };

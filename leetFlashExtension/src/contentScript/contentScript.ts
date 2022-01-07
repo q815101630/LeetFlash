@@ -23,7 +23,7 @@ const DIFFICULTY_CN = "[data-degree]";
 const CONTENT_CN = "[class*=content] .notranslate";
 const QUESTION_ID = "[name='question']";
 const SUBMIT_BTN = "[data-cypress='SubmitCode']";
-console.log("contentScript.ts");
+// console.log("contentScript.ts");
 
 let titleElement: Element;
 let contentElement: any;
@@ -115,8 +115,8 @@ function myMain(evt) {
         text: isEN ? content : undefined,
         translatedText: isEN ? undefined : content,
       };
-      console.log("questionInfo");
-      console.log(questionInfo);
+      // console.log("questionInfo");
+      // console.log(questionInfo);
       getStoredQuestionInfo().then((storedQuestionInfo) => {
         let curQuestionIdx: number;
 
@@ -127,8 +127,8 @@ function myMain(evt) {
           setStoredQuestionInfo([...storedQuestionInfo, questionInfo]).then(
             () => {
               getStoredQuestionInfo().then((storedQuestionInfo) => {
-                console.log("save success");
-                console.log(storedQuestionInfo);
+                // console.log("save success");
+                // console.log(storedQuestionInfo);
               });
             }
           );
@@ -144,8 +144,8 @@ function myMain(evt) {
           }
           setStoredQuestionInfo(storedQuestionInfo).then(() => {
             getStoredQuestionInfo().then((storedQuestionInfo) => {
-              console.log("update success");
-              console.log(storedQuestionInfo);
+              // console.log("update success");
+              // console.log(storedQuestionInfo);
             });
           });
         }
@@ -155,7 +155,7 @@ function myMain(evt) {
 }
 
 const handleSubmitIncrement = () => {
-  console.log("handling Submit at contentScript");
+  // console.log("handling Submit at contentScript");
   chrome.runtime.sendMessage(MessageType.SUBMIT, () => {});
 };
 window.addEventListener("submitBtnHit", handleSubmitIncrement, false);

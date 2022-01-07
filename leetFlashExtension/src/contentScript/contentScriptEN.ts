@@ -7,7 +7,7 @@ import {
 
 const handleEvent = (data: any) => {
   const questionInfo: QuestionInfo = data.detail;
-  console.log(questionInfo);
+  // console.log(questionInfo);
   getStoredQuestionInfo().then((storedQuestionInfo) => {
     const currentQuestionIdx = storedQuestionInfo.findIndex((q) => {
       return q.question_id === questionInfo.question_id;
@@ -15,8 +15,8 @@ const handleEvent = (data: any) => {
     if (currentQuestionIdx === -1) {
       setStoredQuestionInfo([...storedQuestionInfo, questionInfo]).then(() => {
         getStoredQuestionInfo().then((storedQuestionInfo) => {
-          console.log("save success");
-          console.log(storedQuestionInfo);
+          // console.log("save success");
+          // console.log(storedQuestionInfo);
         });
       });
     } else {
@@ -26,8 +26,8 @@ const handleEvent = (data: any) => {
 
       setStoredQuestionInfo(storedQuestionInfo).then(() => {
         getStoredQuestionInfo().then((storedQuestionInfo) => {
-          console.log("update success");
-          console.log(storedQuestionInfo);
+          // console.log("update success");
+          // console.log(storedQuestionInfo);
         });
       });
     }

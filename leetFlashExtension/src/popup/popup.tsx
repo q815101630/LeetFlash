@@ -19,6 +19,7 @@ import { AcStackBar } from "./AcStackBar";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Divider from "@mui/material/Divider";
 import { getStoredUser, User } from "../utils/storage";
+import logo from "../static/IconOnly2.png";
 
 const Item: React.FC<{ label: string; value: number | string }> = ({
   label,
@@ -49,8 +50,8 @@ const App: React.FC<{}> = () => {
 
   useEffect(() => {
     getStoredUser().then((user) => {
-      console.log("popup user");
-      console.log(user);
+      // console.log("popup user");
+      // console.log(user);
       setUser(user);
     });
   }, []);
@@ -82,7 +83,7 @@ const App: React.FC<{}> = () => {
             LeetFlash
           </Box>
           <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
-            <SettingsIcon />
+            <img src={logo} height={50} width={50} />
           </IconButton>
         </Box>
         <Typography variant="subtitle1">Today's Stats:</Typography>

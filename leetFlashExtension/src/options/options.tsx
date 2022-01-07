@@ -23,7 +23,7 @@ import Link from "@mui/material/Link";
 
 type FormState = "ready" | "saving";
 const App: React.FC<{}> = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>(DefaultUser);
   const [password, setPassword] = useState<string>("");
   const [formState, setFormState] = useState<FormState>("ready");
   const [onlyVisitor, setOnlyVisitor] = useState<boolean>(false);
@@ -118,7 +118,7 @@ const App: React.FC<{}> = () => {
   // const handleAutoOverlayChange = (hasAutoOverlay: boolean) => {
   //   setOptions({ ...options, hasAutoOverlay });
   // };
-
+  const temp = true;
   const isFieldsDisabled = formState === "saving";
   return (
     <Grid
@@ -142,10 +142,15 @@ const App: React.FC<{}> = () => {
               clearTodayPerformance();
               toast.success("Cleared your history for today !");
             }}
-            sx={{ display: "inline" }}
+            sx={{ display: "block", mb: 2 }}
           >
             Clear Today History
           </Link>
+
+          <Typography variant="body2">
+            App is still developing, so feel free to use Only Extension option
+            :)
+          </Typography>
 
           <Grid container direction="column">
             <Grid
@@ -165,7 +170,7 @@ const App: React.FC<{}> = () => {
                   value={user.email}
                   variant="standard"
                   onChange={(e) => setUser({ ...user, email: e.target.value })}
-                  disabled={isFieldsDisabled || onlyVisitor}
+                  disabled={isFieldsDisabled || onlyVisitor || temp}
                 />
               </Grid>
             </Grid>
@@ -188,7 +193,7 @@ const App: React.FC<{}> = () => {
                   value={password}
                   variant="standard"
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={isFieldsDisabled || onlyVisitor}
+                  disabled={isFieldsDisabled || onlyVisitor || temp}
                 />
               </Grid>
             </Grid>
@@ -206,7 +211,7 @@ const App: React.FC<{}> = () => {
               <Grid item sx={{ pr: 10 }}>
                 <Switch
                   disabled={isFieldsDisabled || signIn}
-                  checked={onlyVisitor}
+                  checked={onlyVisitor || false}
                   onChange={handleOnlyVisitorChange}
                 />
               </Grid>
@@ -224,7 +229,9 @@ const App: React.FC<{}> = () => {
               <Typography variant="body2"></Typography>
 
               <Link
-                href="http://localhost:300/user/sign-up"
+                component="button"
+                disabled
+                // href="http://localhost:300/user/sign-up"
                 target="_blank"
                 rel="noopener"
                 underline="hover"
@@ -243,7 +250,7 @@ const App: React.FC<{}> = () => {
             </Grid>
             <Grid container item justifyContent="center" sx={{ pt: 5 }}>
               <Button
-                disabled={isFieldsDisabled}
+                disabled={isFieldsDisabled || temp}
                 variant="contained"
                 size="medium"
                 onClick={submitHandler}
