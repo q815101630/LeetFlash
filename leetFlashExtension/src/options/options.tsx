@@ -20,6 +20,7 @@ import { ToastContainer, toast } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
 import Switch from "@mui/material/Switch";
 import Link from "@mui/material/Link";
+import ClearAlert from "./ClearAlert";
 
 type FormState = "ready" | "saving";
 const App: React.FC<{}> = () => {
@@ -28,6 +29,7 @@ const App: React.FC<{}> = () => {
   const [formState, setFormState] = useState<FormState>("ready");
   const [onlyVisitor, setOnlyVisitor] = useState<boolean>(false);
   const [signIn, setSignIn] = useState<boolean>(false);
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
   useEffect(() => {
     getStoredUser().then((user) => {
       console.log("Get user ");
@@ -111,6 +113,14 @@ const App: React.FC<{}> = () => {
     toast.success("Successfully signed out!");
   };
 
+  const handleClear = (clear: boolean) => {
+    if (clear) {
+      clearTodayPerformance();
+      toast.success("Cleared your history for today !");
+    }
+    setOpenAlert(false);
+  };
+
   if (!user) {
     return null;
   }
@@ -139,8 +149,7 @@ const App: React.FC<{}> = () => {
             href="#"
             underline="hover"
             onClick={() => {
-              clearTodayPerformance();
-              toast.success("Cleared your history for today !");
+              setOpenAlert(true);
             }}
             sx={{ display: "block", mb: 2 }}
           >
@@ -262,6 +271,7 @@ const App: React.FC<{}> = () => {
         </Paper>
       </Grid>
       <ToastContainer />
+      <ClearAlert AlertOpen={openAlert} handleClear={handleClear} />
     </Grid>
   );
 };
