@@ -4,7 +4,13 @@ import ReactDOM from "react-dom";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import "./popup.css";
-import { SxProps, Theme, Typography } from "@mui/material";
+import {
+  createTheme,
+  SxProps,
+  Theme,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 
 import { MyPie } from "./pie";
@@ -32,6 +38,12 @@ const Item: React.FC<{ label: string; value: number | string }> = ({
   );
 };
 
+const theme = createTheme({
+  typography: {
+    fontFamily: "Raleway, sans-serif",
+  },
+});
+
 const App: React.FC<{}> = () => {
   const [user, setUser] = useState<User | null>(null);
 
@@ -47,59 +59,56 @@ const App: React.FC<{}> = () => {
     return null;
   }
 
-  console.log("total " + user.performance.today_num_question);
-  console.log("aced" + user.performance.today_ac_count);
-  console.log("easy" + user.performance.num_easy);
-  console.log("medium" + user.performance.num_medium);
-  console.log("hard" + user.performance.num_hard);
-
   return (
-    <div>
-      <Box
-        sx={{
-          bgcolor: "orange",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-around",
-          py: 0.5,
-        }}
-      >
+    <ThemeProvider theme={theme}>
+      <div>
         <Box
           sx={{
-            fontStyle: "italic",
-            typography: "h5",
-            display: "inline",
+            bgcolor: "orange",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-around",
+            py: 0.5,
           }}
         >
-          LeetFlash
+          <Box
+            sx={{
+              fontStyle: "italic",
+              fontFamily: "Raleway",
+              typography: "h5",
+              display: "inline",
+            }}
+          >
+            LeetFlash
+          </Box>
+          <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
+            <SettingsIcon />
+          </IconButton>
         </Box>
-        <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
-          <SettingsIcon />
-        </IconButton>
-      </Box>
-      <Typography variant="subtitle1">Today's Stats:</Typography>
-      <Grid container direction="column">
-        <Item
-          label={"AC Rate"}
-          value={(
-            Math.round(
-              (user.performance.today_ac_count /
-                user.performance.today_num_question) *
-                100
-            ) / 100
-          ).toFixed(2)}
-        />
-        <MyPie
-          easy={user.performance.num_easy}
-          medium={user.performance.num_medium}
-          hard={user.performance.num_hard}
-        />
-        <AcStackBar
-          total={user.performance.today_num_question}
-          ac_count={user.performance.today_ac_count}
-        />
-      </Grid>
-    </div>
+        <Typography variant="subtitle1">Today's Stats:</Typography>
+        <Grid container direction="column">
+          <Item
+            label={"AC Rate"}
+            value={(
+              Math.round(
+                (user.performance.today_ac_count /
+                  user.performance.today_num_question) *
+                  100
+              ) / 100
+            ).toFixed(2)}
+          />
+          <MyPie
+            easy={user.performance.finishedEasy.length}
+            medium={user.performance.finishedMedium.length}
+            hard={user.performance.finishedHard.length}
+          />
+          <AcStackBar
+            total={user.performance.today_num_question}
+            ac_count={user.performance.today_ac_count}
+          />
+        </Grid>
+      </div>
+    </ThemeProvider>
   );
 };
 

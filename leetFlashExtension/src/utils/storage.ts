@@ -21,10 +21,36 @@ export interface UserPerformance {
   today_num_question: number;
   avg_memory_percent: number;
   avg_time_percent: number;
-  num_easy: number;
-  num_medium: number;
-  num_hard: number;
+  finishedEasy: string[];
+  finishedMedium: string[];
+  finishedHard: string[];
 }
+
+export interface SubmissionResponse {
+  question_id: string;
+  status_msg: string;
+  status_runtime: string;
+  status_memory: string;
+}
+
+export const DefaultUserPerformance = {
+  today_ac_count: 0,
+  today_num_question: 0,
+  avg_memory_percent: 0,
+  avg_time_percent: 0,
+  num_easy: 0,
+  num_medium: 0,
+  num_hard: 0,
+  finishedEasy: [],
+  finishedMedium: [],
+  finishedHard: [],
+} as UserPerformance;
+
+export const DefaultUser: User = {
+  email: "",
+  uuid: "",
+  performance: DefaultUserPerformance,
+};
 
 export interface Question {
   id: string;
@@ -94,36 +120,64 @@ export const getStoredOnlyVisitor = (): Promise<boolean> => {
   });
 };
 
-export const incrementEasyCnt = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
-      const { user } = res;
-      user.performance.num_easy += 1;
-      console.log("incrementEasyCnt " + user.performance.num_easy);
-      setStoredUser(user)
-        .then(() => resolve())
-        .catch((err) => reject(err));
-    });
-  });
-};
+// export const incrementEasyCnt = (): Promise<void> => {
+//   return new Promise((resolve, reject) => {
+//     chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+//       const { user } = res;
+//       user.performance.num_easy += 1;
+//       console.log("incrementEasyCnt " + user.performance.num_easy);
+//       setStoredUser(user)
+//         .then(() => resolve())
+//         .catch((err) => reject(err));
+//     });
+//   });
+// };
 
-export const incrementHardCnt = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
-      const { user } = res;
-      user.performance.num_hard += 1;
-      setStoredUser(user)
-        .then(() => resolve())
-        .catch((err) => reject(err));
-    });
-  });
-};
+// export const incrementHardCnt = (): Promise<void> => {
+//   return new Promise((resolve, reject) => {
+//     chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+//       const { user } = res;
+//       user.performance.num_hard += 1;
+//       setStoredUser(user)
+//         .then(() => resolve())
+//         .catch((err) => reject(err));
+//     });
+//   });
+// };
 
-export const incrementMediumCnt = (): Promise<void> => {
+// export const incrementMediumCnt = (): Promise<void> => {
+//   return new Promise((resolve, reject) => {
+//     chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+//       const { user } = res;
+//       user.performance.num_medium += 1;
+//       setStoredUser(user)
+//         .then(() => resolve())
+//         .catch((err) => reject(err));
+//     });
+//   });
+// };
+
+export const addQuestionToSet = (
+  question_id: string,
+  question_type: string
+): Promise<void> => {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
-      const { user } = res;
-      user.performance.num_medium += 1;
+    getStoredUser().then((user) => {
+      let tempSet: Set<string>;
+      console.log(user.performance.finishedEasy);
+      if (question_type === "easy") {
+        tempSet = new Set(user.performance.finishedEasy);
+        tempSet.add(question_id);
+        user.performance.finishedEasy = Array.from(tempSet);
+      } else if (question_type === "medium") {
+        tempSet = new Set(user.performance.finishedMedium);
+        tempSet.add(question_id);
+        user.performance.finishedMedium = Array.from(tempSet);
+      } else if (question_type === "hard") {
+        tempSet = new Set(user.performance.finishedHard);
+        tempSet.add(question_id);
+        user.performance.finishedHard = Array.from(tempSet);
+      }
       setStoredUser(user)
         .then(() => resolve())
         .catch((err) => reject(err));
@@ -230,6 +284,17 @@ export const todayTotalIncrement = (): Promise<void> => {
           setStoredUser(user).then(() => resolve());
         }
       }
+    });
+  });
+};
+
+export const clearTodayPerformance = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    getStoredUser().then((user) => {
+      user.performance = DefaultUserPerformance;
+      setStoredUser(user)
+        .then(() => resolve())
+        .catch((err) => reject(err));
     });
   });
 };

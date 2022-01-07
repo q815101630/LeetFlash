@@ -1,56 +1,29 @@
 import {
+  addQuestionToSet,
+  DefaultUser,
   getStoredOnlyVisitor,
-  incrementEasyCnt,
-  incrementHardCnt,
-  incrementMediumCnt,
+  SubmissionResponse,
 } from "./../utils/storage";
 import {
   findOneQuestionInfo,
-  getStoredQuestionInfo,
   getStoredUser,
-  Languages,
   Question,
   QuestionInfo,
   setStoredQuestionInfo,
   setStoredUser,
-  getIsAllowed,
   User,
-  setIsAllowed,
   todayTotalIncrement,
   todayACIncrement,
 } from "../utils/storage";
-import { debounce } from "ts-debounce";
 import { sendQuestionToServer } from "../utils/api";
 import { MessageType } from "../utils/messages";
 import { UserPerformance } from "../utils/storage";
+import { debounce } from "ts-debounce";
 const SUBMIT_FILTERS = {
   urls: [
     "https://leetcode.com/submissions/detail/*/check/",
     "https://leetcode-cn.com/submissions/detail/*/check/",
   ],
-};
-
-export interface SubmissionResponse {
-  question_id: string;
-  status_msg: string;
-  status_runtime: string;
-  status_memory: string;
-}
-
-export const DefaultUserPerformance = {
-  today_ac_count: 0,
-  today_num_question: 0,
-  avg_memory_percent: 0,
-  avg_time_percent: 0,
-  num_easy: 0,
-  num_medium: 0,
-  num_hard: 0,
-} as UserPerformance;
-
-export const DefaultUser: User = {
-  email: "",
-  uuid: "",
-  performance: DefaultUserPerformance,
 };
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -61,7 +34,6 @@ chrome.runtime.onInstalled.addListener(() => {
       setStoredUser(DefaultUser);
     }
   });
-  setIsAllowed(true);
   setStoredQuestionInfo([]);
 });
 
@@ -111,121 +83,101 @@ const onCompleteHandlerDebounced = (params: any) => {
   ) {
     return;
   }
-  getIsAllowed().then((isAllowed: boolean) => {
-    if (isAllowed) {
-      onCompleteHandler(params);
-    } else {
-      console.log("isAllowed is false");
-    }
-  });
+  onCompleteHandler(params);
 };
 
 const onCompleteHandler = async ({
   url,
 }: chrome.webRequest.WebResponseCacheDetails) => {
-  setIsAllowed(false).then(async () => {
-    timesRequest += 1;
-    console.log("timesRequest " + timesRequest);
+  timesRequest += 1;
+  console.log("timesRequest " + timesRequest);
 
-    const questionUrl = (await getCurrentTab())?.url;
-    if (!questionUrl) {
-      console.log("questionUrl is null");
-      setIsAllowed(true);
-      return;
-    }
-    timesQuery += 1;
-    console.log("timesQuery " + timesQuery);
-    console.log("url ", url);
-    const res: SubmissionResponse = await getJSON(url);
-    console.log("totalIncremented");
-    todayTotalIncrement().then(() => {
-      if (res.status_msg === "Accepted") {
-        console.log("AC incremented");
-        todayACIncrement().then(async () => {
-          console.log("res " + res);
-          console.log("question_id " + res.question_id);
-          questionInfo = await findOneQuestionInfo(res.question_id);
-          console.log("QuestionInfo from GraphQL or front-end");
-          console.log(questionInfo);
-          if (!questionInfo) {
+  const questionUrl = (await getCurrentTab())?.url;
+  if (!questionUrl) {
+    console.log("questionUrl is null");
+    return;
+  }
+  timesQuery += 1;
+  console.log("timesQuery " + timesQuery);
+  console.log("url ", url);
+  const res: SubmissionResponse = await getJSON(url);
+  console.log("totalIncremented");
+  todayTotalIncrement().then(() => {
+    if (res.status_msg === "Accepted") {
+      console.log("AC incremented");
+      todayACIncrement().then(async () => {
+        console.log("res " + res);
+        console.log("question_id " + res.question_id);
+        questionInfo = await findOneQuestionInfo(res.question_id);
+        console.log("QuestionInfo from GraphQL or front-end");
+        console.log(questionInfo);
+        if (!questionInfo) {
+          console.log(
+            "Cannot find question, go back to question page and try again"
+          );
+          return;
+        }
+        const {
+          id,
+          question_id,
+          difficulty,
+          title,
+          translatedTitle,
+          text,
+          translatedText,
+        } = questionInfo;
+
+        const question: Question = {
+          id,
+          question_id,
+          url: questionUrl,
+          difficulty,
+          title,
+          translatedTitle,
+          text,
+          translatedText,
+          status_memory: res.status_memory,
+          status_runtime: res.status_runtime,
+          status_msg: res.status_msg,
+        };
+        console.log("Final question to send:");
+        console.log(question);
+        getStoredUser().then((user) => {
+          if (res.status_msg === "Accepted") {
             console.log(
-              "Cannot find question, go back to question page and try again"
+              "Add question " + question_id + " to set " + difficulty
             );
-            setIsAllowed(true);
-            return;
+            addQuestionToSet(question_id, difficulty).then(() => {
+              handleSendQuestionToServer(question, user);
+            });
+          } else {
+            handleSendQuestionToServer(question, user);
           }
-          const {
-            id,
-            question_id,
-            difficulty,
-            title,
-            translatedTitle,
-            text,
-            translatedText,
-          } = questionInfo;
-
-          const question: Question = {
-            id,
-            question_id,
-            url: questionUrl,
-            difficulty,
-            title,
-            translatedTitle,
-            text,
-            translatedText,
-            status_memory: res.status_memory,
-            status_runtime: res.status_runtime,
-            status_msg: res.status_msg,
-          };
-          console.log("Final question to send:");
-          console.log(question);
-          getStoredUser().then((user) => {
-            if (res.status_msg === "Accepted") {
-              console.log("Accepted");
-              switch (difficulty) {
-                case "easy":
-                  console.log("Easy");
-                  incrementEasyCnt();
-                  break;
-                case "medium":
-                  console.log("medium");
-
-                  incrementMediumCnt();
-                  break;
-                case "hard":
-                  console.log("hard");
-
-                  incrementHardCnt();
-                  break;
-              }
-            }
-
-            if (user && user.uuid) {
-              console.log("found user and start sending");
-              sendQuestionToServer(question, user)
-                .then(() => {
-                  console.log("sent and set isAllowed to true");
-                  setIsAllowed(true);
-                })
-                .catch(() => {
-                  console.log("failed to send");
-                  setIsAllowed(true);
-                });
-            } else {
-              console.log("Need to set up User information");
-              setIsAllowed(true).then(() => {
-                getStoredOnlyVisitor().then((onlyVisitor) => {
-                  if (!onlyVisitor) {
-                    chrome.runtime.openOptionsPage();
-                  }
-                });
-              });
-            }
-          });
         });
+      });
+    }
+  });
+};
+
+const handleSendQuestionToServer = (question: Question, user: User) => {
+  if (user && user.uuid) {
+    console.log("found user and start sending");
+    sendQuestionToServer(question, user)
+      .then(() => {
+        console.log("sent and set isAllowed to true");
+      })
+      .catch(() => {
+        console.log("failed to send");
+      });
+  } else {
+    console.log("Need to set up User information");
+
+    getStoredOnlyVisitor().then((onlyVisitor) => {
+      if (!onlyVisitor) {
+        chrome.runtime.openOptionsPage();
       }
     });
-  });
+  }
 };
 
 const handleSubmitBtnHit = (msg: any, sender: any, sendResponse: Function) => {

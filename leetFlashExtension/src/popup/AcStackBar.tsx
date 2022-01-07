@@ -42,7 +42,7 @@ export const options = {
   },
 };
 
-const labels = ["# AC"];
+const labels = ["# Submit"];
 
 export function AcStackBar({ total, ac_count }) {
   const data = {

@@ -12,10 +12,12 @@ import {
   User,
   getStoredOnlyVisitor,
   setStoredOnlyVisitor,
+  clearTodayPerformance,
+  DefaultUserPerformance,
+  DefaultUser,
 } from "../utils/storage";
 import { ToastContainer, toast } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
-import { DefaultUserPerformance, DefaultUser } from "../background/background";
 import Switch from "@mui/material/Switch";
 import Link from "@mui/material/Link";
 
@@ -85,6 +87,12 @@ const App: React.FC<{}> = () => {
             setFormState("ready");
           }, 1000);
         }
+      })
+      .catch((err) => {
+        toast.error(
+          "Cannot connect to the server, use Only Extension mode first"
+        );
+        setFormState("ready");
       });
   };
 
@@ -126,6 +134,19 @@ const App: React.FC<{}> = () => {
           <Typography variant="h2" pb={5}>
             Setting
           </Typography>
+
+          <Link
+            href="#"
+            underline="hover"
+            onClick={() => {
+              clearTodayPerformance();
+              toast.success("Cleared your history for today !");
+            }}
+            sx={{ display: "inline" }}
+          >
+            Clear Today History
+          </Link>
+
           <Grid container direction="column">
             <Grid
               item
@@ -134,7 +155,6 @@ const App: React.FC<{}> = () => {
               direction="row"
               justifyContent="space-between"
               alignItems="flex-end"
-              spacing={4}
             >
               <Grid item>
                 <Typography variant="h6">LeetFlash Email</Typography>
