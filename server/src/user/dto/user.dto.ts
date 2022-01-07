@@ -1,10 +1,10 @@
 import { Expose } from 'class-transformer';
+import { ObjectId } from 'mongoose';
 
 export class UserDto {
   @Expose()
-  _id: number;
+  _id: string;
+
   @Expose()
   email: string;
-  @Expose()
-  username: string;
 }

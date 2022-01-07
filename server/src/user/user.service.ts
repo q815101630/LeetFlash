@@ -10,13 +10,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-
+import { defaultStages } from 'src/utils/constant';
+import * as mongoose from 'mongoose';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.userModel.create(createUserDto);
+    console.log('Creating user');
+    return await this.userModel.create({
+      ...createUserDto,
+      total_stages: defaultStages,
+    });
   }
 
   async findOne(userId: string): Promise<User> {
@@ -51,6 +56,7 @@ export class UsersService {
     const existingUser = await this.userModel.findByIdAndUpdate(
       { _id: userId },
       updateUserDto,
+      { new: true },
     );
     if (!existingUser) {
       throw new NotFoundException(`User #${userId} not found`);
@@ -74,6 +80,7 @@ export class UsersService {
     const existingUser = await this.userModel.findOneAndUpdate(
       { username },
       updateUserDto,
+      { new: true },
     );
     if (!existingUser) {
       throw new NotFoundException(`User #${username} not found`);

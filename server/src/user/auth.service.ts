@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from './entities/user.entity';
-import { UsersService } from './users.service';
+import { UsersService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -40,11 +40,13 @@ export class AuthService {
     try {
       //Object.assign(createUserDto, { _id: new mongoose.Types.ObjectId() });
       const newUser = await this.usersService.create(createUserDto);
+      console.log('signup');
       return newUser;
     } catch (error) {
       if (error.code === 11000) {
+        console.log(error);
         throw new ConflictException(
-          `User #${createUserDto.username} already exists`,
+          `User #${createUserDto.email} already exists`,
         );
       } else {
         throw new BadRequestException(error);

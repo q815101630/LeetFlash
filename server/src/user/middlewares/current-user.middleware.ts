@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 
 import { Request, Response, NextFunction } from 'express';
 
-import { UsersService } from '../users.service';
+import { UsersService } from '../user.service';
 import { User } from '../entities/user.entity';
 
 declare global {

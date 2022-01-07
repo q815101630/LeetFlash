@@ -1,10 +1,12 @@
 import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
+import { QuestionModule } from './question/question.module';
+import { CardModule } from './card/card.module';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -21,6 +23,8 @@ const cookieSession = require('cookie-session');
       inject: [ConfigService],
     }),
     UsersModule,
+    QuestionModule,
+    CardModule,
   ],
   controllers: [AppController],
   providers: [
