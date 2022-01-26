@@ -1,6 +1,6 @@
 {
-  "name": "LeetFlash Extension",
-  "description": "The must extension that boosts the experience of LeetFlash!",
+  "name": "LeetFlash",
+  "description": "A simple extension that record your LeetCode performance for everyday.",
   "version": "1.0.0",
   "manifest_version": 3,
   "icons": {
@@ -10,7 +10,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "LeetFlash Extension",
+    "default_title": "LeetFlash",
     "default_icon": "iconOnly2.png"
   },
   "permissions": ["storage", "tabs", "activeTab", "webRequest"],
