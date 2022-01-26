@@ -78,7 +78,7 @@ export class UsersController {
   }
   @Serialize(UserDto)
   @UseGuards(LocalAuthGuard)
-  @Patch('/profiles/')
+  @Patch('/profile/')
   update(@Body() updateUserDto: UpdateUserDto, @Req() req) {
     return this.usersService.updateByUsername(req.user.username, updateUserDto);
   }
