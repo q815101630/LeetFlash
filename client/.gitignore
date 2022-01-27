@@ -7,7 +7,7 @@
 my-app
 # testing
 /coverage
-
+.env
 # production
 /build
 
