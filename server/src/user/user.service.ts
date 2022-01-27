@@ -18,10 +18,14 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     console.log('Creating user');
-    return await this.userModel.create({
-      ...createUserDto,
-      total_stages: defaultStages,
-    });
+    try {
+      return await this.userModel.create({
+        ...createUserDto,
+        total_stages: defaultStages,
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 
   async findOne(userId: string): Promise<User> {

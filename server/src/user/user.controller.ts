@@ -11,6 +11,7 @@ import {
   Req,
   UseGuards,
   Headers,
+  HttpCode,
 } from '@nestjs/common';
 import { LocalAuthGuard, SuperUserAuthGuard } from 'src/guards/auth.guard';
 
@@ -40,12 +41,12 @@ export class UsersController {
   @Serialize(UserDto)
   @Post('/signup')
   async signUpUser(@Body() createUserDto: CreateUserDto, @Session() session) {
-    console.log('signuo controller');
     const user = await this.authService.signup(createUserDto);
     session.user = user;
     return user;
   }
   @Serialize(UserDto)
+  @HttpCode(200)
   @Post('/signin')
   async signInUser(@Body() loginUserDto: LoginUserDto, @Session() session) {
     const user = await this.authService.signIn(loginUserDto);

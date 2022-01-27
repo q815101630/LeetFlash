@@ -20,14 +20,14 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException({
         message: 'User not found',
-        error: { username: 'User credential invalid' },
+        error: 'User credential invalid',
       });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new NotFoundException({
         message: 'User credential failed',
-        error: { username: 'User credential invalid' },
+        error: 'User credential invalid',
       });
     }
     return user;
@@ -40,7 +40,7 @@ export class AuthService {
     try {
       //Object.assign(createUserDto, { _id: new mongoose.Types.ObjectId() });
       const newUser = await this.usersService.create(createUserDto);
-      console.log('signup');
+      console.log('signup 1231 123');
       return newUser;
     } catch (error) {
       if (error.code === 11000) {
