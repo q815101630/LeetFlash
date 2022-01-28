@@ -42,7 +42,14 @@ export const checkProfileAsync = createAsyncThunk(
 export const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    clearUserState: (state) => {
+      state.status = initialState.status;
+      state.error = initialState.error;
+      state.email = initialState.email;
+      state.id = initialState.id;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loginUserAsync.pending, (state) => {
@@ -86,6 +93,8 @@ export const userSlice = createSlice({
       });
   },
 });
+
+export const { clearUserState } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 

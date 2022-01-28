@@ -29,7 +29,7 @@ import { AiFillGoogleCircle } from "react-icons/ai";
 import { BsGithub } from "react-icons/bs";
 import { AiFillWechat } from "react-icons/ai";
 import { onClickGitHubHandler, onClickWeChatHandler } from "./oauthHandler";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import client from "../apis/client";
 import axios from "axios";
 type FormState = "ready" | "saving";
@@ -93,6 +93,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         duration: 3000,
         isClosable: true,
       });
+      navigate("/dashboard");
     }
   }, [toast, user.error, user.status]);
 
@@ -282,6 +283,7 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         duration: 3000,
         isClosable: true,
       });
+      navigate("/dashboard");
     }
   }, [toast, user.error, user.status]);
 
@@ -398,18 +400,27 @@ const LoginPage = () => {
 
   const [signUp, setSignUp] = React.useState<boolean>(false);
 
+  const user = useAppSelector(selectUser);
+
   const toggleSignUp = () => {
     setSignUp(!signUp);
   };
+
   return (
-    <Container h="100vh" maxW="container.sm" px={0} py={20}>
-      <Button onClick={toggleColorMode}>Change color mode</Button>
-      {signUp ? (
-        <SignUpVStack toggleSignUp={toggleSignUp} />
+    <>
+      {user.status === "active" ? (
+        <Navigate to="/dashboard" />
       ) : (
-        <SignInVStack toggleSignUp={toggleSignUp} />
+        <Container h="100vh" maxW="container.sm" px={0} py={20}>
+          <Button onClick={toggleColorMode}>Change color mode</Button>
+          {signUp ? (
+            <SignUpVStack toggleSignUp={toggleSignUp} />
+          ) : (
+            <SignInVStack toggleSignUp={toggleSignUp} />
+          )}
+        </Container>
       )}
-    </Container>
+    </>
   );
 };
 

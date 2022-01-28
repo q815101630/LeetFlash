@@ -1,4 +1,9 @@
+import { Logout } from "./logout";
+
 export const Dashboard = () => {
-    //TODO: Persist User
-  return <div>Dashboard</div>;
+  return (
+    <div>
+      <Logout />
+    </div>
+  );
 };

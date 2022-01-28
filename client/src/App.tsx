@@ -1,26 +1,17 @@
 import "./App.css";
-import { Container } from "@chakra-ui/react";
 import LoginPage from "./pages/login";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useAppSelector } from "./redux/hooks";
-import { selectUser } from "./redux/user/userSlice";
+import { Route, Routes } from "react-router-dom";
+import { Callback } from "./pages/callback";
 import { Dashboard } from "./pages/dashboard";
+import { Logout } from "./pages/logout";
 
 function App() {
-  const user = useAppSelector(selectUser);
-
   return (
-    <BrowserRouter>
       <Routes>
-        //TODO: Reference the cloth example on how managing routes
-        <Route
-          path="/login"
-          element={user.status === "active" ? <Dashboard /> : <LoginPage />}
-        />
-        <Route
-          path="/dashboard"
-          element={user.status === "active" ? <Dashboard /> : <LoginPage />}
-        />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/logout" element={<Logout />} />
+        <Route path="/login/callback" element={<Callback />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route
           path="*"
           element={
@@ -30,7 +21,6 @@ function App() {
           }
         />
       </Routes>
-    </BrowserRouter>
   );
 }
 
