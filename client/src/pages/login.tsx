@@ -31,7 +31,7 @@ import { AiFillWechat } from "react-icons/ai";
 import { onClickGitHubHandler, onClickWeChatHandler } from "./oauthHandler";
 import { useNavigate } from "react-router-dom";
 import client from "../apis/client";
-import axios from 'axios';
+import axios from "axios";
 type FormState = "ready" | "saving";
 
 const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
@@ -240,6 +240,23 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
   const firstUpdate = useRef(true);
   let navigate = useNavigate();
 
+  const onClickGoogleHandler = () => {
+    const win = window.open(
+      `${process.env.REACT_APP_BASE_URL}/user/google`,
+      "name",
+      "height=600,width=450"
+    );
+    const checkConnect = setInterval(function () {
+      if (!win || !win.closed) {
+        console.log("return");
+        return;
+      }
+      dispatch(checkProfileAsync());
+
+      clearInterval(checkConnect);
+    }, 100);
+  };
+
   useEffect(() => {
     // forbids the first run at the time of mount
     if (firstUpdate.current) {
@@ -297,13 +314,7 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
             <Button
               size="md"
               w="full"
-              onClick={() => {
-                window.open(
-                  `${process.env.REACT_APP_BASE_URL}/user/google`,
-                  "name",
-                  "height=600,width=450"
-                );
-              }}
+              onClick={onClickGoogleHandler}
               colorScheme="teal"
               variant="outline"
               leftIcon={<AiFillGoogleCircle />}

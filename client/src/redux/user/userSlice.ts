@@ -71,11 +71,18 @@ export const userSlice = createSlice({
         state.status = "inactive";
         state.error = action.error.message;
       })
+      .addCase(checkProfileAsync.pending, (state) => {
+        state.status = "loading";
+      })
       .addCase(checkProfileAsync.fulfilled, (state, action) => {
         state.status = "active";
         state.id = action.payload.id;
         state.email = action.payload.email;
         state.error = undefined;
+      })
+      .addCase(checkProfileAsync.rejected, (state, action) => {
+        state.status = "inactive";
+        state.error = "Emmm... something went wrong ;(";
       });
   },
 });

@@ -93,11 +93,11 @@ export class UsersController {
     if (user) {
       session.user = user;
       console.log('User used to login with Google', user.email);
-      return user;
+      return 'You can close this window now.';
     }
     const newUser = this.authService.googleSignUp(req);
     session.user = newUser;
-    return newUser;
+    return 'You can close this window now.';
   }
 
   @Serialize(UserDto)
