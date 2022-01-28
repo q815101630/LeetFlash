@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { Source, User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { defaultStages } from 'src/utils/constant';
 import * as mongoose from 'mongoose';
@@ -22,6 +22,7 @@ export class UsersService {
       return await this.userModel.create({
         ...createUserDto,
         total_stages: defaultStages,
+        source: createUserDto.source ? createUserDto.source : Source.WEB,
       });
     } catch (err) {
       throw err;
@@ -42,6 +43,14 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User> {
     const user = await this.userModel.findOne({ email }).exec();
+    if (!user) {
+      throw new NotFoundException(`User #${email} not found`);
+    }
+    return user;
+  }
+
+  async findByEmailAndSource(email: string, source: Source): Promise<User> {
+    const user = await this.userModel.findOne({ email, source }).exec();
     if (!user) {
       throw new NotFoundException(`User #${email} not found`);
     }

@@ -12,6 +12,8 @@ import {
   UseGuards,
   Headers,
   HttpCode,
+  Res,
+  Header,
 } from '@nestjs/common';
 import { LocalAuthGuard, SuperUserAuthGuard } from 'src/guards/auth.guard';
 
@@ -28,6 +30,8 @@ import { QuestionService } from 'src/question/question.service';
 import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
 import { Question } from 'src/question/entities/question.entity';
 import { CardService } from 'src/card/card.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Source } from './entities/user.entity';
 
 @ApiTags('api/user')
 @Controller('user')
@@ -70,6 +74,32 @@ export class UsersController {
   async signOutUser(@Session() session) {
     session.user = null;
   }
+
+  // Google Oauth Entry Point
+  @Get('/google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {}
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req, @Session() session) {
+    const { email } = req.user;
+
+    const user = await this.usersService
+      .findByEmailAndSource(email, Source.GOOGLE)
+      .catch(() => {
+        console.log('sign up a new google user');
+      });
+    if (user) {
+      session.user = user;
+      console.log('User used to login with Google', user.email);
+      return user;
+    }
+    const newUser = this.authService.googleSignUp(req);
+    session.user = newUser;
+    return newUser;
+  }
+
   @Serialize(UserDto)
   @UseGuards(LocalAuthGuard)
   @Get('/profile')

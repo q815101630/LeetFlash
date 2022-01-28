@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Source } from '../entities/user.entity';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -12,9 +13,8 @@ export class CreateUserDto {
   @MaxLength(30)
   email: string;
 
-  @IsNotEmpty()
   @MaxLength(30)
-  password: string;
+  password?: string;
 
   @IsOptional()
   description?: string;
@@ -22,4 +22,7 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   total_stages?: string;
+
+  @IsOptional()
+  source?: Source;
 }

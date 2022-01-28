@@ -7,6 +7,7 @@ import { CurrentUserMiddleware } from './middlewares/current-user.middleware';
 import { AuthService } from './auth.service';
 import { CardModule } from 'src/card/card.module';
 import { QuestionModule } from 'src/question/question.module';
+import { GoogleStrategy } from './google-oauth.strategy';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { QuestionModule } from 'src/question/question.module';
     forwardRef(() => QuestionModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService, AuthService],
+  providers: [UsersService, AuthService, GoogleStrategy],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {

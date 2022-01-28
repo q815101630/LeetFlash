@@ -5,6 +5,18 @@ import * as mongoose from 'mongoose';
 import { Question } from 'src/question/entities/question.entity';
 import { QuestionService } from '../../question/question.service';
 
+export const enum RoleType {
+  ADMIN = 'admin',
+  USER = 'user',
+  MODERATOR = 'moderator',
+}
+
+export const enum Source {
+  GOOGLE = 'google',
+  WEB = 'web',
+  GITHUB = 'github',
+}
+
 @Schema()
 export class User {
   @Transform(({ value }) => value.toString())
@@ -14,7 +26,7 @@ export class User {
   email: string;
 
   @Prop()
-  password: string;
+  password?: string;
 
   @Prop()
   description?: string;
@@ -27,6 +39,15 @@ export class User {
   })
   @Type(() => Question)
   questions: Question;
+
+  @Prop({
+    default: RoleType.USER,
+    enum: [RoleType.ADMIN, RoleType.USER, RoleType.MODERATOR],
+  })
+  role: string;
+
+  @Prop({ required: true, enum: [Source.GOOGLE, Source.WEB, Source.GITHUB] })
+  source: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

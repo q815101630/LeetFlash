@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
-import { User } from './entities/user.entity';
+import { Source, User } from './entities/user.entity';
 import { UsersService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -52,5 +52,19 @@ export class AuthService {
         throw new BadRequestException(error);
       }
     }
+  }
+
+  async googleSignUp(req) {
+    //req.user is already attached to the request by passport
+    if (!req.user) {
+      throw new BadRequestException('Google Sign in failed');
+    }
+
+    const { email, firstName, lastName, picture } = req.user;
+    const user = await this.usersService.create({
+      email,
+      source: Source.GOOGLE,
+    } as CreateUserDto);
+    return user;
   }
 }
