@@ -1,9 +1,5 @@
 import { Logout } from "./logout";
 
 export const Dashboard = () => {
-  return (
-    <div>
-      <Logout />
-    </div>
-  );
+  return <div>Hello!</div>;
 };

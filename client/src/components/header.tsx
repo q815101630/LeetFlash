@@ -62,9 +62,15 @@ const Header = () => {
         spacing={{ base: 2, md: 10 }}
         mt={{ base: 4, md: 0 }}
       >
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/tutorial">Tutorial</Link>
-        <Link to="/about">About</Link>
+        <Box>
+          <Link to="/dashboard">Dashboard</Link>
+        </Box>
+        <Box>
+          <Link to="/tutorial">Tutorial</Link>
+        </Box>
+        <Box>
+          <Link to="/about">About</Link>
+        </Box>
       </Stack>
 
       <Box

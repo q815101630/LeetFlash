@@ -16,7 +16,7 @@ import {
   FormErrorMessage,
   useToast,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   checkProfileAsync,
@@ -32,6 +32,7 @@ import { onClickGitHubHandler, onClickWeChatHandler } from "./oauthHandler";
 import { Navigate, useNavigate } from "react-router-dom";
 import client from "../apis/client";
 import axios from "axios";
+import { debounce } from "lodash";
 type FormState = "ready" | "saving";
 
 const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
@@ -68,7 +69,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
 
   const firstUpdate = useRef(true);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // forbids the first run at the time of mount
     if (firstUpdate.current) {
       firstUpdate.current = false;
@@ -93,7 +94,9 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         duration: 3000,
         isClosable: true,
       });
-      navigate("/dashboard");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
     }
   }, [toast, user.error, user.status]);
 
@@ -258,7 +261,7 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
     }, 100);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // forbids the first run at the time of mount
     if (firstUpdate.current) {
       firstUpdate.current = false;
@@ -283,7 +286,9 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         duration: 3000,
         isClosable: true,
       });
-      navigate("/dashboard");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
     }
   }, [toast, user.error, user.status]);
 
@@ -406,20 +411,18 @@ const LoginPage = () => {
     setSignUp(!signUp);
   };
 
+  const toast = useToast();
+
   return (
     <>
-      {user.status === "active" ? (
-        <Navigate to="/dashboard" />
-      ) : (
-        <Container h="100vh" maxW="container.sm" px={0} py={20}>
-          <Button onClick={toggleColorMode}>Change color mode</Button>
-          {signUp ? (
-            <SignUpVStack toggleSignUp={toggleSignUp} />
-          ) : (
-            <SignInVStack toggleSignUp={toggleSignUp} />
-          )}
-        </Container>
-      )}
+      <Container h="100vh" maxW="container.sm" px={0} py={20}>
+        <Button onClick={toggleColorMode}>Change color mode</Button>
+        {signUp ? (
+          <SignUpVStack toggleSignUp={toggleSignUp} />
+        ) : (
+          <SignInVStack toggleSignUp={toggleSignUp} />
+        )}
+      </Container>
     </>
   );
 };

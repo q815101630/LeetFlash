@@ -14,6 +14,7 @@ import {
   HttpCode,
   Res,
   Header,
+  Redirect,
 } from '@nestjs/common';
 import { LocalAuthGuard, SuperUserAuthGuard } from 'src/guards/auth.guard';
 
@@ -79,9 +80,10 @@ export class UsersController {
   @Get('/google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {}
-
+  
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
+  @Redirect('http://localhost:3000/login/callback', 301)
   async googleAuthRedirect(@Req() req, @Session() session) {
     const { email } = req.user;
 
@@ -97,7 +99,6 @@ export class UsersController {
     }
     const newUser = this.authService.googleSignUp(req);
     session.user = newUser;
-    return 'You can close this window now.';
   }
 
   @Serialize(UserDto)
