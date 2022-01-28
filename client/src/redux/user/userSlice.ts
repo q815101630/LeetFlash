@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { signInUser, signUpUser } from "../../apis/auth.api";
+import { checkProfile, signInUser, signUpUser } from "../../apis/auth.api";
 export interface userState {
   id: string;
   email: string;
@@ -27,6 +27,14 @@ export const signUpUserAsync = createAsyncThunk(
   "user/signUpUser",
   async ({ email, password }: { email: string; password: string }) => {
     const user = await signUpUser(email, password);
+    return user;
+  }
+);
+
+export const checkProfileAsync = createAsyncThunk(
+  "user/checkProfile",
+  async () => {
+    const user = await checkProfile();
     return user;
   }
 );
@@ -62,6 +70,12 @@ export const userSlice = createSlice({
       .addCase(signUpUserAsync.rejected, (state, action) => {
         state.status = "inactive";
         state.error = action.error.message;
+      })
+      .addCase(checkProfileAsync.fulfilled, (state, action) => {
+        state.status = "active";
+        state.id = action.payload.id;
+        state.email = action.payload.email;
+        state.error = undefined;
       });
   },
 });

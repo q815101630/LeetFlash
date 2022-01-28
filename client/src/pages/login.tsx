@@ -1,6 +1,5 @@
 import {
   Container,
-  Flex,
   Heading,
   VStack,
   Text,
@@ -17,15 +16,22 @@ import {
   FormErrorMessage,
   useToast,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
+  checkProfileAsync,
   loginUserAsync,
   selectUser,
   signUpUserAsync,
 } from "../redux/user/userSlice";
 import { validateEmail } from "../utils/validates";
-
+import { AiFillGoogleCircle } from "react-icons/ai";
+import { BsGithub } from "react-icons/bs";
+import { AiFillWechat } from "react-icons/ai";
+import { onClickGitHubHandler, onClickWeChatHandler } from "./oauthHandler";
+import { useNavigate } from "react-router-dom";
+import client from "../apis/client";
+import axios from 'axios';
 type FormState = "ready" | "saving";
 
 const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
@@ -39,10 +45,35 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
   const [formState, setFormState] = React.useState<FormState>("ready");
   const user = useAppSelector(selectUser);
   const toast = useToast();
+  let navigate = useNavigate();
 
   const dispatch = useAppDispatch();
 
+  const onClickGoogleHandler = () => {
+    const win = window.open(
+      `${process.env.REACT_APP_BASE_URL}/user/google`,
+      "name",
+      "height=600,width=450"
+    );
+    const checkConnect = setInterval(function () {
+      if (!win || !win.closed) {
+        console.log("return");
+        return;
+      }
+      dispatch(checkProfileAsync());
+
+      clearInterval(checkConnect);
+    }, 100);
+  };
+
+  const firstUpdate = useRef(true);
+
   useEffect(() => {
+    // forbids the first run at the time of mount
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
     if (user.status === "inactive" && user.error) {
       console.log(user.error);
       toast({
@@ -63,7 +94,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         isClosable: true,
       });
     }
-  }, [user.status]);
+  }, [toast, user.error, user.status]);
 
   const onSubmit = () => {
     setFormState("saving");
@@ -89,13 +120,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
 
   return (
     <ScaleFade initialScale={0.95} in={true}>
-      <VStack
-        w="full"
-        p={10}
-        spacing={10}
-        alignItems="flex-start"
-        bg={bgColor1}
-      >
+      <VStack w="full" p={10} alignItems="flex-start" bg={bgColor1}>
         <VStack spacing="3" alignItems="flex-start">
           <Heading size="xl">Sign up LeetFlash</Heading>
           <Text>
@@ -103,7 +128,43 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
             flash!
           </Text>
         </VStack>
-        <SimpleGrid columns={4} columnGap={3} rowGap={6} w="full">
+        <SimpleGrid pt={3} columns={4} spacingX={2} spacingY={5} w="full">
+          <GridItem colSpan={1}>
+            <Button
+              size="md"
+              w="full"
+              onClick={onClickGoogleHandler}
+              colorScheme="teal"
+              variant="outline"
+              leftIcon={<AiFillGoogleCircle />}
+            >
+              Google
+            </Button>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <Button
+              size="md"
+              w="full"
+              onClick={onClickGitHubHandler}
+              colorScheme="teal"
+              variant="outline"
+              leftIcon={<BsGithub />}
+            >
+              GitHub
+            </Button>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <Button
+              size="md"
+              w="full"
+              onClick={onClickWeChatHandler}
+              colorScheme="teal"
+              variant="outline"
+              leftIcon={<AiFillWechat />}
+            >
+              WeChat
+            </Button>
+          </GridItem>
           <GridItem colSpan={4}>
             <FormControl isRequired isInvalid={emailErrors.length !== 0}>
               <FormLabel htmlFor="email">Email</FormLabel>
@@ -151,7 +212,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
               colorScheme="teal"
               variant="outline"
             >
-              Sign up
+              Sign Up
             </Button>
           </GridItem>
           <GridItem colSpan={4}>
@@ -176,7 +237,15 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
 
   const dispatch = useAppDispatch();
 
+  const firstUpdate = useRef(true);
+  let navigate = useNavigate();
+
   useEffect(() => {
+    // forbids the first run at the time of mount
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
     if (user.status === "inactive" && user.error) {
       console.log(user.error);
       toast({
@@ -197,7 +266,7 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         isClosable: true,
       });
     }
-  }, [user.status]);
+  }, [toast, user.error, user.status]);
 
   const onSubmit = () => {
     setFormState("saving");
@@ -217,20 +286,55 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
   };
   return (
     <ScaleFade initialScale={0.95} in={true}>
-      <VStack
-        w="full"
-        h="full"
-        p={10}
-        spacing={10}
-        alignItems="flex-start"
-        bg={bgColor2}
-      >
+      <VStack w="full" p={10} alignItems="flex-start" bg={bgColor2}>
         <VStack spacing="3" alignItems="flex-start">
-          <Heading size="xl">Sign in </Heading>
+          <Heading size="xl">Sign in LeetFlash</Heading>
           <Text>Already have an account?</Text>
         </VStack>
 
-        <SimpleGrid columns={4} columnGap={3} rowGap={6} w="full">
+        <SimpleGrid pt={3} columns={4} spacingX={2} spacingY={5} w="full">
+          <GridItem colSpan={1}>
+            <Button
+              size="md"
+              w="full"
+              onClick={() => {
+                window.open(
+                  `${process.env.REACT_APP_BASE_URL}/user/google`,
+                  "name",
+                  "height=600,width=450"
+                );
+              }}
+              colorScheme="teal"
+              variant="outline"
+              leftIcon={<AiFillGoogleCircle />}
+            >
+              Google
+            </Button>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <Button
+              size="md"
+              w="full"
+              onClick={onClickGitHubHandler}
+              colorScheme="teal"
+              variant="outline"
+              leftIcon={<BsGithub />}
+            >
+              GitHub
+            </Button>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <Button
+              size="md"
+              w="full"
+              onClick={onClickWeChatHandler}
+              colorScheme="teal"
+              variant="outline"
+              leftIcon={<AiFillWechat />}
+            >
+              WeChat
+            </Button>
+          </GridItem>
           <GridItem colSpan={4}>
             <FormControl isRequired isInvalid={errors.length !== 0}>
               <FormLabel htmlFor="email">Email</FormLabel>
