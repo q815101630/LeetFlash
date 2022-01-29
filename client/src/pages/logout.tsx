@@ -14,7 +14,7 @@ import { useAppDispatch } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 export const Logout = () => {
   const [isOpen, setIsOpen] = React.useState(true);
-  const onClose = () => setIsOpen(false);
+
   const cancelRef = React.useRef(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -22,6 +22,10 @@ export const Logout = () => {
     setIsOpen(false);
     dispatch(clearUserState());
     navigate("/");
+  };
+  const onClose = () => {
+    setIsOpen(false);
+    navigate(-1);
   };
 
   return (

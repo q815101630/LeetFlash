@@ -21,4 +21,21 @@ export class CardService {
     });
     return await card.save();
   }
+
+  async findAll(user: User): Promise<Card[]> {
+    return await this.cardModel
+      .find({ owner: user })
+      .populate('question')
+      .exec();
+  }
+
+  async findByQuestionAndUser(
+    question: Question,
+    user: User,
+  ): Promise<Card> {
+    const card = await this.cardModel
+      .findOne({ question, owner: user })
+      .exec();
+    return card;
+  }
 }

@@ -80,7 +80,7 @@ export class UsersController {
   @Get('/google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {}
-  
+
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   @Redirect('http://localhost:3000/login/callback', 301)
@@ -146,14 +146,23 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
-  @Post('/add-question/:email')
+  @Post('/add-question/')
   async submitQuestion(
-    @Param('email') email: string,
     @Headers('UUID') uuid: string,
     @Body() submitQuestionDto: SubmitQuestionDto,
   ) {
-    const user = await this.usersService.findOne(uuid);
+    const user = await this.usersService.findOne(uuid).catch(() => {
+      throw new NotFoundException('Cannot find the user');
+    });
     const question = await this.questionService.upsert(submitQuestionDto);
+    console.log(question);
+    const existingCard = await this.cardService.findByQuestionAndUser(
+      question,
+      user,
+    );
+    if (existingCard) {
+      return existingCard;
+    }
     const card = await this.cardService.create(user, question);
     return card;
   }

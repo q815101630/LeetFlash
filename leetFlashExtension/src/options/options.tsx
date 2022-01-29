@@ -44,10 +44,11 @@ const App: React.FC<{}> = () => {
       } else {
         setSignIn(true);
       }
+      console.log(user)
     });
   }, []);
 
-  const SUBMIT_URL = "http://localhost:3000/api/user/signin-return-id";
+  const SUBMIT_URL = "http://localhost:3000/api/user/signin";
 
   const submitHandler = () => {
     setFormState("saving");
@@ -128,7 +129,6 @@ const App: React.FC<{}> = () => {
   // const handleAutoOverlayChange = (hasAutoOverlay: boolean) => {
   //   setOptions({ ...options, hasAutoOverlay });
   // };
-  const temp = true;
   const isFieldsDisabled = formState === "saving";
   return (
     <Grid
@@ -179,7 +179,7 @@ const App: React.FC<{}> = () => {
                   value={user.email}
                   variant="standard"
                   onChange={(e) => setUser({ ...user, email: e.target.value })}
-                  disabled={isFieldsDisabled || onlyVisitor || temp}
+                  disabled={isFieldsDisabled || onlyVisitor}
                 />
               </Grid>
             </Grid>
@@ -202,7 +202,7 @@ const App: React.FC<{}> = () => {
                   value={password}
                   variant="standard"
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={isFieldsDisabled || onlyVisitor || temp}
+                  disabled={isFieldsDisabled || onlyVisitor}
                 />
               </Grid>
             </Grid>
@@ -259,7 +259,7 @@ const App: React.FC<{}> = () => {
             </Grid>
             <Grid container item justifyContent="center" sx={{ pt: 5 }}>
               <Button
-                disabled={isFieldsDisabled || temp}
+                disabled={isFieldsDisabled}
                 variant="contained"
                 size="medium"
                 onClick={submitHandler}

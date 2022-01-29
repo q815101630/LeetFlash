@@ -15,15 +15,18 @@ export class QuestionService {
     return await this.questionModel.create(createQuestionDto);
   }
 
-  async findByQuestionId(questionId: string): Promise<Question> {
-    const question = await this.questionModel.findOne({ questionId }).exec();
+  async findByQuestionId(question_id: string): Promise<Question> {
+    const question = await this.questionModel.findOne({ question_id }).exec();
 
     return question;
   }
 
   async update(createQuestionDto: CreateQuestionDto): Promise<Question> {
+    //delete a field called questionId from createQuestionDto
+    const question_id = createQuestionDto.question_id;
+    delete createQuestionDto.question_id;
     const existingQuestion = await this.questionModel.findOneAndUpdate(
-      { questionId: createQuestionDto.question_id },
+      { question_id },
       { $set: createQuestionDto },
       { new: true },
     );
@@ -39,16 +42,24 @@ export class QuestionService {
     const currentQuestion = await this.findByQuestionId(
       submitQuestionDto.question_id,
     );
-    if (currentQuestion) {
-      if (
-        (submitQuestionDto.translatedTitle &&
-          !currentQuestion?.translatedTitle) ||
-        (submitQuestionDto.title && !currentQuestion?.title)
-      ) {
+    if (!!currentQuestion) {
+      if (submitQuestionDto.translatedText && !currentQuestion.translatedText) {
+        console.log('goes 1');
+
         return await this.update(submitQuestionDto);
       }
+      if (submitQuestionDto.title && !currentQuestion.title) {
+        return await this.update(submitQuestionDto);
+      }
+      console.log('No update!');
+      return currentQuestion;
     } else {
+      console.log('goes 3');
       return await this.create(submitQuestionDto);
     }
+  }
+
+  async getAllQuestions(): Promise<Question[]> {
+    return await this.questionModel.find({}).exec();
   }
 }

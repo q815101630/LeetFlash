@@ -169,13 +169,13 @@ const handleSendQuestionToServer = (question: Question, user: User) => {
     // console.log("found user and start sending");
     sendQuestionToServer(question, user)
       .then(() => {
-        // console.log("sent and set isAllowed to true");
+        console.log("sent and set isAllowed to true");
       })
       .catch(() => {
-        // console.log("failed to send");
+        console.log("failed to send");
       });
   } else {
-    // console.log("Need to set up User information");
+    console.log("Need to set up User information");
 
     getStoredOnlyVisitor().then((onlyVisitor) => {
       if (!onlyVisitor) {

@@ -88,7 +88,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
     } else if (user.status === "active") {
       toast({
         title: "Sign up Success",
-        description: "Welcome!",
+        description: `Welcome back! ${user.email}`,
         status: "success",
         position: "top",
         duration: 3000,
@@ -280,7 +280,7 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
     } else if (user.status === "active") {
       toast({
         title: "Login Success",
-        description: "Welcome back!",
+        description: `Welcome back! ${user.email}`,
         status: "success",
         position: "top",
         duration: 3000,

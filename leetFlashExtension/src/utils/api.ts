@@ -10,24 +10,24 @@ export const sendQuestionToServer = (
     ...question,
   };
   return new Promise((resolve, reject) => {
-    // fetch(`${SEND_QUESTION_API}${user.email}`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     uuid: `${user.uuid}`,
-    //   },
-    //   body: JSON.stringify(body),
-    // })
-    //   .then((res) => {
-    //     if (res.status === 200 || res.status === 201) {
-    //       resolve();
-    //     } else {
-    //       reject(res.statusText);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     reject(err);
-    //   });
+    fetch(`${SEND_QUESTION_API}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        uuid: `${user.uuid}`,
+      },
+      body: JSON.stringify(body),
+    })
+      .then((res) => {
+        if (res.status === 200 || res.status === 201) {
+          resolve();
+        } else {
+          reject(res.statusText);
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
     resolve();
   });
 };
