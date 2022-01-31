@@ -1,6 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { checkProfile, signInUser, signUpUser } from "../../apis/auth.api";
+import {
+  checkProfile,
+  sendResetPassword,
+  signInUser,
+  signUpUser,
+} from "../../apis/auth.api";
 export interface userState {
   id: string;
   email: string;
@@ -35,6 +40,14 @@ export const checkProfileAsync = createAsyncThunk(
   "user/checkProfile",
   async () => {
     const user = await checkProfile();
+    return user;
+  }
+);
+
+export const sendResetPasswordAsync = createAsyncThunk(
+  "user/passwordReset",
+  async (email: string) => {
+    const user = await sendResetPassword(email);
     return user;
   }
 );
@@ -90,6 +103,12 @@ export const userSlice = createSlice({
       .addCase(checkProfileAsync.rejected, (state, action) => {
         state.status = "inactive";
         state.error = "Emmm... something went wrong ;(";
+      })
+      .addCase(sendResetPasswordAsync.fulfilled, (state, action) => {
+        state.error = "Already sent an password reset email to your inbox!";
+      })
+      .addCase(sendResetPasswordAsync.rejected, (state, action) => {
+        state.error = "Cannot sent the request, check the email again";
       });
   },
 });

@@ -9,7 +9,6 @@ import {
   Input,
   GridItem,
   Button,
-  useColorMode,
   useColorModeValue,
   Link,
   ScaleFade,
@@ -22,6 +21,7 @@ import {
   checkProfileAsync,
   loginUserAsync,
   selectUser,
+  sendResetPasswordAsync,
   signUpUserAsync,
 } from "../redux/user/userSlice";
 import { validateEmail } from "../utils/validates";
@@ -98,7 +98,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         navigate("/dashboard");
       }, 1000);
     }
-  }, [toast, user.error, user.status]);
+  }, [navigate, toast, user.email, user.error, user.status]);
 
   const onSubmit = () => {
     setFormState("saving");
@@ -109,6 +109,10 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
     }
     if (password.length < 6) {
       passwordErrors.push("Password must be at least 6 characters");
+    }
+
+    if (password !== passwordConfirm) {
+      passwordErrors.push("Password does not match");
     }
 
     setEmailErrors(emailErrors);
@@ -230,7 +234,13 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
   );
 };
 
-const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
+const SignInVStack = ({
+  toggleSignUp,
+  toggleForgetPassword,
+}: {
+  toggleSignUp: () => void;
+  toggleForgetPassword: () => void;
+}) => {
   const bgColor2 = useColorModeValue("blue.50", "blackAlpha.200");
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
@@ -290,7 +300,7 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         navigate("/dashboard");
       }, 1000);
     }
-  }, [toast, user.error, user.status]);
+  }, [navigate, toast, user.email, user.error, user.status]);
 
   const onSubmit = () => {
     setFormState("saving");
@@ -389,9 +399,93 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
               Sign in
             </Button>
           </GridItem>
-          <GridItem colSpan={4}>
+          <GridItem colSpan={2}>
             <Link onClick={toggleSignUp} href="#">
               No account? Sign up here!
+            </Link>
+          </GridItem>
+          <GridItem colSpan={2} justifySelf="end">
+            <Link onClick={toggleForgetPassword} href="#">
+              Forgot Password?
+            </Link>
+          </GridItem>
+        </SimpleGrid>
+      </VStack>
+    </ScaleFade>
+  );
+};
+
+const ForgetPasswordVStack = ({
+  toggleForgetPassword,
+}: {
+  toggleForgetPassword: () => void;
+}) => {
+  const bgColor = useColorModeValue("green.50", "blackAlpha.200");
+
+  const [email, setEmail] = React.useState<string>("");
+  const [formState, setFormState] = React.useState<FormState>("ready");
+
+  const toast = useToast();
+  const dispatch = useAppDispatch();
+  const onSubmit = () => {
+    setFormState("saving");
+    if (!validateEmail(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Invalid email",
+        status: "error",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    dispatch(sendResetPasswordAsync(email));
+    setTimeout(() => {
+      setFormState("ready");
+      toast({
+        title: "Reset Password Request Sent",
+        description: `If an email is found, we will send an reset password request to your inbox. Thank you!`,
+        status: "success",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
+    }, 5000);
+  };
+  return (
+    <ScaleFade initialScale={0.95} in={true}>
+      <VStack w="full" p={10} alignItems="flex-start" bg={bgColor}>
+        <VStack spacing="3" alignItems="flex-start">
+          <Heading size="xl">Forgot Password?</Heading>
+        </VStack>
+
+        <SimpleGrid pt={3} columns={4} spacingX={2} spacingY={5} w="full">
+          <GridItem colSpan={4}>
+            <FormControl isRequired>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input
+                placeholder="solution@accept.com"
+                type="email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={4}>
+            <Button
+              size="lg"
+              w="full"
+              variant="outline"
+              onClick={onSubmit}
+              isLoading={formState === "saving"}
+              loadingText="Submitting"
+            >
+              Send Password Reset Request
+            </Button>
+          </GridItem>
+          <GridItem colSpan={4} justifySelf="end">
+            <Link onClick={toggleForgetPassword} href="#">
+              Go to sign in
             </Link>
           </GridItem>
         </SimpleGrid>
@@ -401,26 +495,32 @@ const SignInVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
 };
 
 const LoginPage = () => {
-  const { toggleColorMode } = useColorMode();
-
   const [signUp, setSignUp] = React.useState<boolean>(false);
-
-  const user = useAppSelector(selectUser);
+  const [forgetPassword, setForgetPassword] = React.useState<boolean>(false);
 
   const toggleSignUp = () => {
     setSignUp(!signUp);
   };
 
-  const toast = useToast();
+  const toggleForgetPassword = () => {
+    setForgetPassword(!forgetPassword);
+  };
 
   return (
     <>
       <Container h="100vh" maxW="container.sm" px={0} py={20}>
-        <Button onClick={toggleColorMode}>Change color mode</Button>
-        {signUp ? (
+        {forgetPassword && (
+          <ForgetPasswordVStack toggleForgetPassword={toggleForgetPassword} />
+        )}
+
+        {!forgetPassword && signUp && (
           <SignUpVStack toggleSignUp={toggleSignUp} />
-        ) : (
-          <SignInVStack toggleSignUp={toggleSignUp} />
+        )}
+        {!forgetPassword && !signUp && (
+          <SignInVStack
+            toggleSignUp={toggleSignUp}
+            toggleForgetPassword={toggleForgetPassword}
+          />
         )}
       </Container>
     </>

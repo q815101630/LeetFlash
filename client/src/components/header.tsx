@@ -4,6 +4,7 @@ import {
   Stack,
   Heading,
   Flex,
+  useColorMode,
   Text,
   Button,
   useDisclosure,
@@ -16,6 +17,7 @@ import { selectUser } from "../redux/user/userSlice";
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleToggle = () => (isOpen ? onClose() : onOpen());
+  const { toggleColorMode } = useColorMode();
 
   const user = useAppSelector(selectUser);
   let navigate = useNavigate();
@@ -59,16 +61,28 @@ const Header = () => {
         width={{ base: "full", md: "auto" }}
         alignItems="center"
         flexGrow={1}
-        spacing={{ base: 2, md: 10 }}
+        spacing={{ base: 2, md: 5 }}
         mt={{ base: 4, md: 0 }}
       >
-        <Box>
+        <Box
+          _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+          p={2}
+          rounded="md"
+        >
           <Link to="/dashboard">Dashboard</Link>
         </Box>
-        <Box>
+        <Box
+          _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+          p={2}
+          rounded="md"
+        >
           <Link to="/tutorial">Tutorial</Link>
         </Box>
-        <Box>
+        <Box
+          _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+          p={2}
+          rounded="md"
+        >
           <Link to="/about">About</Link>
         </Box>
       </Stack>
@@ -77,13 +91,23 @@ const Header = () => {
         display={{ base: isOpen ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
       >
-        <Button
-          variant="outline"
-          _hover={{ bg: "orange.700", borderColor: "orange.700" }}
-          onClick={handleClick}
-        >
-          {user.status === "active" ? "Logout" : "Login"}
-        </Button>
+        <Stack direction={{ base: "column", md: "row" }}>
+          <Button
+            variant="outline"
+            _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+            onClick={toggleColorMode}
+          >
+            Change color
+          </Button>
+
+          <Button
+            variant="outline"
+            _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+            onClick={handleClick}
+          >
+            {user.status === "active" ? "Logout" : "Login"}
+          </Button>
+        </Stack>
       </Box>
     </Flex>
   );

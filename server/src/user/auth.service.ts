@@ -9,6 +9,7 @@ import { Source, User } from './entities/user.entity';
 import { UsersService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ResetPasswordDto } from './dto/reset-password-dto';
 
 @Injectable()
 export class AuthService {
@@ -65,6 +66,18 @@ export class AuthService {
       email,
       source: Source.GOOGLE,
     } as CreateUserDto);
+    return user;
+  }
+
+  async sendResetPasswordEmail(resetPasswordDto: ResetPasswordDto) {
+    const { email } = resetPasswordDto;
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        message: 'User not found',
+        error: 'User does not exist',
+      });
+    }
     return user;
   }
 }

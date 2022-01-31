@@ -41,3 +41,15 @@ export const checkProfile = () =>
         reject(error.response?.data);
       });
   });
+
+export const sendResetPassword = (email: string) =>
+  new Promise<UserInterface>((resolve, reject) => {
+    client
+      .post("/user/forget-password", { email })
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error: AxiosError) => {
+        reject(error.response?.data);
+      });
+  });

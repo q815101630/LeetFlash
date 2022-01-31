@@ -33,6 +33,7 @@ import { Question } from 'src/question/entities/question.entity';
 import { CardService } from 'src/card/card.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Source } from './entities/user.entity';
+import { ResetPasswordDto } from './dto/reset-password-dto';
 
 @ApiTags('api/user')
 @Controller('user')
@@ -79,6 +80,7 @@ export class UsersController {
   // Google Oauth Entry Point
   @Get('/google')
   @UseGuards(AuthGuard('google'))
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async googleAuth() {}
 
   @Get('google/callback')
@@ -144,6 +146,11 @@ export class UsersController {
   @Delete('/profiles/:id')
   removeByUsername(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Post('/forget-password')
+  async sendResetPasswordEmail(@Body() resetPasswordDto: ResetPasswordDto) {
+    await this.authService.sendResetPasswordEmail(resetPasswordDto);
   }
 
   @Post('/add-question/')

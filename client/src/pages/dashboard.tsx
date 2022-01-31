@@ -105,5 +105,5 @@ export const Dashboard = () => {
     ],
     []
   );
-  return <DataTable columns={cardColumns} data={cardsData} />;
+  return <DataTable columns={questionColumns} data={questionsData} />;
 };
