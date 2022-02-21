@@ -1,13 +1,18 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  // Global validation pipe is moved to app.module
-
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableCors({
+    credentials: true,
+    origin: ['http://localhost:3000'],
+  });
   app.setGlobalPrefix('api');
-  app.enableCors();
+
+  app.use(cookieParser());
   const config = new DocumentBuilder()
     .setTitle('LeetFlash 1.0')
     .setDescription('LeetFlash 1.0 API description')
@@ -17,8 +22,8 @@ async function bootstrap() {
   const customOptions = {
     customSiteTitle: 'LeetFlash 1.0 API Doc',
   };
-  SwaggerModule.setup('api/doc', app, document, customOptions);
+  SwaggerModule.setup('api/swagger', app, document, customOptions);
 
-  await app.listen(3000);
+  await app.listen(3030);
 }
 bootstrap();

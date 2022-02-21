@@ -1,39 +1,26 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Session,
+  Get,
+  Headers,
   NotFoundException,
+  Param,
+  Patch,
+  Post,
   Req,
   UseGuards,
-  Headers,
-  HttpCode,
-  Res,
-  Header,
-  Redirect,
 } from '@nestjs/common';
-import { LocalAuthGuard, SuperUserAuthGuard } from 'src/guards/auth.guard';
-
-import { UsersService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import * as bcrypt from 'bcrypt';
-import { Serialize } from 'src/interceptors/serialize.interceptor';
-import { UserDto } from './dto/user.dto';
-import { AuthService } from './auth.service';
-import { LoginUserDto } from './dto/login-user.dto';
-import { QuestionService } from 'src/question/question.service';
-import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
-import { Question } from 'src/question/entities/question.entity';
+import { AuthService } from 'src/auth/auth.service';
+import { UpdateUserDto } from 'src/auth/dtos/update-user.dto';
+import { UserDto } from 'src/auth/dtos/user.dto';
 import { CardService } from 'src/card/card.service';
-import { AuthGuard } from '@nestjs/passport';
-import { Source } from './entities/user.entity';
-import { ResetPasswordDto } from './dto/reset-password-dto';
+import { LocalAuthGuard, SuperUserAuthGuard } from 'src/guards/auth.guard';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
+import { QuestionService } from 'src/question/question.service';
+import { UsersService } from './user.service';
 
 @ApiTags('api/user')
 @Controller('user')
@@ -44,64 +31,6 @@ export class UsersController {
     private questionService: QuestionService,
     private cardService: CardService,
   ) {}
-  @Serialize(UserDto)
-  @Post('/signup')
-  async signUpUser(@Body() createUserDto: CreateUserDto, @Session() session) {
-    const user = await this.authService.signup(createUserDto);
-    session.user = user;
-    return user;
-  }
-  @Serialize(UserDto)
-  @HttpCode(200)
-  @Post('/signin')
-  async signInUser(@Body() loginUserDto: LoginUserDto, @Session() session) {
-    const user = await this.authService.signIn(loginUserDto);
-    console.log('user', user);
-    console.log(user);
-    session.user = user;
-    return user;
-  }
-
-  @Post('/signin-return-id')
-  async signInAndReturnId(
-    @Body() loginUserDto: LoginUserDto,
-    @Session() session,
-  ) {
-    const user = await this.authService.signIn(loginUserDto);
-    session.user = user;
-    return { id: user._id.toString(), email: user.email };
-  }
-
-  @Post('/signout')
-  async signOutUser(@Session() session) {
-    session.user = null;
-  }
-
-  // Google Oauth Entry Point
-  @Get('/google')
-  @UseGuards(AuthGuard('google'))
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async googleAuth() {}
-
-  @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
-  @Redirect('http://localhost:3000/login/callback', 301)
-  async googleAuthRedirect(@Req() req, @Session() session) {
-    const { email } = req.user;
-
-    const user = await this.usersService
-      .findByEmailAndSource(email, Source.GOOGLE)
-      .catch(() => {
-        console.log('sign up a new google user');
-      });
-    if (user) {
-      session.user = user;
-      console.log('User used to login with Google', user.email);
-      return 'You can close this window now.';
-    }
-    const newUser = this.authService.googleSignUp(req);
-    session.user = newUser;
-  }
 
   @Serialize(UserDto)
   @UseGuards(LocalAuthGuard)
@@ -146,11 +75,6 @@ export class UsersController {
   @Delete('/profiles/:id')
   removeByUsername(@Param('id') id: string) {
     return this.usersService.remove(id);
-  }
-
-  @Post('/forget-password')
-  async sendResetPasswordEmail(@Body() resetPasswordDto: ResetPasswordDto) {
-    await this.authService.sendResetPasswordEmail(resetPasswordDto);
   }
 
   @Post('/add-question/')

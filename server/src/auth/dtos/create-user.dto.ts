@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Source } from '../entities/user.entity';
+import { Source } from 'src/user/entities/user.entity';
 
 export class CreateUserDto {
   @IsNotEmpty()

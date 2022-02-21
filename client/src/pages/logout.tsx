@@ -9,7 +9,7 @@ import {
   AlertDialogOverlay,
   Button,
 } from "@chakra-ui/react";
-import { clearUserState } from "../redux/user/userSlice";
+import { clearUserState, signOutUserAsync } from "../redux/user/userSlice";
 import { useAppDispatch } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 export const Logout = () => {
@@ -21,6 +21,7 @@ export const Logout = () => {
   const onLogout = () => {
     setIsOpen(false);
     dispatch(clearUserState());
+    dispatch(signOutUserAsync());
     navigate("/");
   };
   const onClose = () => {

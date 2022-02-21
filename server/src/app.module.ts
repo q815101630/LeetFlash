@@ -9,6 +9,11 @@ import { QuestionModule } from './question/question.module';
 import { CardModule } from './card/card.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
+import { EmailConfirmationModule } from './email-confirmation/email-confirmation.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieSession = require('cookie-session');
 
@@ -21,6 +26,8 @@ const cookieSession = require('cookie-session');
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
+    ScheduleModule.forRoot(),
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -31,6 +38,9 @@ const cookieSession = require('cookie-session');
     UsersModule,
     QuestionModule,
     CardModule,
+    AuthModule,
+    EmailModule,
+    EmailConfirmationModule,
   ],
   controllers: [AppController],
   providers: [

@@ -7,7 +7,7 @@ export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @Get('/')
-  // @UseGuards(LocalAuthGuard)
+  @UseGuards(LocalAuthGuard)
   async getQuestions() {
     const questions = await this.questionService.getAllQuestions();
     return questions;

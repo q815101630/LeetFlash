@@ -1,21 +1,24 @@
 import {
-  Container,
-  Heading,
-  VStack,
-  Text,
-  SimpleGrid,
-  FormControl,
-  FormLabel,
-  Input,
-  GridItem,
   Button,
-  useColorModeValue,
+  Container,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  GridItem,
+  Heading,
+  Input,
   Link,
   ScaleFade,
-  FormErrorMessage,
+  SimpleGrid,
+  Text,
+  useColorModeValue,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
+import { AiFillWechat } from "react-icons/ai";
+import { BsGithub } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   checkProfileAsync,
@@ -25,14 +28,9 @@ import {
   signUpUserAsync,
 } from "../redux/user/userSlice";
 import { validateEmail } from "../utils/validates";
-import { AiFillGoogleCircle } from "react-icons/ai";
-import { BsGithub } from "react-icons/bs";
-import { AiFillWechat } from "react-icons/ai";
 import { onClickGitHubHandler, onClickWeChatHandler } from "./oauthHandler";
-import { Navigate, useNavigate } from "react-router-dom";
-import client from "../apis/client";
-import axios from "axios";
-import { debounce } from "lodash";
+import GoogleButton from "./../components/GoogleButton";
+
 type FormState = "ready" | "saving";
 
 const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
@@ -49,23 +47,6 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
   let navigate = useNavigate();
 
   const dispatch = useAppDispatch();
-
-  const onClickGoogleHandler = () => {
-    const win = window.open(
-      `${process.env.REACT_APP_BASE_URL}/user/google`,
-      "name",
-      "height=600,width=450"
-    );
-    const checkConnect = setInterval(function () {
-      if (!win || !win.closed) {
-        console.log("return");
-        return;
-      }
-      dispatch(checkProfileAsync());
-
-      clearInterval(checkConnect);
-    }, 100);
-  };
 
   const firstUpdate = useRef(true);
 
@@ -138,16 +119,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
         </VStack>
         <SimpleGrid pt={3} columns={4} spacingX={2} spacingY={5} w="full">
           <GridItem colSpan={1}>
-            <Button
-              size="md"
-              w="full"
-              onClick={onClickGoogleHandler}
-              colorScheme="teal"
-              variant="outline"
-              leftIcon={<AiFillGoogleCircle />}
-            >
-              Google
-            </Button>
+            <GoogleButton />
           </GridItem>
           <GridItem colSpan={1}>
             <Button
@@ -254,23 +226,6 @@ const SignInVStack = ({
   const firstUpdate = useRef(true);
   let navigate = useNavigate();
 
-  const onClickGoogleHandler = () => {
-    const win = window.open(
-      `${process.env.REACT_APP_BASE_URL}/user/google`,
-      "name",
-      "height=600,width=450"
-    );
-    const checkConnect = setInterval(function () {
-      if (!win || !win.closed) {
-        console.log("return");
-        return;
-      }
-      dispatch(checkProfileAsync());
-
-      clearInterval(checkConnect);
-    }, 100);
-  };
-
   useLayoutEffect(() => {
     // forbids the first run at the time of mount
     if (firstUpdate.current) {
@@ -328,16 +283,7 @@ const SignInVStack = ({
 
         <SimpleGrid pt={3} columns={4} spacingX={2} spacingY={5} w="full">
           <GridItem colSpan={1}>
-            <Button
-              size="md"
-              w="full"
-              onClick={onClickGoogleHandler}
-              colorScheme="teal"
-              variant="outline"
-              leftIcon={<AiFillGoogleCircle />}
-            >
-              Google
-            </Button>
+            <GoogleButton />
           </GridItem>
           <GridItem colSpan={1}>
             <Button

@@ -9,7 +9,7 @@ interface UserInterface {
 export const signInUser = (email: string, password: string) =>
   new Promise<UserInterface>((resolve, reject) => {
     client
-      .post("/user/signin", { email, password })
+      .post("/auth/signin", { email, password })
       .then((response) => {
         resolve(response.data);
       })
@@ -21,7 +21,19 @@ export const signInUser = (email: string, password: string) =>
 export const signUpUser = (email: string, password: string) =>
   new Promise<UserInterface>((resolve, reject) => {
     client
-      .post("/user/signup", { email, password })
+      .post("/auth/signup", { email, password })
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error: AxiosError) => {
+        reject(error.response?.data);
+      });
+  });
+
+export const signOutUser = () =>
+  new Promise<UserInterface>((resolve, reject) => {
+    client
+      .post("/auth/signout")
       .then((response) => {
         resolve(response.data);
       })
@@ -45,7 +57,21 @@ export const checkProfile = () =>
 export const sendResetPassword = (email: string) =>
   new Promise<UserInterface>((resolve, reject) => {
     client
-      .post("/user/forget-password", { email })
+      .post("/auth/forget-password", { email })
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error: AxiosError) => {
+        reject(error.response?.data);
+      });
+  });
+
+export const sendGoogleLogin = (token: string) =>
+  new Promise<UserInterface>((resolve, reject) => {
+    client
+      .post("/auth/google-auth", {
+        token,
+      })
       .then((response) => {
         resolve(response.data);
       })

@@ -4,6 +4,7 @@ import {
   checkProfile,
   sendResetPassword,
   signInUser,
+  signOutUser,
   signUpUser,
 } from "../../apis/auth.api";
 export interface userState {
@@ -33,6 +34,13 @@ export const signUpUserAsync = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }) => {
     const user = await signUpUser(email, password);
     return user;
+  }
+);
+
+export const signOutUserAsync = createAsyncThunk(
+  "user/signOutUser",
+  async () => {
+    await signOutUser();
   }
 );
 

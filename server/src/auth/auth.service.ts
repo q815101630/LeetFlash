@@ -4,16 +4,27 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { LoginUserDto } from './dto/login-user.dto';
-import { Source, User } from './entities/user.entity';
-import { UsersService } from './user.service';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './dto/create-user.dto';
-import { ResetPasswordDto } from './dto/reset-password-dto';
+import { Auth, google } from 'googleapis';
+import { Source, User } from 'src/user/entities/user.entity';
+import { UsersService } from 'src/user/user.service';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { LoginUserDto } from './dtos/login-user.dto';
+import { ResetPasswordDto } from './dtos/reset-password-dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService) {}
+  oauthClient: Auth.OAuth2Client;
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+  ) {
+    const clientID = this.configService.get('GOOGLE_CLIENT_ID');
+    const clientSecret = this.configService.get('GOOGLE_SECRET');
+    this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
+  }
 
   async signIn(loginUserDto: LoginUserDto): Promise<User> {
     const { email, password } = loginUserDto;
@@ -41,7 +52,6 @@ export class AuthService {
     try {
       //Object.assign(createUserDto, { _id: new mongoose.Types.ObjectId() });
       const newUser = await this.usersService.create(createUserDto);
-      console.log('signup 1231 123');
       return newUser;
     } catch (error) {
       if (error.code === 11000) {
@@ -55,28 +65,42 @@ export class AuthService {
     }
   }
 
-  async googleSignUp(req) {
-    //req.user is already attached to the request by passport
-    if (!req.user) {
-      throw new BadRequestException('Google Sign in failed');
-    }
-
-    const { email, firstName, lastName, picture } = req.user;
+  /**
+   *  Sign up through google
+   * @param email email
+   * @returns user object
+   */
+  async googleSignUp(email: string) {
     const user = await this.usersService.create({
       email,
       source: Source.GOOGLE,
     } as CreateUserDto);
+
     return user;
   }
 
+  async authenticateByGoogleToken(token: string): Promise<User> {
+    const tokenInfo = await this.oauthClient.getTokenInfo(token);
+
+    const email = tokenInfo.email;
+    const user = await this.usersService.findByEmailAndSource(
+      email,
+      Source.GOOGLE,
+    );
+    if (user) {
+      console.log('User used to login with Google', user.email);
+      return user;
+    } else {
+      return await this.googleSignUp(email);
+    }
+  }
+
+  //TODO
   async sendResetPasswordEmail(resetPasswordDto: ResetPasswordDto) {
     const { email } = resetPasswordDto;
     const user = await this.usersService.findByEmail(email);
     if (!user) {
-      throw new NotFoundException({
-        message: 'User not found',
-        error: 'User does not exist',
-      });
+      throw new NotFoundException(`User #${email} not found`);
     }
     return user;
   }

@@ -4,19 +4,20 @@ import { UsersController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
 import { CurrentUserMiddleware } from './middlewares/current-user.middleware';
-import { AuthService } from './auth.service';
 import { CardModule } from 'src/card/card.module';
 import { QuestionModule } from 'src/question/question.module';
-import { GoogleStrategy } from './google-oauth.strategy';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     forwardRef(() => CardModule),
     forwardRef(() => QuestionModule),
+    AuthModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, AuthService, GoogleStrategy],
+  providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {
