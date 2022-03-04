@@ -82,7 +82,7 @@ export class AuthController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @Get('generate-api-token')
+  @Post('generate-api-token')
   async sendApiToken(@Req() request) {
     try {
       const userId = request.user.id;

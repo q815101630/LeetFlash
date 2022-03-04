@@ -10,6 +10,8 @@ import { DisplayType } from "pages/setting";
 import { useState } from "react";
 import { FiInfo, FiKey, FiMessageCircle } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { useAppSelector } from "redux/hooks";
+import { selectUser } from "redux/user/userSlice";
 import NavItem from "./NavItem";
 const SideBar = ({
   setDisplayType,
@@ -17,6 +19,7 @@ const SideBar = ({
   setDisplayType: (value: DisplayType) => void;
 }) => {
   const [navSize, setNavSize] = useState<string>("large");
+  const user = useAppSelector(selectUser);
   return (
     <Flex
       pos="sticky"
@@ -47,9 +50,24 @@ const SideBar = ({
             navSize === "large" ? setNavSize("small") : setNavSize("large");
           }}
         />
-        <NavItem navSize={navSize} icon={FiKey} title="API Token" setDisplayType={setDisplayType} />
-        <NavItem navSize={navSize} icon={FiInfo} title="General" setDisplayType={setDisplayType}/>
-        <NavItem navSize={navSize} icon={FiMessageCircle} title="Comments" setDisplayType={setDisplayType}/>
+        <NavItem
+          navSize={navSize}
+          icon={FiKey}
+          title="API Token"
+          setDisplayType={setDisplayType}
+        />
+        <NavItem
+          navSize={navSize}
+          icon={FiInfo}
+          title="General"
+          setDisplayType={setDisplayType}
+        />
+        <NavItem
+          navSize={navSize}
+          icon={FiMessageCircle}
+          title="Comments"
+          setDisplayType={setDisplayType}
+        />
       </Flex>
       <Flex
         p="5%"
@@ -68,9 +86,9 @@ const SideBar = ({
             display={navSize === "small" ? "none" : "flex"}
           >
             <Heading as="h3" size="s">
-              q8151@qq.com
+              {user.email}
             </Heading>
-            <Text>User</Text>
+            <Text>{user.status}</Text>
           </Flex>
         </Flex>
       </Flex>

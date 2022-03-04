@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import {
   checkProfile,
+  generateApiToken,
   sendResetPassword,
   signInUser,
   signOutUser,
@@ -12,6 +13,7 @@ export interface userState {
   email: string;
   status: "active" | "loading" | "inactive";
   error: string | undefined;
+  token: string;
 }
 
 const initialState: userState = {
@@ -19,6 +21,7 @@ const initialState: userState = {
   email: "invalid",
   status: "inactive",
   error: undefined,
+  token: "invalid",
 };
 
 export const loginUserAsync = createAsyncThunk(
@@ -60,6 +63,14 @@ export const sendResetPasswordAsync = createAsyncThunk(
   }
 );
 
+export const generateApiTokenAsync = createAsyncThunk(
+  "user/generateApiToken",
+  async () => {
+    const token = await generateApiToken();
+    return token;
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -69,6 +80,7 @@ export const userSlice = createSlice({
       state.error = initialState.error;
       state.email = initialState.email;
       state.id = initialState.id;
+      state.token = initialState.token;
     },
   },
   extraReducers: (builder) => {
@@ -117,6 +129,9 @@ export const userSlice = createSlice({
       })
       .addCase(sendResetPasswordAsync.rejected, (state, action) => {
         state.error = "Cannot sent the request, check the email again";
+      })
+      .addCase(generateApiTokenAsync.fulfilled, (state, action) => {
+        state.token = action.payload;
       });
   },
 });

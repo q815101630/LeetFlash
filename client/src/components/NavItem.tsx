@@ -25,7 +25,8 @@ const NavItem = ({ navSize, icon, title, setDisplayType }: NavItemProps) => {
     } else {
       setDisplayType(DisplayType.API);
     }
-  };
+    };
+    
   return (
     <Flex
       mt={30}
