@@ -1,9 +1,8 @@
 import * as React from "react";
-import { ChakraProvider } from "@chakra-ui/react";
 import { Column } from "react-table";
+import { fetchCards, fetchQuestions } from "../apis/data.api";
 import { DataTable } from "../components/dataTable";
 import { Card, Question } from "../interfaces/interfaces";
-import { fetchCards, fetchQuestions } from "../apis/data.api";
 
 const data: Question[] = [
   {

@@ -21,11 +21,10 @@ import "material-react-toastify/dist/ReactToastify.css";
 import Switch from "@mui/material/Switch";
 import Link from "@mui/material/Link";
 import ClearAlert from "./ClearAlert";
-
+import { BASE_URL } from "../utils/types";
 type FormState = "ready" | "saving";
 const App: React.FC<{}> = () => {
   const [user, setUser] = useState<User>(DefaultUser);
-  const [password, setPassword] = useState<string>("");
   const [formState, setFormState] = useState<FormState>("ready");
   const [onlyVisitor, setOnlyVisitor] = useState<boolean>(false);
   const [signIn, setSignIn] = useState<boolean>(false);
@@ -36,7 +35,7 @@ const App: React.FC<{}> = () => {
       console.log(user);
 
       setUser(user);
-      if (!user.email) {
+      if (!user.uuid) {
         getStoredOnlyVisitor().then((onlyVisitor) => {
           setOnlyVisitor(onlyVisitor);
         });
@@ -44,11 +43,11 @@ const App: React.FC<{}> = () => {
       } else {
         setSignIn(true);
       }
-      console.log(user)
+      console.log(user);
     });
   }, []);
 
-  const SUBMIT_URL = "http://localhost:3000/api/user/signin";
+  const SUBMIT_URL = `${BASE_URL}/api/auth/verify-api-token`;
 
   const submitHandler = () => {
     setFormState("saving");
@@ -60,8 +59,7 @@ const App: React.FC<{}> = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: user?.email,
-        password: password,
+        token: user?.uuid,
       }),
     })
       .then((res) => res.json())
@@ -171,37 +169,14 @@ const App: React.FC<{}> = () => {
               alignItems="flex-end"
             >
               <Grid item>
-                <Typography variant="h6">LeetFlash Email</Typography>
+                <Typography variant="h6">LeetFlash Token</Typography>
               </Grid>
               <Grid item>
                 <TextField
-                  label="User Email"
-                  value={user.email}
+                  label="User "
+                  value={user.uuid}
                   variant="standard"
-                  onChange={(e) => setUser({ ...user, email: e.target.value })}
-                  disabled={isFieldsDisabled || onlyVisitor}
-                />
-              </Grid>
-            </Grid>
-            <Grid
-              item
-              py={5}
-              container
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-end"
-            >
-              <Grid item>
-                <Typography variant="h6">Password</Typography>
-              </Grid>
-              <Grid item>
-                <TextField
-                  id="outlined-password-input"
-                  label="Password"
-                  type="password"
-                  value={password}
-                  variant="standard"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setUser({ ...user, uuid: e.target.value })}
                   disabled={isFieldsDisabled || onlyVisitor}
                 />
               </Grid>

@@ -45,7 +45,7 @@ export const signOutUser = () =>
 export const checkProfile = () =>
   new Promise<UserInterface>((resolve, reject) => {
     client
-      .get("/user/profile")
+      .get("/users/profile")
       .then((response) => {
         resolve(response.data);
       })
@@ -72,6 +72,18 @@ export const sendGoogleLogin = (token: string) =>
       .post("/auth/google-auth", {
         token,
       })
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error: AxiosError) => {
+        reject(error.response?.data);
+      });
+  });
+
+export const generateApiToken = () =>
+  new Promise<string>((resolve, reject) => {
+    client
+      .post("/auth/generate-api-token")
       .then((response) => {
         resolve(response.data);
       })

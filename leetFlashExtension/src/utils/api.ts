@@ -1,6 +1,7 @@
 import { Question, User } from "./storage";
+import { BASE_URL } from "./types";
 
-const SEND_QUESTION_API = "http://localhost:3000/api/user/add-question/";
+const SEND_QUESTION_API = `${BASE_URL}/user/add-question/`;
 
 export const sendQuestionToServer = (
   question: Question,

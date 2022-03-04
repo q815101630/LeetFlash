@@ -85,6 +85,13 @@ const Header = () => {
         >
           <Link to="/about">About</Link>
         </Box>
+        <Box
+          _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+          p={2}
+          rounded="md"
+        >
+          <Link to="/setting">Setting</Link>
+        </Box>
       </Stack>
 
       <Box
