@@ -8,18 +8,23 @@ import {
   Text,
   Button,
   useDisclosure,
+  Tooltip,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectUser } from "../redux/user/userSlice";
-
+import { FaLanguage } from "react-icons/fa";
+import { selectLang, toggleLang } from "redux/lang/langSlice";
+import { IconButton } from "@chakra-ui/react";
+import { MdDarkMode } from "react-icons/md";
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleToggle = () => (isOpen ? onClose() : onOpen());
   const { toggleColorMode } = useColorMode();
-
+  const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const lang = useAppSelector(selectLang);
   let navigate = useNavigate();
   const handleClick = () => {
     if (user.status === "active") {
@@ -27,6 +32,9 @@ const Header = () => {
     } else {
       navigate("/login");
     }
+  };
+  const switchLang = () => {
+    dispatch(toggleLang());
   };
   return (
     <Flex
@@ -98,14 +106,30 @@ const Header = () => {
         display={{ base: isOpen ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
       >
-        <Stack direction={{ base: "column", md: "row" }}>
-          <Button
-            variant="outline"
-            _hover={{ bg: "orange.700", borderColor: "orange.700" }}
-            onClick={toggleColorMode}
+        <Stack direction={{ base: "column", md: "row" }} spacing={3}>
+          <Tooltip
+            hasArrow
+            label="Switch question language"
+            placement="auto-start"
           >
-            Change color
-          </Button>
+            <IconButton
+              variant="ghost"
+              _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+              aria-label="Switch language"
+              icon={<FaLanguage size={28} />}
+              onClick={switchLang}
+            />
+          </Tooltip>
+
+          <Tooltip hasArrow label="Dark mode" placement="auto-start">
+            <IconButton
+              variant="ghost"
+              _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+              aria-label="Switch language"
+              icon={<MdDarkMode size={28} />}
+              onClick={toggleColorMode}
+            />
+          </Tooltip>
 
           <Button
             variant="outline"

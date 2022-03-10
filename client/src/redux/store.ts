@@ -11,7 +11,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/es/storage";
 import userReducer from "./user/userSlice";
-
+import langReducer from "./lang/langSlice";
 const persistConfig = {
   key: "root",
   version: 1,
@@ -19,10 +19,11 @@ const persistConfig = {
 };
 
 const persistedUserReducer = persistReducer(persistConfig, userReducer);
-
+const persistedLangReducer = persistReducer(persistConfig, langReducer);
 export const store = configureStore({
   reducer: {
     user: persistedUserReducer,
+    lang: persistedLangReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

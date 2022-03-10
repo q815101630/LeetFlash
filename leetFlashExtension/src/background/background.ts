@@ -97,11 +97,14 @@ const onCompleteHandler = async ({
   timesRequest += 1;
   // console.log("timesRequest " + timesRequest);
 
-  const questionUrl = (await getCurrentTab())?.url;
+  let questionUrl = (await getCurrentTab())?.url;
   if (!questionUrl) {
     // console.log("questionUrl is null");
     return;
   }
+
+  questionUrl = questionUrl.split("/")[questionUrl.split("/").length-3];
+
   timesQuery += 1;
   // console.log("timesQuery " + timesQuery);
   // console.log("url ", url);

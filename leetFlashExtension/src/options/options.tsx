@@ -21,7 +21,7 @@ import "material-react-toastify/dist/ReactToastify.css";
 import Switch from "@mui/material/Switch";
 import Link from "@mui/material/Link";
 import ClearAlert from "./ClearAlert";
-import { BASE_URL } from "../utils/types";
+import { verifyUser } from "../utils/api";
 type FormState = "ready" | "saving";
 const App: React.FC<{}> = () => {
   const [user, setUser] = useState<User>(DefaultUser);
@@ -47,53 +47,37 @@ const App: React.FC<{}> = () => {
     });
   }, []);
 
-  const SUBMIT_URL = `${BASE_URL}/api/auth/verify-api-token`;
-
   const submitHandler = () => {
     setFormState("saving");
     toast.info("Saving your info...");
-    // make a post request to SUBMIT_URL with fetch
-    fetch(SUBMIT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        token: user?.uuid,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (!res.error) {
-          const returnUser: User = {
-            email: res.email,
-            uuid: res.id,
-            performance: DefaultUserPerformance,
-          };
-          setUser(returnUser);
-          setStoredUser(returnUser).then(() => {
-            setTimeout(() => {
-              setFormState("ready");
-              toast.success(
-                "Successfully linked the extension with your account!"
-              );
-              setSignIn(true);
-            }, 1000);
-          });
-        } else {
+
+    verifyUser(user.uuid)
+      .then((returnUser: User) => {
+        setUser(returnUser);
+        setStoredUser(returnUser).then(() => {
+          setTimeout(() => {
+            setFormState("ready");
+            toast.success(
+              "Successfully linked the extension with your account!"
+            );
+            setSignIn(true);
+          }, 1000);
+        });
+      })
+      .catch((status: number) => {
+        if (status == 401) {
           toast.error(
             "Cannot link your account with LeetFlash. Please check if the credential is valid. "
           );
           setTimeout(() => {
             setFormState("ready");
           }, 1000);
+        } else {
+          toast.error(
+            "Cannot connect to the server, use Only Extension mode first"
+          );
+          setFormState("ready");
         }
-      })
-      .catch((err) => {
-        toast.error(
-          "Cannot connect to the server, use Only Extension mode first"
-        );
-        setFormState("ready");
       });
   };
 

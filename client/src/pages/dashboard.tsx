@@ -3,6 +3,7 @@ import { Column } from "react-table";
 import { fetchCards, fetchQuestions } from "../apis/data.api";
 import { DataTable } from "../components/dataTable";
 import { Card, Question } from "../interfaces/interfaces";
+import QuestionCell from "../components/QuestionCell";
 
 const data: Question[] = [
   {
@@ -61,6 +62,14 @@ export const Dashboard = () => {
       {
         Header: "Title",
         accessor: "title",
+        Cell: (props) => {
+          return (
+            <QuestionCell
+              text={props.cell.value}
+              translateText={props.row.values.translatedTitle}
+            />
+          );
+        },
       },
       {
         Header: "Chinese Title",
