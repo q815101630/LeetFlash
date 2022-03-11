@@ -9,14 +9,14 @@ import {
   Button,
   useDisclosure,
   Tooltip,
+  IconButton
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectUser } from "../redux/user/userSlice";
 import { FaLanguage } from "react-icons/fa";
-import { selectLang, toggleLang } from "redux/lang/langSlice";
-import { IconButton } from "@chakra-ui/react";
+import { selectSettings, toggleLang } from "redux/settings/settingsSlice";
 import { MdDarkMode } from "react-icons/md";
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -24,7 +24,6 @@ const Header = () => {
   const { toggleColorMode } = useColorMode();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
-  const lang = useAppSelector(selectLang);
   let navigate = useNavigate();
   const handleClick = () => {
     if (user.status === "active") {

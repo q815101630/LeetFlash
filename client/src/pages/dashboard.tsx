@@ -1,10 +1,15 @@
+import { Button } from "@chakra-ui/react";
+import { TitleColumnFilterComponent, TitleColumnFilter } from "components/Filters";
 import * as React from "react";
-import { Column } from "react-table";
+import { CellProps, Column, Row } from "react-table";
+import { useAppSelector } from "redux/hooks";
+import { DifficultyType, selectSettings } from "redux/settings/settingsSlice";
 import { fetchCards, fetchQuestions } from "../apis/data.api";
 import { DataTable } from "../components/dataTable";
-import { Card, Question } from "../interfaces/interfaces";
+import DifficultyHeader from "../components/DifficultyHeader";
 import QuestionCell from "../components/QuestionCell";
-
+import UrlCell from "../components/UrlCell";
+import { Card, Question } from "../interfaces/interfaces";
 const data: Question[] = [
   {
     question_id: "1",
@@ -23,8 +28,14 @@ const data: Question[] = [
 export const Dashboard = () => {
   const [questions, setQuestions] = React.useState<Question[]>([]);
   const [cards, setCards] = React.useState<Card[]>([]);
+  const [difficultyType, setDifficultyType] = React.useState<DifficultyType>(
+    DifficultyType.ALL
+  );
   const questionsData = React.useMemo(() => [...questions], [questions]);
   const cardsData = React.useMemo(() => [...cards], [cards]);
+
+  const settings = useAppSelector(selectSettings);
+
   React.useEffect(() => {
     const fetchData = async () => {
       const questions = await fetchQuestions();
@@ -40,16 +51,24 @@ export const Dashboard = () => {
   const questionColumns: Column<Question>[] = React.useMemo(
     () => [
       {
-        Header: "Question Id",
+        Header:<Button variant='ghost'>Question Id</Button>,
         accessor: "question_id",
+        disableFilters: true,
       },
       {
-        Header: "Difficulty",
+        Header: () => <DifficultyHeader />,
         accessor: "difficulty",
+        disableSortBy: true,
+        disableFilters: true,
       },
       {
-        Header: "Url",
+        Header: <Button variant='ghost'>Link</Button>,
         accessor: "url",
+        Cell: (props) => {
+          return <UrlCell url={props.value} />;
+        },
+        disableSortBy: true,
+        disableFilters: true,
       },
       {
         Header: "Text",
@@ -61,15 +80,13 @@ export const Dashboard = () => {
       },
       {
         Header: "Title",
-        accessor: "title",
-        Cell: (props) => {
-          return (
-            <QuestionCell
-              text={props.cell.value}
-              translateText={props.row.values.translatedTitle}
-            />
-          );
+        accessor: settings.lang === "EN" ? "title" : "translatedTitle",
+        Cell: (props: React.PropsWithChildren<CellProps<Question, string>>) => {
+          return <QuestionCell question={props.row.values as Question} />;
         },
+        disableSortBy: true,
+        Filter: TitleColumnFilterComponent,
+        filter: TitleColumnFilter,
       },
       {
         Header: "Chinese Title",
@@ -113,5 +130,24 @@ export const Dashboard = () => {
     ],
     []
   );
-  return <DataTable columns={questionColumns} data={questionsData} />;
+
+  const filterQuestionByDifficulty = (questionsData: Question[]) => {
+    if (settings.difficultyType === DifficultyType.ALL) {
+      return questionsData;
+    }
+
+    return questionsData.filter((question: Question) => {
+      return (
+        question.difficulty.toLowerCase() ===
+        settings.difficultyType.toLowerCase()
+      );
+    });
+  };
+
+  return (
+    <DataTable
+      columns={questionColumns}
+      data={filterQuestionByDifficulty(questionsData)}
+    />
+  );
 };
