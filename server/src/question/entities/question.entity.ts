@@ -24,7 +24,7 @@ export class Question {
   difficulty: Difficulty;
 
   @Prop()
-  text?: string;
+text?: string;
 
   @Prop()
   translatedText?: string;

@@ -1,5 +1,8 @@
-import { Button } from "@chakra-ui/react";
-import { TitleColumnFilterComponent, TitleColumnFilter } from "components/Filters";
+import { Box, Text, Button, Flex } from "@chakra-ui/react";
+import {
+  TitleColumnFilterComponent,
+  TitleColumnFilter,
+} from "components/Filters";
 import * as React from "react";
 import { CellProps, Column, Row } from "react-table";
 import { useAppSelector } from "redux/hooks";
@@ -9,18 +12,9 @@ import { DataTable } from "../components/dataTable";
 import DifficultyHeader from "../components/DifficultyHeader";
 import QuestionCell from "../components/QuestionCell";
 import UrlCell from "../components/UrlCell";
-import { Card, Question } from "../interfaces/interfaces";
-const data: Question[] = [
-  {
-    question_id: "1",
-    difficulty: "hard",
-    url: "http://nasd",
-    text: "Two sumTwo sumTwo sumTwo sumTwo sumTwo sum",
-    translatedText: "Two sumTwo sum",
-    title: "Two sumTwo sum",
-    translatedTitle: "Two sumTwo sum",
-  },
-];
+import { Card, FlattenedCard, Question } from "../interfaces/interfaces";
+import SideBar from "../components/SideBar";
+import { DisplayType } from "./setting";
 
 // see https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-table
 // to configure react-table typings
@@ -32,9 +26,45 @@ export const Dashboard = () => {
     DifficultyType.ALL
   );
   const questionsData = React.useMemo(() => [...questions], [questions]);
-  const cardsData = React.useMemo(() => [...cards], [cards]);
+
+  // flatten the question field in the card object
+  const flattenedCards: FlattenedCard[] = cards.map((card: Card) => {
+    const flattenedCard = {
+      ...card,
+      ...card.question,
+    };
+    // @ts-ignore: question must exist
+    delete flattenedCard.question;
+    return flattenedCard;
+  });
+
+  // const cardsData = React.useMemo(() => [...flattenedCards], [flattenedCards]);
+  const cardsData: FlattenedCard[] = React.useMemo(
+    () =>
+      [
+        {
+          question_id: "123",
+          difficulty: "hard",
+          url: "https://www.google.com",
+          text: "text",
+          translatedText: "translated_text",
+          title: "title",
+          translatedTitle: "translated_title",
+          created_at: "string",
+          is_archived: true,
+          last_rep_date: "string",
+          next_rep_date: "string",
+          stage: 1,
+          id: "string",
+        },
+      ] as FlattenedCard[],
+    []
+  );
 
   const settings = useAppSelector(selectSettings);
+  const [displayType, setDisplayType] = React.useState<DisplayType>(
+    DisplayType.API
+  );
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -51,8 +81,9 @@ export const Dashboard = () => {
   const questionColumns: Column<Question>[] = React.useMemo(
     () => [
       {
-        Header:<Button variant='ghost'>Question Id</Button>,
+        Header: <Button variant="ghost">Question Id</Button>,
         accessor: "question_id",
+        width: 50,
         disableFilters: true,
       },
       {
@@ -62,7 +93,7 @@ export const Dashboard = () => {
         disableFilters: true,
       },
       {
-        Header: <Button variant='ghost'>Link</Button>,
+        Header: <Button variant="ghost">Link</Button>,
         accessor: "url",
         Cell: (props) => {
           return <UrlCell url={props.value} />;
@@ -81,12 +112,12 @@ export const Dashboard = () => {
       {
         Header: "Title",
         accessor: settings.lang === "EN" ? "title" : "translatedTitle",
-        Cell: (props: React.PropsWithChildren<CellProps<Question, string>>) => {
-          return <QuestionCell question={props.row.values as Question} />;
-        },
+        // Cell: (props: React.PropsWithChildren<CellProps<Question, string>>) => {
+        //   return <QuestionCell card={props.row.values as Question} />;
+        // },
         disableSortBy: true,
         Filter: TitleColumnFilterComponent,
-        filter: TitleColumnFilter,
+        //filter: TitleColumnFilter,
       },
       {
         Header: "Chinese Title",
@@ -95,10 +126,18 @@ export const Dashboard = () => {
     ],
     []
   );
-  const cardColumns: Column<Card>[] = React.useMemo(
+  const cardColumns: Column<FlattenedCard>[] = React.useMemo(
     () => [
       {
-        Header: "Creation Date",
+        Header: <Button variant="ghost">Link</Button>,
+        accessor: "url",
+        Cell: (props) => {
+          return <UrlCell url={props.value} />;
+        },
+        disableFilters: true,
+      },
+      {
+        Header: <Button variant="ghost">Created at</Button>,
         accessor: "created_at",
       },
       {
@@ -106,48 +145,77 @@ export const Dashboard = () => {
         accessor: "is_archived",
       },
       {
-        Header: "Last Repetition Date",
+        Header: <Button variant="ghost">Question Id</Button>,
+        accessor: "question_id",
+        disableFilters: true,
+      },
+      {
+        Header: () => <DifficultyHeader />,
+        accessor: "difficulty",
+        disableFilters: true,
+      },
+
+      {
+        Header: "Text",
+        accessor: "text",
+      },
+      {
+        Header: "Chinese Text",
+        accessor: "translatedText",
+      },
+      {
+        Header: <Button variant="ghost">Title</Button>,
+        accessor: settings.lang === "EN" ? "title" : "translatedTitle",
+        Cell: (
+          props: React.PropsWithChildren<CellProps<FlattenedCard, string>>
+        ) => {
+          return <QuestionCell card={props.row.values as FlattenedCard} />;
+        },
+        // Filter: TitleColumnFilterComponent,
+        // filter: TitleColumnFilter,
+      },
+      {
+        Header: "Chinese Title",
+        accessor: "translatedTitle",
+      },
+      {
+        Header: <Button variant="ghost">Last Repetition Date</Button>,
         accessor: "last_rep_date",
       },
       {
-        Header: "Next Repetition Date",
+        Header: <Button variant="ghost">Next Repetition Date</Button>,
         accessor: "next_rep_date",
       },
+
       {
-        Header: "Question",
-        accessor: (data) => {
-          return data.question.question_id;
-        },
-      },
-      {
-        Header: "Stage",
+        Header: <Button variant="ghost">Stage</Button>,
         accessor: "stage",
       },
       {
-        Header: "Id",
+        Header: <Button variant="ghost">Id</Button>,
         accessor: "id",
       },
     ],
     []
   );
 
-  const filterQuestionByDifficulty = (questionsData: Question[]) => {
+  const filterQuestionByDifficulty = (cardsData: FlattenedCard[]) => {
     if (settings.difficultyType === DifficultyType.ALL) {
-      return questionsData;
+      return cardsData;
     }
 
-    return questionsData.filter((question: Question) => {
+    return cardsData.filter((card: FlattenedCard) => {
       return (
-        question.difficulty.toLowerCase() ===
-        settings.difficultyType.toLowerCase()
+        card.difficulty.toLowerCase() === settings.difficultyType.toLowerCase()
       );
     });
   };
 
+  console.log(cardsData);
   return (
-    <DataTable
-      columns={questionColumns}
-      data={filterQuestionByDifficulty(questionsData)}
-    />
+    <Flex direction="row" align="flex-start" h="93vh">
+      {/* <SideBar setDisplayType={setDisplayType} /> */}
+      <DataTable columns={cardColumns} data={cardsData} />
+    </Flex>
   );
 };

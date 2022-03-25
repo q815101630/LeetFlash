@@ -9,7 +9,7 @@ import {
   Button,
   useDisclosure,
   Tooltip,
-  IconButton
+  IconButton,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
@@ -44,6 +44,9 @@ const Header = () => {
       padding={3}
       bg="orange.500"
       color="white"
+      pos="sticky"
+      top="0"
+      zIndex={1}
     >
       <Flex align="center" mr={5}>
         <Heading
@@ -83,7 +86,15 @@ const Header = () => {
           p={2}
           rounded="md"
         >
-          <Link to="/tutorial">Tutorial</Link>
+          <Link to="/review">Daily Review</Link>
+        </Box>
+
+        <Box
+          _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+          p={2}
+          rounded="md"
+        >
+          <Link to="/setting">Setting</Link>
         </Box>
         <Box
           _hover={{ bg: "orange.700", borderColor: "orange.700" }}
@@ -91,13 +102,6 @@ const Header = () => {
           rounded="md"
         >
           <Link to="/about">About</Link>
-        </Box>
-        <Box
-          _hover={{ bg: "orange.700", borderColor: "orange.700" }}
-          p={2}
-          rounded="md"
-        >
-          <Link to="/setting">Setting</Link>
         </Box>
       </Stack>
 

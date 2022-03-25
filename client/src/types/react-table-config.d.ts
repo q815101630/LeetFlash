@@ -15,9 +15,7 @@
 //   UseGroupByOptions,
 //   UseGroupByRowProps,
 //   UseGroupByState,
-//   UsePaginationInstanceProps,
-//   UsePaginationOptions,
-//   UsePaginationState,
+
 //   UseResizeColumnsColumnOptions,
 //   UseResizeColumnsColumnProps,
 //   UseResizeColumnsOptions,
@@ -132,6 +130,9 @@ import {
   UseGlobalFiltersInstanceProps,
   UseGlobalFiltersOptions,
   UseGlobalFiltersState,
+  UsePaginationInstanceProps,
+  UsePaginationOptions,
+  UsePaginationState,
 } from "react-table";
 
 declare module "react-table" {
@@ -139,6 +140,7 @@ declare module "react-table" {
     D extends Record<string, unknown>
   > extends UseSortByOptions<D>,
       UseFiltersOptions<D>,
+      UsePaginationOptions<D>,
       UseGlobalFiltersOptions<D>,
       // note that having Record here allows you to add anything to the options, this matches the spirit of the
       // underlying js library, but might be cleaner if it's replaced by a more specific type that matches your
@@ -153,11 +155,12 @@ declare module "react-table" {
     D extends Record<string, unknown> = Record<string, unknown>
   > extends UseSortByInstanceProps<D>,
       UseGlobalFiltersInstanceProps<D>,
+      UsePaginationInstanceProps<D>,
       UseFiltersInstanceProps<D> {}
 
   export interface TableState<
     D extends Record<string, unknown> = Record<string, unknown>
-  > extends UseSortByState<D>,
+  > extends UseSortByState<D>,UsePaginationState<D>,
       UseGlobalFiltersState<D>,
       UseFiltersState<D> {}
 

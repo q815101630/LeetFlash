@@ -16,10 +16,10 @@ import React from "react";
 import { useAppSelector } from "redux/hooks";
 import { selectSettings } from "redux/settings/settingsSlice";
 import { settingsState } from "../redux/settings/settingsSlice";
-import { Question } from "../interfaces/interfaces";
+import { FlattenedCard, Question } from "../interfaces/interfaces";
 
 interface QuestionCellProps {
-  question: Question;
+  card: FlattenedCard;
 }
 
 const showContentByLang = (
@@ -36,8 +36,18 @@ const showContentByLang = (
     : text;
 };
 
-const QuestionCell = ({ question }: QuestionCellProps) => {
+const QuestionCell = ({ card }: QuestionCellProps) => {
   const settings = useAppSelector(selectSettings);
+
+  const question: Question = {
+    question_id: card.question_id,
+    difficulty: card.difficulty,
+    url: card.url,
+    text: card.text,
+    translatedText: card.translatedText,
+    title: card.title,
+    translatedTitle: card.translatedTitle,
+  };
 
   return (
     <Popover>

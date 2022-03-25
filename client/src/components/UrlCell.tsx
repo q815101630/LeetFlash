@@ -3,7 +3,7 @@ import { RiEnglishInput } from "react-icons/ri";
 import { RiEmphasisCn } from "react-icons/ri";
 const UrlCell = ({ url }: { url: string }) => {
   return (
-    <HStack>
+    <HStack w="10">
       <IconButton
         variant="ghost"
         href={url}

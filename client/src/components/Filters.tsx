@@ -1,5 +1,5 @@
 import { Input, HStack, Text, Button } from "@chakra-ui/react";
-import { Question } from "interfaces/interfaces";
+import { FlattenedCard, Question } from "interfaces/interfaces";
 import React from "react";
 import { Row } from "react-table";
 
@@ -18,7 +18,6 @@ export const TitleColumnFilterComponent = ({
     <HStack w="100%" h="100%">
       <Button variant="ghost">Title</Button>,
       <Input
-        w="40vh"
         value={filterValue || ""}
         onChange={(e) => {
           // Set undefined to remove the filter entirely
@@ -31,10 +30,10 @@ export const TitleColumnFilterComponent = ({
 };
 
 export const TitleColumnFilter = (
-  rows: Array<Row<Question>>,
+  rows: Array<Row<FlattenedCard>>,
   columnIds: Array<string>,
   filterValue: string
-): Array<Row<Question>> => {
+): Array<Row<FlattenedCard>> => {
   return rows.filter((row) => {
     return (
       row.values["title"]?.toLowerCase().includes(filterValue?.toLowerCase()) ||

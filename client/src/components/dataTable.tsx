@@ -1,25 +1,6 @@
+import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import * as React from "react";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  HStack,
-  chakra,
-} from "@chakra-ui/react";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import {
-  useTable,
-  useSortBy,
-  Column,
-  useFilters,
-  useGlobalFilter,
-  Row,
-  IdType,
-} from "react-table";
-import { TitleColumnFilterComponent } from "./Filters";
+import { Column, useTable } from "react-table";
 
 export type DataTableProps<Data extends object> = {
   data: Data[];
@@ -40,6 +21,16 @@ export function DataTable<Data extends object>({
   data,
   columns,
 }: DataTableProps<Data>) {
+  const defaultColumn = React.useMemo(
+    () => ({
+      // When using the useFlexLayout:
+      minWidth: 10, // minWidth is only used as a limit for resizing
+      width: 100, // width is used for both the flex-basis and flex-grow
+      maxWidth: 300, // maxWidth is only used as a limit for resizing
+    }),
+    []
+  );
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -47,62 +38,62 @@ export function DataTable<Data extends object>({
     rows,
     state,
     prepareRow,
+    visibleColumns,
+    state: { pageIndex, pageSize },
     // setGlobalFilter,
     // preGlobalFilteredRows,
   } = useTable(
     {
       columns,
+      defaultColumn,
       data,
       initialState: {
-        hiddenColumns: ["translatedTitle", "translatedText", "text"],
+        hiddenColumns: [
+          "translatedTitle",
+          "translatedText",
+          "text",
+          "is_archived",
+        ],
       },
-    },
-    useFilters,
-    // useGlobalFilter,
-    useSortBy
+    }
+    // useFilters,
+    // useFlexLayout
   );
 
   return (
-    <>
-      <Table {...getTableProps()}>
-        <Thead>
-          {headerGroups.map((headerGroup) => (
-            <Tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <Th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.canFilter ? column.render("Filter") : null}
-                  {column.Header?.toString() != "Title"
-                    ? column.render("Header")
-                    : null}
-                  {column.Header?.toString() != "Title" ? (
-                    <chakra.span pl="4">
-                      {column.isSorted ? (
-                        column.isSortedDesc ? (
-                          <TriangleDownIcon aria-label="sorted descending" />
-                        ) : (
-                          <TriangleUpIcon aria-label="sorted ascending" />
-                        )
-                      ) : null}
-                    </chakra.span>
-                  ) : null}
-                </Th>
+    <Table
+      {...getTableProps({
+        style: {
+          borderWidth: 1,
+          borderColor: "white",
+          margin: "1rem",
+        },
+      })}
+    >
+      <Thead>
+        {headerGroups.map((headerGroup) => (
+          <Tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map((column) => (
+              <Th {...column.getHeaderProps()}>
+                {column.canFilter ? column.render("Filter") : null}
+                {column.render("Header")}
+              </Th>
+            ))}
+          </Tr>
+        ))}
+      </Thead>
+      <Tbody {...getTableBodyProps()}>
+        {rows.map((row) => {
+          prepareRow(row);
+          return (
+            <Tr {...row.getRowProps()}>
+              {row.cells.map((cell) => (
+                <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
               ))}
             </Tr>
-          ))}
-        </Thead>
-        <Tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <Tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
-                ))}
-              </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-    </>
+          );
+        })}
+      </Tbody>
+    </Table>
   );
 }
