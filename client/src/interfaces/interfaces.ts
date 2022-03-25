@@ -1,6 +1,7 @@
 export interface Question {
   question_id: string;
-  difficulty: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  translated_url?: string;
   url: string;
   text: string;
   translatedText: string;
@@ -9,12 +10,13 @@ export interface Question {
 }
 
 export interface Card {
-  created_at: string;
+  created_at: Date;
   is_archived: boolean;
-  last_rep_date: string;
-  next_rep_date: string;
+  last_rep_date: Date;
+  next_rep_date: Date;
   question: Question;
   stage: number;
+  max_stage?: number;
   id: string;
 }
 
