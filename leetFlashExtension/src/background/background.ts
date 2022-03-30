@@ -130,9 +130,9 @@ const onCompleteHandler = async ({
           question_id,
           difficulty,
           title,
-          translatedTitle,
+          translated_title,
           text,
-          translatedText,
+          translated_text,
         } = questionInfo;
 
         const question: Question = {
@@ -141,9 +141,9 @@ const onCompleteHandler = async ({
           url: questionUrl,
           difficulty,
           title,
-          translatedTitle,
+          translated_title,
           text,
-          translatedText,
+          translated_text,
           status_memory: res.status_memory,
           status_runtime: res.status_runtime,
           status_msg: res.status_msg,

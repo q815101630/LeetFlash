@@ -43,7 +43,10 @@ export class QuestionService {
       submitQuestionDto.question_id,
     );
     if (!!currentQuestion) {
-      if (submitQuestionDto.translatedText && !currentQuestion.translatedText) {
+      if (
+        submitQuestionDto.translated_text &&
+        !currentQuestion.translated_text
+      ) {
         console.log('goes 1');
 
         return await this.update(submitQuestionDto);

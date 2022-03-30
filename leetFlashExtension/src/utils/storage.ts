@@ -11,9 +11,9 @@ export interface QuestionInfo {
   question_id: string;
   difficulty: string;
   title?: string;
-  translatedTitle?: string;
+  translated_title?: string;
   text?: string;
-  translatedText?: string;
+  translated_text?: string;
 }
 
 export interface UserPerformance {
@@ -57,9 +57,9 @@ export interface Question {
   question_id: string;
   difficulty: string;
   title: string;
-  translatedTitle?: string;
+  translated_title?: string;
   text?: string;
-  translatedText?: string;
+  translated_text?: string;
   url: string;
   status_memory: string;
   status_msg: string;

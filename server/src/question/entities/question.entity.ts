@@ -24,16 +24,16 @@ export class Question {
   difficulty: Difficulty;
 
   @Prop()
-text?: string;
+  text?: string;
 
   @Prop()
-  translatedText?: string;
+  translated_text?: string;
 
   @Prop()
   title?: string;
 
   @Prop()
-  translatedTitle?: string;
+  translated_title?: string;
 
   //TODO: only wants /problems/two-sum/ like this
   @Prop()

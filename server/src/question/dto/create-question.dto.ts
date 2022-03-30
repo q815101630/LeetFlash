@@ -16,7 +16,7 @@ export class CreateQuestionDto {
 
   @IsOptional()
   @IsString()
-  translatedText?: string;
+  translated_text?: string;
 
   @IsOptional()
   @IsString()
@@ -24,7 +24,7 @@ export class CreateQuestionDto {
 
   @IsOptional()
   @IsString()
-  translatedTitle?: string;
+  translated_title?: string;
 
   //TODO: only wants /problems/two-sum/ like this
   @IsNotEmpty()

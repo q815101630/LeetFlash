@@ -36,7 +36,7 @@ export const QuestionTitle: React.FC<{ card: Card; lang: string }> = ({ card, la
             onMouseLeave={close}
           >
             <Text fontWeight="semibold">
-              {lang === 'EN' ? card.question.title : card.question.translatedTitle}
+              {lang === 'EN' ? card.question.title : card.question.translated_title}
             </Text>
           </Link>
         </PopoverTrigger>
@@ -44,7 +44,7 @@ export const QuestionTitle: React.FC<{ card: Card; lang: string }> = ({ card, la
           <PopoverArrow />
           <PopoverHeader fontWeight="semibold">Question Prompt</PopoverHeader>
           <PopoverBody>
-            {lang === 'EN' ? card.question.text : card.question.translatedText}
+            {lang === 'EN' ? card.question.text : card.question.translated_text}
           </PopoverBody>
         </PopoverContent>
       </Popover>

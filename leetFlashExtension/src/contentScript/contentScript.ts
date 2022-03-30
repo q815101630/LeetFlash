@@ -111,9 +111,9 @@ function myMain(evt) {
         question_id: question_id.trim(),
         difficulty: difficulty,
         title: isEN ? name.trim() : undefined,
-        translatedTitle: isEN ? undefined : name.trim(),
+        translated_title: isEN ? undefined : name.trim(),
         text: isEN ? content : undefined,
-        translatedText: isEN ? undefined : content,
+        translated_text: isEN ? undefined : content,
       };
       // console.log("questionInfo");
       // console.log(questionInfo);
@@ -134,10 +134,10 @@ function myMain(evt) {
           );
         } else {
           if (storedQuestionInfo[curQuestionIdx].title) {
-            storedQuestionInfo[curQuestionIdx].translatedTitle =
-              questionInfo.translatedTitle;
-            storedQuestionInfo[curQuestionIdx].translatedText =
-              questionInfo.translatedText;
+            storedQuestionInfo[curQuestionIdx].translated_title =
+              questionInfo.translated_title;
+            storedQuestionInfo[curQuestionIdx].translated_text =
+              questionInfo.translated_text;
           } else {
             storedQuestionInfo[curQuestionIdx].title = questionInfo.title;
             storedQuestionInfo[curQuestionIdx].text = questionInfo.text;

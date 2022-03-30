@@ -4,9 +4,9 @@ export interface Question {
   translated_url?: string;
   url: string;
   text: string;
-  translatedText: string;
+  translated_text: string;
   title: string;
-  translatedTitle: string;
+  translated_title: string;
 }
 
 export interface Card {
@@ -18,21 +18,4 @@ export interface Card {
   stage: number;
   max_stage?: number;
   id: string;
-}
-
-export interface FlattenedCard {
-  created_at: string;
-  is_archived: boolean;
-  last_rep_date: string;
-  next_rep_date: string;
-  stage: number;
-  id: string;
-
-  question_id: string;
-  difficulty: string;
-  url: string;
-  text: string;
-  translatedText: string;
-  title: string;
-  translatedTitle: string;
 }
