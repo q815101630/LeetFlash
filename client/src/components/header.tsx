@@ -25,6 +25,7 @@ const Header = () => {
   const { toggleColorMode } = useColorMode();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const settings = useAppSelector(selectSettings);
   let navigate = useNavigate();
   const handleClick = () => {
     if (user.status === "active") {
@@ -114,7 +115,9 @@ const Header = () => {
         <Stack direction={{ base: "column", md: "row" }} spacing={3}>
           <Tooltip
             hasArrow
-            label="Switch question language"
+            label={
+              settings.lang === "EN" ? "Switch to Chinese" : "Switch to English"
+            }
             placement="auto-start"
           >
             <IconButton
