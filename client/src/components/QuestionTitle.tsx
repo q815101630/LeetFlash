@@ -42,7 +42,6 @@ export const QuestionTitle: React.FC<{ card: Card; lang: string }> = ({ card, la
         </PopoverTrigger>
         <PopoverContent {...defaultPopoverContentProps}>
           <PopoverArrow />
-          <PopoverCloseButton />
           <PopoverHeader fontWeight="semibold">Question Prompt</PopoverHeader>
           <PopoverBody>
             {lang === 'EN' ? card.question.text : card.question.translatedText}
