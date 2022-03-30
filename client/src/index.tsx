@@ -7,7 +7,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Provider } from 'react-redux';
 import { persistor, store } from './redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
-import Header from './components/header';
+import Header from './components/Header';
 import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(

@@ -1,5 +1,16 @@
 import React from 'react';
-import { Box, Stack, Heading, Flex, useColorMode, Text, Button, useDisclosure, Tooltip, IconButton } from '@chakra-ui/react';
+import {
+  Box,
+  Stack,
+  Heading,
+  Flex,
+  useColorMode,
+  Text,
+  Button,
+  useDisclosure,
+  Tooltip,
+  IconButton,
+} from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
@@ -7,6 +18,7 @@ import { selectUser } from '../redux/user/userSlice';
 import { FaLanguage } from 'react-icons/fa';
 import { selectSettings, toggleLang } from 'redux/settings/settingsSlice';
 import { MdDarkMode } from 'react-icons/md';
+
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleToggle = () => (isOpen ? onClose() : onOpen());
@@ -30,13 +42,13 @@ const Header = () => {
       align="center"
       justify="space-between"
       wrap="wrap"
-      padding={3}
+      px={3}
+      py={2}
       bg="orange.500"
       color="white"
       pos="sticky"
       top="0"
       zIndex={1}
-      h="6vh"
     >
       <Flex align="center" mr={5}>
         <Heading
@@ -101,7 +113,11 @@ const Header = () => {
             />
           </Tooltip>
 
-          <Button variant="outline" _hover={{ bg: 'orange.700', borderColor: 'orange.700' }} onClick={handleClick}>
+          <Button
+            variant="outline"
+            _hover={{ bg: 'orange.700', borderColor: 'orange.700' }}
+            onClick={handleClick}
+          >
             {user.status === 'active' ? 'Logout' : 'Login'}
           </Button>
         </Stack>

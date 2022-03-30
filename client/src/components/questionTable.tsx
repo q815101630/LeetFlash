@@ -3,13 +3,11 @@ import {
   HStack,
   Icon,
   IconButton,
-  Avatar,
   Badge,
   Box,
   Checkbox,
   Table,
   Tbody,
-  Link,
   Td,
   Th,
   Thead,
@@ -17,32 +15,13 @@ import {
   Text,
   useColorModeValue,
   Progress,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
 } from '@chakra-ui/react';
 import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { FaStar } from 'react-icons/fa';
-import { Question, Card } from '../interfaces/interfaces';
+import { Card } from '../interfaces/interfaces';
 import { selectSettings } from 'redux/settings/settingsSlice';
 import { useAppSelector } from 'redux/hooks';
-// @ts-ignore
-const { faker } = require('@faker-js/faker');
-
-export const defaultPopoverContentProps = {
-  sx: {
-    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-  },
-  _focus: {
-    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-    outline: 'none',
-  },
-};
+import { formatDate } from 'utils';
+import { QuestionTitle } from './QuestionTitle';
 
 interface TableHeadProps {
   name: string;
@@ -53,76 +32,16 @@ interface TableCellProps {
   render: (card: Card) => React.ReactNode;
 }
 
-const formatDate = (date: Date) => {
-  // format date to yyyy-mm-dd
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
-};
+export interface QuestionTableProps {
+  search: string;
+  cards: Card[];
+  rowCount: number;
+}
 
-// use faker to generate fake data
-export const fakeData: Card[] = Array.from(Array(10).keys()).map((): Card => {
-  return {
-    created_at: faker.date.past(),
-    is_archived: faker.random.boolean(),
-    last_rep_date: faker.date.past(),
-    next_rep_date: faker.date.future(),
-    question: {
-      question_id: faker.random.number({ min: 1, max: 100 }),
-      difficulty: faker.random.arrayElement(['easy', 'medium', 'hard']),
-      url: faker.internet.url(),
-      translated_url: faker.internet.url(),
-      text: faker.lorem.sentence(),
-      translatedText: faker.lorem.sentence(),
-      title: faker.lorem.sentence(),
-      translatedTitle: '阿斯顿撒大苏打',
-    },
-    stage: faker.random.number({ min: 0, max: 10 }),
-    max_stage: 10,
-    id: faker.random.uuid(),
-  };
-});
-
-export const QuestionTitle: React.FC<{ card: Card; lang: string }> = ({ card, lang }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-
-  return (
-    <HStack>
-      <Text>{`${card.question.question_id}.`}</Text>
-      <Popover placement="right" returnFocusOnClose={false} isOpen={isOpen} onClose={close}>
-        <PopoverTrigger>
-          <Link
-            isExternal
-            href={lang === 'EN' ? card.question.url : card.question.translated_url}
-            _focus={{}}
-            _hover={{
-              textColor: 'blue.500',
-              textDecoration: 'underline',
-            }}
-            onMouseEnter={open}
-            onMouseLeave={close}
-          >
-            <Text fontWeight="semibold">{lang === 'EN' ? card.question.title : card.question.translatedTitle}</Text>
-          </Link>
-        </PopoverTrigger>
-        <PopoverContent {...defaultPopoverContentProps}>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader fontWeight="semibold">Question Prompt</PopoverHeader>
-          <PopoverBody>{lang === 'EN' ? card.question.text : card.question.translatedText}</PopoverBody>
-        </PopoverContent>
-      </Popover>
-    </HStack>
-  );
-};
-
-export const QuestionTable: React.FC<{ search: string }> = (props) => {
-  const [cards, setCards] = useState(fakeData);
+export const QuestionTable: React.FC<QuestionTableProps> = ({ search, cards, rowCount }) => {
   const [orderCol, setOrderCol] = useState(4);
   const [order, setOrder] = useState(0); // 0 -> asc, 1 -> desc
+
   const { lang } = useAppSelector(selectSettings); // EN or CN
 
   const tableHeaders: TableHeadProps[] = useMemo(() => {
@@ -150,11 +69,13 @@ export const QuestionTable: React.FC<{ search: string }> = (props) => {
       },
       {
         name: 'Last Repition',
-        compare: (a, b) => new Date(a.last_rep_date).getTime() - new Date(b.last_rep_date).getTime(),
+        compare: (a, b) =>
+          new Date(a.last_rep_date).getTime() - new Date(b.last_rep_date).getTime(),
       },
       {
         name: 'Next Repition',
-        compare: (a, b) => new Date(a.next_rep_date).getTime() - new Date(b.next_rep_date).getTime(),
+        compare: (a, b) =>
+          new Date(a.next_rep_date).getTime() - new Date(b.next_rep_date).getTime(),
       },
       {
         name: 'Progress',
@@ -198,8 +119,10 @@ export const QuestionTable: React.FC<{ search: string }> = (props) => {
         render: (card) => <Text>{formatDate(card.next_rep_date)}</Text>,
       },
       {
-        // @ts-ignore
-        render: (card) => <Progress hasStripe value={(card.stage / card.max_stage) * 100} />,
+        render: (card) => (
+          // @ts-ignore
+          <Progress w={100} hasStripe value={(card.stage / card.max_stage) * 100} />
+        ),
       },
     ],
     [lang]
@@ -212,14 +135,14 @@ export const QuestionTable: React.FC<{ search: string }> = (props) => {
   const tableHeadBg = useColorModeValue('gray.50', 'gray.700');
   // const tableRowBg = useColorModeValue('gray.200', 'gray.300');
 
+  const sortedCards = useMemo(() => {
+    const newCards = cards.sort(tableHeaders[orderCol].compare);
+    if (order === 1) newCards.reverse();
+
+    return newCards;
+  }, [cards, tableHeaders, orderCol, order]);
+
   const sortTable = (col: number, order: number) => {
-    const newCards = cards.sort(tableHeaders[col].compare);
-
-    if (order === 1) {
-      newCards.reverse();
-      setCards(newCards);
-    }
-
     setOrderCol(col);
     setOrder(order);
   };
@@ -239,7 +162,6 @@ export const QuestionTable: React.FC<{ search: string }> = (props) => {
                   opacity={orderCol === i ? 1 : 0.5}
                   icon={<Icon as={orderCol !== i || order === 0 ? IoArrowUp : IoArrowDown} />}
                   onClick={() => {
-                    console.log('ADADAD');
                     sortTable(i, orderCol === i ? (order + 1) % 2 : 0);
                   }}
                 />
@@ -249,19 +171,13 @@ export const QuestionTable: React.FC<{ search: string }> = (props) => {
         </Tr>
       </Thead>
       <Tbody>
-        {cards
-          .filter(
-            (card) =>
-              `${card.question.question_id}. ${card.question.title}`.includes(props.search) ||
-              `${card.question.question_id}. ${card.question.translatedTitle}`.includes(props.search)
-          )
-          .map((card) => (
-            <Tr key={card.id}>
-              {tableCells.map((cell, i) => (
-                <Td key={`t-cell-${i}`}>{cell.render(card)}</Td>
-              ))}
-            </Tr>
-          ))}
+        {sortedCards.map((card) => (
+          <Tr key={card.id}>
+            {tableCells.map((cell, i) => (
+              <Td key={`t-cell-${i}`}>{cell.render(card)}</Td>
+            ))}
+          </Tr>
+        ))}
       </Tbody>
     </Table>
   );
