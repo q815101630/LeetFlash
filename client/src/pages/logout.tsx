@@ -10,16 +10,20 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { clearUserState, signOutUserAsync } from "../redux/user/userSlice";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
+import { selectSettings } from "redux/settings/settingsSlice";
 export const Logout = () => {
   const [isOpen, setIsOpen] = React.useState(true);
+
+  const { socket } = useAppSelector(selectSettings);
 
   const cancelRef = React.useRef(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const onLogout = () => {
     setIsOpen(false);
+
     dispatch(clearUserState());
     dispatch(signOutUserAsync());
     navigate("/");

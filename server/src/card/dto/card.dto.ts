@@ -45,4 +45,7 @@ export class CardDto {
 
   @Expose()
   id: string;
+
+  @Expose()
+  note: string;
 }

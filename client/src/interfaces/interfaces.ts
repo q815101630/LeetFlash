@@ -18,4 +18,5 @@ export interface Card {
   stage: number;
   max_stage?: number;
   id: string;
+  note?: string;
 }

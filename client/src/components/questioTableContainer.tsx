@@ -121,11 +121,11 @@ export const QuestionTableContainer: React.FC = () => {
     compareFn.current = compare;
     setOrderCol(col);
     setOrder(order);
-    console.log('State has been fucking changed!');
+    console.log('State has been changed!');
   };
 
   const filteredData = useMemo(() => {
-    console.log('You would better fucking know what you are doing');
+    console.log('You would better know what you are doing');
     const sortedData = questions.sort(compareFn.current);
     if (order === 1) sortedData.reverse();
 

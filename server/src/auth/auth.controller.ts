@@ -31,6 +31,7 @@ export class AuthController {
   @Post('/signup')
   async signUpUser(@Body() createUserDto: CreateUserDto, @Session() session) {
     const user = await this.authService.signup(createUserDto);
+    delete user.password;
     session.user = user;
     return user;
   }
@@ -40,7 +41,8 @@ export class AuthController {
   @Post('/signin')
   async signInUser(@Body() loginUserDto: LoginUserDto, @Session() session) {
     const user = await this.authService.signIn(loginUserDto);
-    console.log('user', user);
+    console.log('user', user.email);
+    delete user.password;
     session.user = user;
     return user;
   }
@@ -64,6 +66,7 @@ export class AuthController {
       const user = await this.authService.authenticateByGoogleToken(
         tokenData.token,
       );
+      delete user.password;
       session.user = user;
       return user;
     } catch (error) {

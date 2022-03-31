@@ -8,6 +8,9 @@ import {
   signOutUser,
   signUpUser,
 } from "../../apis/auth.api";
+import { setSocket } from "redux/settings/settingsSlice";
+import { io } from "socket.io-client";
+import { createSocket } from "apis/ws.api";
 export interface userState {
   id: string;
   email: string;
@@ -44,6 +47,7 @@ export const signOutUserAsync = createAsyncThunk(
   "user/signOutUser",
   async () => {
     await signOutUser();
+    
   }
 );
 
@@ -96,12 +100,16 @@ export const userSlice = createSlice({
         state.id = action.payload.id;
         state.email = action.payload.email;
         state.error = undefined;
+
+        setSocket(createSocket());
       })
       .addCase(signUpUserAsync.fulfilled, (state, action) => {
         state.status = "active";
         state.id = action.payload.id;
         state.email = action.payload.email;
         state.error = undefined;
+
+        setSocket(createSocket());
       })
       .addCase(loginUserAsync.rejected, (state, action) => {
         state.status = "inactive";

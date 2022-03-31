@@ -43,6 +43,7 @@ export class Card {
 
   @Prop({ required: true })
   next_rep_date: Date;
+
 }
 
 export const CardSchema = SchemaFactory.createForClass(Card);

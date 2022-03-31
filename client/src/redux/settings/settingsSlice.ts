@@ -1,21 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Socket } from "socket.io-client";
 import { RootState } from "../store";
-
-export enum DifficultyType {
-  ALL = "All",
-  HARD = "Hard",
-  EASY = "Easy",
-  MEDIUM = "Medium",
-}
 
 export interface settingsState {
   lang: "EN" | "CN";
-  difficultyType: DifficultyType;
+  socket: Socket | undefined;
 }
 
 const initialState: settingsState = {
   lang: "EN",
-  difficultyType: DifficultyType.ALL,
+  socket: undefined,
 };
 
 export const settingsSlice = createSlice({
@@ -29,12 +23,13 @@ export const settingsSlice = createSlice({
         state.lang = "EN";
       }
     },
-    setDifficultyType: (state, action) => {
-      state.difficultyType = action.payload;
+
+    setSocket: (state, action) => {
+      state.socket = action.payload;
     },
   },
 });
-export const { toggleLang, setDifficultyType } = settingsSlice.actions;
+export const { toggleLang, setSocket } = settingsSlice.actions;
 export const selectSettings = (state: RootState) => state.settings;
 
 export default settingsSlice.reducer;

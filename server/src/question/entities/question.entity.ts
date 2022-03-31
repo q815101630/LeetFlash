@@ -35,7 +35,6 @@ export class Question {
   @Prop()
   translated_title?: string;
 
-  //TODO: only wants /problems/two-sum/ like this
   @Prop()
   url: string;
 }

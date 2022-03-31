@@ -20,3 +20,18 @@ export const fetchCards = () =>
         reject(error);
       });
   });
+
+/**
+ * patch to update a card, only update three fields: next_rep_date, note, stage
+ * @param card card object
+ */
+export const patchCard = (card: Card) => {
+  new Promise<Card>((resolve, reject) => {
+    client
+      .patch("/card/", card)
+      .then((response: AxiosResponse) => resolve(response.data))
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsDate } from 'class-validator';
 
 export class UpdateCardDto {
   @IsOptional()
@@ -8,4 +8,8 @@ export class UpdateCardDto {
   @IsOptional()
   @IsNumber()
   stage?: number;
+
+  @IsOptional()
+  @IsDate()
+  next_rep_date?: Date;
 }
