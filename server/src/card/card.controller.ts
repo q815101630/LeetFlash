@@ -12,6 +12,9 @@ import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { LocalAuthGuard } from 'src/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { Question } from 'src/question/entities/question.entity';
+import { User } from 'src/user/entities/user.entity';
+import { CardGateway } from './card.gateway';
 import { CardService } from './card.service';
 import { CardDto } from './dto/card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
@@ -57,4 +60,6 @@ export class CardController {
     const retCard = this.cardService.serializeCard(updatedCard);
     return retCard;
   }
+
+  
 }

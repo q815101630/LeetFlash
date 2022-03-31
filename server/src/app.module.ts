@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { EmailConfirmationModule } from './email-confirmation/email-confirmation.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieSession = require('cookie-session');
@@ -27,6 +28,10 @@ const cookieSession = require('cookie-session');
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot({
+      ttl: 2,
+      limit: 1,
+    }),
 
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

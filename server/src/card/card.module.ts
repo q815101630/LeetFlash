@@ -11,6 +11,6 @@ import { CardGateway } from './card.gateway';
   ],
   controllers: [CardController],
   providers: [CardService, CardGateway],
-  exports: [CardService],
+  exports: [CardService, CardGateway],
 })
 export class CardModule {}

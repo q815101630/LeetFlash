@@ -8,7 +8,10 @@ import {
 } from '@nestjs/websockets';
 import { CardService } from './card.service';
 import { Server, Socket } from 'socket.io';
-import { Session } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Session } from '@nestjs/common';
+import { Card } from './entities/card.entity';
+import { User } from 'src/user/entities/user.entity';
+import { Question } from 'src/question/entities/question.entity';
 
 const options = {
   cors: {
@@ -20,6 +23,7 @@ const options = {
 /**
  * ChatGateway is a WebSocketGateway that handles all chat messages.
  */
+@Injectable()
 @WebSocketGateway(options)
 export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -61,5 +65,20 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
       socket.emit('error', 'Failed authentication');
       socket.disconnect();
     }
+  }
+
+  async handleSubmit(user: User, question: Question) {
+    let card = await this.cardService.findByQuestionAndUser(question, user);
+    if (!card) {
+      card = await this.cardService.create(user, question);
+    }
+
+    const socketId = this.cardService.getSocketId(card.owner._id.toString());
+    if (socketId) {
+      const gg = this.server.to(socketId).emit('new-submit-today', card);
+      console.log(`socket success: ${gg}`);
+    }
+
+    return card;
   }
 }

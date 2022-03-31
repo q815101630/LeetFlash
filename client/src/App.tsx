@@ -24,28 +24,19 @@ function App() {
   useEffect(() => {
     const socket = createSocket();
     setSocket(socket);
+
+    const openPopupListener = (card: Card) => {
+      console.log("listened!");
+      setPopupCards((popupCards) => [...popupCards, card]);
+    };
+
+    socket.on("new-submit-today", openPopupListener);
+    console.log("shit");
     return () => {
       socket.close();
     };
-  }, []);
+  }, [socket]);
 
-  interface OpenPopupMessage {
-    card: Card;
-  }
-
-  useEffect(() => {
-    if (!socket) return;
-
-    const openPopupListener = ({ card }: OpenPopupMessage) => {
-      setPopupCards([...popupCards, card]);
-    };
-
-    socket.on("openPopup", openPopupListener);
-
-    return () => {
-      socket.off("openPopup", openPopupListener);
-    };
-  }, [socket, popupCards]);
   return (
     <>
       <Routes>
@@ -60,9 +51,9 @@ function App() {
         <Route path="*" element={<LandingPage />} />
       </Routes>
 
-      {popupCards.map((card) => (
+      {popupCards.map((card, i) => (
         <PopupModal
-          key={card.id}
+          key={`${card.id}-${i}`}
           card={card}
           removePopup={() => setPopupCards(popupCards.slice(0, -1))}
         />

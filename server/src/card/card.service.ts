@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Question } from 'src/question/entities/question.entity';
@@ -29,7 +29,8 @@ export class CardService {
       total_stages: owner.total_stages,
       max_stage: owner.total_stages.split(',').length,
     });
-    return await card.save();
+    await card.save();
+    return card;
   }
 
   async findAll(user: User | string): Promise<Card[]> {
@@ -63,7 +64,10 @@ export class CardService {
   }
 
   async findByQuestionAndUser(question: Question, user: User): Promise<Card> {
-    const card = await this.cardModel.findOne({ question, owner: user }).exec();
+    const card = await this.cardModel
+      .findOne({ question, owner: user })
+      .populate('question')
+      .exec();
     return card;
   }
 
