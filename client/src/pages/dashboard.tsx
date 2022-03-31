@@ -19,7 +19,7 @@ export const Dashboard = () => {
   }, []);
 
   return (
-    <Flex direction="row" justify="center" bg={bg}>
+    <Flex direction="row" justify="center" bg={bg} minH="calc(100vh - 4rem)">
       <QuestionTableContainer />
     </Flex>
   );
