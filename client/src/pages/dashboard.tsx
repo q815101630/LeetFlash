@@ -1,5 +1,5 @@
 import { Flex, useColorModeValue } from '@chakra-ui/react';
-import { QuestionTableContainer } from 'components/QuestioTableContainer';
+import { QuestionTableContainer } from '../components/QuestioTableContainer';
 import * as React from 'react';
 import { fetchCards } from '../apis/data.api';
 

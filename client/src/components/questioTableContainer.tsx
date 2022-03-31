@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   HStack,
   Icon,
@@ -19,70 +20,70 @@ import {
   MenuList,
   MenuItem,
   Tooltip,
-} from "@chakra-ui/react";
-import { Question, Card } from "../interfaces/interfaces";
-import { FiSearch } from "react-icons/fi";
-import { QuestionTable } from "./QuestionTable";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { fetchCards } from "apis/data.api";
+} from '@chakra-ui/react';
+import { Question, Card } from '../interfaces/interfaces';
+import { FiSearch } from 'react-icons/fi';
+import { QuestionTable } from './QuestionTable';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { fetchCards } from 'apis/data.api';
 // @ts-ignore
-const { faker } = require("@faker-js/faker");
+const { faker } = require('@faker-js/faker');
 
 export const members = [
   {
-    id: "1",
-    name: "Christian Nwamba",
-    handle: "@christian",
-    email: "christian@chakra-ui.com",
-    avatarUrl: "https://bit.ly/code-beast",
-    status: "active",
-    role: "Senior Developer Advocate",
+    id: '1',
+    name: 'Christian Nwamba',
+    handle: '@christian',
+    email: 'christian@chakra-ui.com',
+    avatarUrl: 'https://bit.ly/code-beast',
+    status: 'active',
+    role: 'Senior Developer Advocate',
     rating: 4,
   },
   {
-    id: "2",
-    name: "Kent C. Dodds",
-    handle: "@kent",
-    email: "kent@chakra-ui.com",
-    avatarUrl: "https://bit.ly/kent-c-dodds",
-    status: "active",
-    role: "Director of DX",
+    id: '2',
+    name: 'Kent C. Dodds',
+    handle: '@kent',
+    email: 'kent@chakra-ui.com',
+    avatarUrl: 'https://bit.ly/kent-c-dodds',
+    status: 'active',
+    role: 'Director of DX',
     rating: 4,
   },
   {
-    id: "3",
-    name: "Prosper Otemuyiwa",
-    handle: "@prosper",
-    email: "prosper@chakra-ui.com",
-    avatarUrl: "https://bit.ly/prosper-baba",
-    status: "active",
-    role: "Director of Evangelism",
+    id: '3',
+    name: 'Prosper Otemuyiwa',
+    handle: '@prosper',
+    email: 'prosper@chakra-ui.com',
+    avatarUrl: 'https://bit.ly/prosper-baba',
+    status: 'active',
+    role: 'Director of Evangelism',
     rating: 4,
   },
   {
-    id: "4",
-    name: "Ryan Florence",
-    handle: "@ryan",
-    email: "ryan@chakra-ui.com",
-    avatarUrl: "https://bit.ly/ryan-florence",
-    status: "active",
-    role: "Co-Founder",
+    id: '4',
+    name: 'Ryan Florence',
+    handle: '@ryan',
+    email: 'ryan@chakra-ui.com',
+    avatarUrl: 'https://bit.ly/ryan-florence',
+    status: 'active',
+    role: 'Co-Founder',
     rating: 4,
   },
   {
-    id: "5",
-    name: "Segun Adebayo",
-    handle: "@segun",
-    email: "segun@chakra-ui.com",
-    avatarUrl: "https://bit.ly/sage-adebayo",
-    status: "active",
-    role: "Frontend UI Engineer",
+    id: '5',
+    name: 'Segun Adebayo',
+    handle: '@segun',
+    email: 'segun@chakra-ui.com',
+    avatarUrl: 'https://bit.ly/sage-adebayo',
+    status: 'active',
+    role: 'Frontend UI Engineer',
     rating: 4,
   },
 ];
 
 // use faker to generate fake data
-export const fakeData: Card[] = Array.from(Array(100).keys()).map((): Card => {
+export const fakeData: Card[] = Array.from(Array(55).keys()).map((): Card => {
   return {
     created_at: faker.date.past(),
     is_archived: faker.random.boolean(),
@@ -90,13 +91,13 @@ export const fakeData: Card[] = Array.from(Array(100).keys()).map((): Card => {
     next_rep_date: faker.date.future(),
     question: {
       question_id: faker.random.number({ min: 1, max: 100 }),
-      difficulty: faker.random.arrayElement(["easy", "medium", "hard"]),
+      difficulty: faker.random.arrayElement(['easy', 'medium', 'hard']),
       url: faker.internet.url(),
       translated_url: faker.internet.url(),
       text: faker.lorem.sentence(),
       translated_text: faker.lorem.sentence(),
       title: faker.lorem.sentence().slice(0, 30),
-      translated_title: "阿斯顿撒大苏打",
+      translated_title: '阿斯顿撒大苏打',
     },
     stage: faker.random.number({ min: 0, max: 10 }),
     max_stage: 10,
@@ -105,36 +106,45 @@ export const fakeData: Card[] = Array.from(Array(100).keys()).map((): Card => {
 });
 
 export const QuestionTableContainer: React.FC = () => {
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useState<string>('');
   const [rowCount, setRowCount] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
-  const [paginatedData, setPaginatedData] = useState<Card[]>(fakeData);
+  const [orderCol, setOrderCol] = useState(4);
+  const [order, setOrder] = useState(0); // 0 -> asc, 1 -> desc
+  const [questions, setQuestions] = useState<Card[]>([]);
+  const compareFn = useRef<(a: Card, b: Card) => number>((a, b) => 0);
 
-  const containerBg = useColorModeValue("white", "gray.900");
+  const containerBg = useColorModeValue('white', 'gray.900');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
-  const filteredData = useMemo(() => {
-    return fakeData.filter(
-      (card) =>
-        `${card.question.question_id}. ${card.question.title}`.includes(
-          search
-        ) ||
-        `${card.question.question_id}. ${card.question.translated_title}`.includes(
-          search
-        )
-    );
-  }, [search]);
+  const handleSortTable = (col: number, order: number, compare: any) => {
+    compareFn.current = compare;
+    setOrderCol(col);
+    setOrder(order);
+    console.log('State has been fucking changed!');
+  };
 
-  // Get the paginated data
-  useEffect(() => {
-    setPaginatedData(
-      filteredData.slice(page * rowCount, (page + 1) * rowCount)
+  const filteredData = useMemo(() => {
+    console.log('You would better fucking know what you are doing');
+    const sortedData = questions.sort(compareFn.current);
+    if (order === 1) sortedData.reverse();
+
+    return sortedData.filter(
+      (card) =>
+        `${card.question.question_id}. ${card.question.title}`.includes(search) ||
+        `${card.question.question_id}. ${card.question.translated_title}`.includes(search)
     );
-  }, [filteredData, page, rowCount, search]);
+  }, [search, questions, order, orderCol]);
+
+  const paginatedData = useMemo(() => {
+    return filteredData.slice(page * rowCount, (page + 1) * rowCount);
+  }, [filteredData, page, rowCount]);
 
   // Get the original data
   useEffect(() => {
-    fetchCards().then((cards) => setPaginatedData(cards));
+    fetchCards().then((cards) => {
+      setQuestions(fakeData);
+    });
   }, []);
 
   // Reset page whenever search keyword changes
@@ -147,22 +157,22 @@ export const QuestionTableContainer: React.FC = () => {
       <Box
         my={10}
         bg={containerBg}
-        boxShadow={useColorModeValue("md", "md-dark")}
-        borderRadius={useBreakpointValue({ base: "none", md: "lg" })}
+        boxShadow={useColorModeValue('md', 'md-dark')}
+        borderRadius={useBreakpointValue({ base: 'none', md: 'lg' })}
       >
         <Stack spacing="5">
-          <Box px={{ base: "4", md: "6" }} pt="5">
+          <Box px={{ base: '4', md: '6' }} pt="5">
             <Flex
-              direction={{ base: "column", md: "row" }}
+              direction={{ base: 'column', md: 'row' }}
               justify="space-between"
-              gap={{ md: "none", base: 3 }}
+              gap={{ md: 'none', base: 3 }}
             >
               <Box>
                 <Text fontSize="lg" fontWeight="medium">
                   Leetcode Questions
                 </Text>
               </Box>
-              <InputGroup maxW={{ base: "full", md: "xs" }}>
+              <InputGroup maxW={{ base: 'full', md: 'xs' }}>
                 <InputLeftElement pointerEvents="none">
                   <Icon as={FiSearch} color="muted" boxSize="5" />
                 </InputLeftElement>
@@ -178,40 +188,33 @@ export const QuestionTableContainer: React.FC = () => {
           {/* Main Content */}
           <Box overflowX="auto">
             <QuestionTable
-              search={search}
+              order={order}
+              orderCol={orderCol}
               cards={paginatedData}
-              rowCount={rowCount}
+              onSort={handleSortTable}
             />
           </Box>
           {/* Footer */}
-          <Box px={{ base: "4", md: "6" }} pb="5">
+          <Box px={{ base: '4', md: '6' }} pb="5">
             <HStack spacing="3" justify="space-between">
               {!isMobile && (
                 <Text color="muted" fontSize="sm">
-                  {`Showing ${page * rowCount + 1} to ${
-                    (page + 1) * rowCount
-                  } of ${filteredData.length} results`}{" "}
+                  {`Showing ${filteredData.length === 0 ? 0 : page * rowCount + 1} to ${Math.min(
+                    (page + 1) * rowCount,
+                    filteredData.length
+                  )} of ${filteredData.length} results`}
                 </Text>
               )}
 
               <ButtonGroup
                 spacing="3"
                 justifyContent="space-between"
-                width={{ base: "full", md: "auto" }}
+                width={{ base: 'full', md: 'auto' }}
                 variant="secondary"
               >
                 <Menu>
-                  <Tooltip
-                    label="Row per page"
-                    placement="top"
-                    hasArrow
-                    rounded="md"
-                  >
-                    <MenuButton
-                      as={Button}
-                      variant="outline"
-                      rightIcon={<ChevronDownIcon />}
-                    >
+                  <Tooltip label="Row per page" placement="top" hasArrow rounded="md">
+                    <MenuButton as={Button} variant="outline" rightIcon={<ChevronDownIcon />}>
                       {rowCount}
                     </MenuButton>
                   </Tooltip>
@@ -239,12 +242,7 @@ export const QuestionTableContainer: React.FC = () => {
                 <Button
                   variant="solid"
                   onClick={() => {
-                    setPage(
-                      Math.min(
-                        Math.floor(filteredData.length / rowCount),
-                        page + 1
-                      )
-                    );
+                    setPage(Math.min(Math.ceil(filteredData.length / rowCount) - 1, page + 1));
                   }}
                 >
                   Next

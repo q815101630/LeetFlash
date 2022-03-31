@@ -25,7 +25,7 @@ import { QuestionTitle } from './QuestionTitle';
 
 interface TableHeadProps {
   name: string;
-  compare?: (a: Card, b: Card) => number;
+  compare: (a: Card, b: Card) => number;
 }
 
 interface TableCellProps {
@@ -33,15 +33,13 @@ interface TableCellProps {
 }
 
 export interface QuestionTableProps {
-  search: string;
   cards: Card[];
-  rowCount: number;
+  orderCol: number;
+  order: number;
+  onSort: (col: number, order: number, compare: (a: Card, b: Card) => number) => void;
 }
 
-export const QuestionTable: React.FC<QuestionTableProps> = ({ search, cards, rowCount }) => {
-  const [orderCol, setOrderCol] = useState(4);
-  const [order, setOrder] = useState(0); // 0 -> asc, 1 -> desc
-
+export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, order, onSort }) => {
   const { lang } = useAppSelector(selectSettings); // EN or CN
 
   const tableHeaders: TableHeadProps[] = useMemo(() => {
@@ -128,24 +126,8 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ search, cards, row
     [lang]
   );
 
-  useEffect(() => {
-    sortTable(orderCol, order);
-  }, []);
-
   const tableHeadBg = useColorModeValue('gray.50', 'gray.700');
   // const tableRowBg = useColorModeValue('gray.200', 'gray.300');
-
-  const sortedCards = useMemo(() => {
-    const newCards = cards.sort(tableHeaders[orderCol].compare);
-    if (order === 1) newCards.reverse();
-
-    return newCards;
-  }, [cards, tableHeaders, orderCol, order]);
-
-  const sortTable = (col: number, order: number) => {
-    setOrderCol(col);
-    setOrder(order);
-  };
 
   return (
     <Table minW={1000}>
@@ -162,7 +144,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ search, cards, row
                   opacity={orderCol === i ? 1 : 0.5}
                   icon={<Icon as={orderCol !== i || order === 0 ? IoArrowUp : IoArrowDown} />}
                   onClick={() => {
-                    sortTable(i, orderCol === i ? (order + 1) % 2 : 0);
+                    onSort(i, orderCol === i ? (order + 1) % 2 : 0, header.compare);
                   }}
                 />
               </HStack>
@@ -171,7 +153,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ search, cards, row
         </Tr>
       </Thead>
       <Tbody>
-        {sortedCards.map((card) => (
+        {cards.map((card) => (
           <Tr key={card.id}>
             {tableCells.map((cell, i) => (
               <Td key={`t-cell-${i}`}>{cell.render(card)}</Td>
