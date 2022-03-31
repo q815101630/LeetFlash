@@ -115,17 +115,17 @@ export const QuestionTableContainer: React.FC = () => {
   const compareFn = useRef<(a: Card, b: Card) => number>((a, b) => 0);
 
   const containerBg = useColorModeValue('white', 'gray.900');
+  const buttonColor = useColorModeValue('gray', 'orange');
+  const buttonVariant = useColorModeValue('solid', 'outline');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleSortTable = (col: number, order: number, compare: any) => {
     compareFn.current = compare;
     setOrderCol(col);
     setOrder(order);
-    console.log('State has been fucking changed!');
   };
 
   const filteredData = useMemo(() => {
-    console.log('You would better fucking know what you are doing');
     const sortedData = questions.sort(compareFn.current);
     if (order === 1) sortedData.reverse();
 
@@ -143,7 +143,7 @@ export const QuestionTableContainer: React.FC = () => {
   // Get the original data
   useEffect(() => {
     fetchCards().then((cards) => {
-      setQuestions(fakeData);
+      setQuestions(cards);
     });
   }, []);
 
@@ -232,7 +232,8 @@ export const QuestionTableContainer: React.FC = () => {
                   </MenuList>
                 </Menu>
                 <Button
-                  variant="solid"
+                  variant={buttonVariant}
+                  colorScheme={buttonColor}
                   onClick={() => {
                     setPage(Math.max(0, page - 1));
                   }}
@@ -240,7 +241,8 @@ export const QuestionTableContainer: React.FC = () => {
                   Previous
                 </Button>
                 <Button
-                  variant="solid"
+                  variant={buttonVariant}
+                  colorScheme={buttonColor}
                   onClick={() => {
                     setPage(Math.min(Math.ceil(filteredData.length / rowCount) - 1, page + 1));
                   }}

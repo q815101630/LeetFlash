@@ -11,6 +11,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000',
       'chrome-extension://kafhjamkbbdkbljoiklphhcekmgfekpo',
+      'chrome-extension://dooiaakbibgcdapdmdappegjkeaghhab',
     ],
   });
   app.setGlobalPrefix('api');
