@@ -22,6 +22,7 @@ export interface PopupModelProps {
   btn2Text: string;
   header: string;
   btn1Handler: () => void;
+  btn2Handler?: () => void;
   removePopup: () => void;
 }
 
@@ -32,6 +33,7 @@ const PopupModal = ({
   btn2Text,
   header,
   btn1Handler,
+  btn2Handler,
   removePopup,
 }: PopupModelProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -68,7 +70,13 @@ const PopupModal = ({
           >
             {btn1Text}
           </Button>
-          <Button variant="blue" onClick={onClose}>
+          <Button
+            variant="blue"
+            onClick={() => {
+              if (!!btn2Handler) btn2Handler();
+              onClose();
+            }}
+          >
             {btn2Text}
           </Button>
         </ModalFooter>

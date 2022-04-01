@@ -104,30 +104,48 @@ function App() {
         />
       ))}
 
-      {popupCards.map((card, i) => (
-        <PopupModal
-          text={`You reviewed \`${
-            lang === "EN" ? card.question.title : card.question.translatedTitle
-          }\`, due \`${
-            formatDate(card.next_rep_date) === formatDate(new Date())
-              ? "Today"
-              : formatDate(card.next_rep_date)
-          }\`. When do you prefer to review for the next time? 🐼`}
-          header={`Reviewed a problem 😎`}
-          btn1Text={`Not so sure? Tomorrow then!`}
-          btn2Text={`Default: ${formatDate(card.next_rep_date)}`}
-          btn1Handler={() => {
-            card.last_rep_date = new Date();
-            card.next_rep_date = new Date(Date.now() + 24 * 60 * 60 * 1000);
-            patchCard(card);
-          }}
-          key={`${card._id}-${i}`}
-          card={card}
-          removePopup={() =>
-            setPopupCards((popupCards) => popupCards.slice(0, -1))
-          }
-        />
-      ))}
+      {popupCards.map((card, i) => {
+        const isToday =
+          formatDate(card.next_rep_date) === formatDate(new Date());
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return (
+          <PopupModal
+            text={`You reviewed \`${
+              lang === "EN"
+                ? card.question.title
+                : card.question.translatedTitle
+            }\`, due \`${
+              isToday ? "Today" : formatDate(card.next_rep_date)
+            }\`. When do you prefer to review for the next time? 🐼`}
+            header={`Reviewed a problem 😎`}
+            btn1Text={`Not sure? Tomorrow!`}
+            btn2Text={`${
+              new Date(card.next_rep_date).getTime() < today.getTime()
+                ? "Oops, late! Three days later 😒"
+                : formatDate(new Date(today.getTime() + 3 * 86400000))
+            }`}
+            btn1Handler={() => {
+              card.last_rep_date = new Date();
+              card.next_rep_date = new Date(Date.now() + 24 * 60 * 60 * 1000);
+              // does not modify stage
+              patchCard(card);
+            }}
+            btn2Handler={() => {
+              card.last_rep_date = new Date();
+              card.next_rep_date = new Date(today.getTime() + 3 * 86400000);
+              // does not modify stage
+              patchCard(card);
+            }}
+            key={`${card._id}-${i}`}
+            card={card}
+            removePopup={() =>
+              setPopupCards((popupCards) => popupCards.slice(0, -1))
+            }
+          />
+        );
+      })}
     </>
   );
 }
