@@ -81,7 +81,6 @@ export class UsersController {
   }
 
   @Post('/add-question/')
-  @UseGuards(ThrottlerGuard)
   async submitQuestion(
     @Headers('UUID') uuid: string,
     @Body() submitQuestionDto: SubmitQuestionDto,
@@ -89,8 +88,10 @@ export class UsersController {
     const user = await this.usersService.findOne(uuid).catch(() => {
       throw new NotFoundException('Cannot find the user');
     });
-    const question = await this.questionService.upsert(submitQuestionDto);
+    const question = await this.questionService.upsert(
+      submitQuestionDto.question,
+    );
 
-    return this.cardGateway.handleSubmit(user, question);
+    return this.cardGateway.handleSubmit(user, submitQuestionDto, question);
   }
 }

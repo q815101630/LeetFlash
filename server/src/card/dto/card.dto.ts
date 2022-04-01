@@ -1,23 +1,39 @@
 import { Expose, Type } from 'class-transformer';
+import { isArray, IsArray } from 'class-validator';
+import { TopicTag } from 'src/common/types';
 import { Question } from '../../question/entities/question.entity';
 
 class QuestionExposeDto {
   @Expose()
-  question_id: string;
-  @Expose()
-  difficulty: string;
+  questionId: string;
   @Expose()
   title: string;
   @Expose()
-  translated_title: string;
+  translatedTitle: string;
   @Expose()
-  text: string;
+  difficulty: string;
+
+  titleSlug: string;
+
   @Expose()
-  translated_text: string;
+  get url(): string {
+    return `https://leetcode.com/problems/${this.titleSlug}/`;
+  }
+
   @Expose()
-  url: string;
+  get translatedUrl(): string {
+    return `https://leetcode-cn.com/problems/${this.titleSlug}/`;
+  }
   @Expose()
-  translated_url: string;
+  @IsArray()
+  @Type(() => TopicTag)
+  topicTags: TopicTag[];
+
+  @Expose()
+  content: string;
+
+  @Expose()
+  translatedContent: string;
 }
 
 export class CardDto {
@@ -46,6 +62,22 @@ export class CardDto {
   @Expose()
   id: string;
 
+  titleSlug: string;
+
   @Expose()
   note: string;
+
+  @Expose()
+  code: string;
+
+  @Expose()
+  lang: string;
+
+  @Expose()
+  get avgMemory(): string {
+    return `https://leetcode-cn.com/problems/${this.titleSlug}/`;
+  }
+
+  @Expose()
+  runtime: string;
 }

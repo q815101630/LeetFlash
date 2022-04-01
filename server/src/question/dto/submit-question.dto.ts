@@ -1,48 +1,34 @@
-import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
-import { Difficulty } from '../entities/question.entity';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { CreateQuestionDto } from './create-question.dto';
 
 export class SubmitQuestionDto {
-  @IsNotEmpty()
   @IsString()
-  id: string;
-
-  @IsNotEmpty()
-  @IsString()
-  question_id: string;
-
   @IsOptional()
-  @IsString()
-  text?: string;
+  code: string;
 
-  @IsOptional()
   @IsString()
-  translated_text?: string;
+  lang: string;
 
-  @IsOptional()
   @IsString()
-  title?: string;
+  rawMemory: string;
 
-  @IsOptional()
+  @IsObject()
+  @Type(() => CreateQuestionDto)
+  question: CreateQuestionDto;
+
   @IsString()
-  translated_title?: string;
+  runtime: string;
 
-  //TODO: only wants /problems/two-sum/ like this
-  @IsNotEmpty()
   @IsString()
-  url: string;
+  sourceUrl: string;
 
-  @IsEnum(Difficulty)
-  difficulty: Difficulty;
-
-  @IsNotEmpty()
-  @IsString()
-  status_msg: string;
-
-  @IsNotEmpty()
-  @IsString()
-  status_memory: string;
-
-  @IsNotEmpty()
-  @IsString()
-  status_runtime: string;
+  @IsNumber()
+  timestamp: number;
 }

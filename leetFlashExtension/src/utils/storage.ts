@@ -225,7 +225,7 @@ export const getStoredUser = (): Promise<User> => {
 
 export const todayACIncrement = (): Promise<void> => {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(["user"], (res: SyncStorage) => {
+    chrome.storage.sync.get(["user"], async (res: SyncStorage) => {
       if (chrome.runtime.lastError) {
         // console.log(chrome.runtime.lastError.message);
         reject(chrome.runtime.lastError.message);
@@ -233,7 +233,8 @@ export const todayACIncrement = (): Promise<void> => {
         const user = res.user;
         if (user) {
           user.performance.today_ac_count += 1;
-          setStoredUser(user).then(() => resolve());
+          await setStoredUser(user);
+          resolve();
         }
       }
     });

@@ -28,10 +28,6 @@ const cookieSession = require('cookie-session');
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     ScheduleModule.forRoot(),
-    ThrottlerModule.forRoot({
-      ttl: 2,
-      limit: 1,
-    }),
 
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

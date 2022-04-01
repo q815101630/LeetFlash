@@ -26,6 +26,18 @@ export class Card {
   @Prop()
   note?: string;
 
+  @Prop()
+  code?: string;
+
+  @Prop()
+  lang?: string;
+
+  @Prop()
+  rawMemory?: number;
+
+  @Prop()
+  runtime?: number;
+
   @Prop({ default: false })
   is_archived?: boolean;
 
@@ -44,6 +56,8 @@ export class Card {
   @Prop({ required: true })
   next_rep_date: Date;
 
+  @Prop({ default: 1 })
+  frequency: number;
 }
 
 export const CardSchema = SchemaFactory.createForClass(Card);

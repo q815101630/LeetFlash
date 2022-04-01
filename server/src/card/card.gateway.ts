@@ -12,6 +12,7 @@ import { forwardRef, Inject, Injectable, Session } from '@nestjs/common';
 import { Card } from './entities/card.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Question } from 'src/question/entities/question.entity';
+import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
 
 const options = {
   cors: {
@@ -67,10 +68,17 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async handleSubmit(user: User, question: Question) {
+  async handleSubmit(
+    user: User,
+    submitQuestionDto: SubmitQuestionDto,
+    question: Question,
+  ) {
     let card = await this.cardService.findByQuestionAndUser(question, user);
     if (!card) {
-      card = await this.cardService.create(user, question);
+      card = await this.cardService.create(user, submitQuestionDto, question);
+    } else {
+      card = this.cardService.computeUpdateCardInfo(card, submitQuestionDto);
+      card = await this.cardService.update(card);
     }
 
     const socketId = this.cardService.getSocketId(card.owner._id.toString());

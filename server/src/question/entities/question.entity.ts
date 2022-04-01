@@ -1,6 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Transform } from 'class-transformer';
 import { Document, ObjectId } from 'mongoose';
+import { TopicTag } from 'src/common/types';
 
 export type QuestionDocument = Question & Document;
 export enum Difficulty {
@@ -15,28 +16,28 @@ export class Question {
   _id: ObjectId;
 
   @Prop({ unique: true, required: true })
-  id: string;
-
-  @Prop({ unique: true, required: true })
-  question_id: string;
-
-  @Prop({ required: true })
-  difficulty: Difficulty;
-
-  @Prop()
-  text?: string;
-
-  @Prop()
-  translated_text?: string;
+  questionId: string;
 
   @Prop()
   title?: string;
 
   @Prop()
-  translated_title?: string;
+  translatedTitle?: string;
 
   @Prop()
-  url: string;
+  titleSlug?: string;
+
+  @Prop()
+  topicTags?: TopicTag[];
+
+  @Prop({ required: true })
+  difficulty: Difficulty;
+
+  @Prop()
+  content?: string;
+
+  @Prop()
+  translatedContent?: string;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);

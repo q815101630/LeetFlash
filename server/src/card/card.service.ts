@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Question } from 'src/question/entities/question.entity';
@@ -10,6 +15,7 @@ import { Socket } from 'socket.io';
 import { parse } from 'cookie';
 import jwt_decode from 'jwt-decode';
 import { WsException } from '@nestjs/websockets';
+import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
 
 @Injectable()
 export class CardService {
@@ -17,7 +23,11 @@ export class CardService {
 
   constructor(@InjectModel(Card.name) private cardModel: Model<CardDocument>) {}
 
-  async create(owner: User, question: Question): Promise<Card> {
+  async create(
+    owner: User,
+    submitQuestionDto: SubmitQuestionDto,
+    question: Question,
+  ): Promise<Card> {
     const initDay = parseInt(owner.total_stages.split(',')[0]);
     const today = new Date();
     const nextDay = new Date(today.setDate(today.getDate() + initDay));
@@ -28,6 +38,11 @@ export class CardService {
       next_rep_date: nextDay,
       total_stages: owner.total_stages,
       max_stage: owner.total_stages.split(',').length,
+
+      code: submitQuestionDto.code,
+      lang: submitQuestionDto.lang,
+      rawMemory: parseInt(submitQuestionDto.rawMemory),
+      runtime: parseInt(submitQuestionDto.runtime.split(' ')[0]),
     });
     await card.save();
     return card;
@@ -38,6 +53,19 @@ export class CardService {
       .find({ owner: user })
       .populate('question')
       .exec();
+  }
+
+  async update(card: Card): Promise<Card> {
+    const { _id } = card;
+    delete card._id;
+    const existingCard = await this.cardModel
+      .findByIdAndUpdate(_id, { card }, { new: true })
+      .populate('question')
+      .exec();
+    if (!existingCard) {
+      throw new NotFoundException(`Question #${_id} not found`);
+    }
+    return existingCard;
   }
 
   async updateById(
@@ -140,7 +168,9 @@ export class CardService {
     const parsed = parse(cookie);
     const { session, Authentication } = parsed;
     const sig = parsed['session.sig'];
-    const headerInfo = Authentication.split('.')[0];
+    const headerInfo = !!Authentication
+      ? Authentication.split('.')[0]
+      : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
     const token = `${headerInfo}.${session.slice(
       0,
       session.length - 2,
@@ -151,5 +181,22 @@ export class CardService {
     }
 
     return user;
+  }
+
+  computeUpdateCardInfo(
+    card: Card,
+    submitQuestionDto: SubmitQuestionDto,
+  ): Card {
+    card.rawMemory =
+      (card.frequency * card.rawMemory +
+        parseInt(submitQuestionDto.rawMemory)) /
+      (card.frequency + 1);
+
+    card.runtime =
+      (card.frequency * card.runtime +
+        parseInt(submitQuestionDto.runtime.split(' ')[0])) /
+      (card.frequency + 1);
+    card.frequency++;
+    return card;
   }
 }

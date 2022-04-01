@@ -19,7 +19,6 @@ export interface SubmissionQuestion {
 
   content: string;
   translatedContent: string;
-  url: string;
 }
 
 export interface SubmissionDetail {

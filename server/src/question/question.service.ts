@@ -15,50 +15,35 @@ export class QuestionService {
     return await this.questionModel.create(createQuestionDto);
   }
 
-  async findByQuestionId(question_id: string): Promise<Question> {
-    const question = await this.questionModel.findOne({ question_id }).exec();
+  async findByQuestionId(questionId: string): Promise<Question> {
+    const question = await this.questionModel.findOne({ questionId }).exec();
 
     return question;
   }
 
   async update(createQuestionDto: CreateQuestionDto): Promise<Question> {
-    //delete a field called questionId from createQuestionDto
-    const question_id = createQuestionDto.question_id;
-    delete createQuestionDto.question_id;
+    const { questionId } = createQuestionDto;
+    delete createQuestionDto.questionId; //why do I delete? bug?
     const existingQuestion = await this.questionModel.findOneAndUpdate(
-      { question_id },
+      { questionId },
       { $set: createQuestionDto },
       { new: true },
     );
     if (!existingQuestion) {
-      throw new NotFoundException(
-        `Question #${createQuestionDto.question_id} not found`,
-      );
+      throw new NotFoundException(`Question #${questionId} not found`);
     }
     return existingQuestion;
   }
 
-  async upsert(submitQuestionDto: SubmitQuestionDto): Promise<Question> {
-    const currentQuestion = await this.findByQuestionId(
-      submitQuestionDto.question_id,
-    );
+  async upsert(question: CreateQuestionDto): Promise<Question> {
+    const currentQuestion = await this.findByQuestionId(question.questionId);
     if (!!currentQuestion) {
-      if (
-        submitQuestionDto.translated_text &&
-        !currentQuestion.translated_text
-      ) {
-        console.log('goes 1');
-
-        return await this.update(submitQuestionDto);
+      if (!currentQuestion.translatedTitle && question.translatedTitle) {
+        this.update(question);
       }
-      if (submitQuestionDto.title && !currentQuestion.title) {
-        return await this.update(submitQuestionDto);
-      }
-      console.log('No update!');
       return currentQuestion;
     } else {
-      console.log('goes 3');
-      return await this.create(submitQuestionDto);
+      return await this.create(question);
     }
   }
 

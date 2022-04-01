@@ -66,14 +66,20 @@ const onCompleteHandler = async ({
   const submissionIds = await getStoredSubmissionIds();
   console.log(`submissions: ${submissionIds}`);
   console.log(`current submission: ${submissionDetail.id}`);
-  if (submissionDetail.id && !submissionIds.includes(submissionDetail.id)) {
+
+  // only start processing after receive a valid status && not in submission ids
+  if (
+    submissionDetail.id &&
+    !submissionIds.includes(submissionDetail.id) &&
+    submissionDetail.statusDisplay !== ""
+  ) {
     submissionIds.push(submissionDetail.id);
     await setStoredSubmissionIds(submissionIds);
-
-    await todayACIncrement();
+    await todayTotalIncrement();
 
     if (submissionDetail.statusDisplay === "Accepted") {
-      await todayTotalIncrement();
+      await todayACIncrement();
+
       await addQuestionToSet(
         submissionDetail.question.questionId,
         submissionDetail.question.difficulty
