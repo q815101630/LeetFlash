@@ -1,13 +1,13 @@
-import { DefaultUserPerformance, Question, User } from "./storage";
-import { BASE_URL, SEND_QUESTION_API, VERIFY_URL } from "./types";
 import axios from "axios";
+import { DefaultUserPerformance, User } from "./storage";
+import { SEND_QUESTION_API, SubmissionDetail, VERIFY_URL } from "./types";
 
 export const sendQuestionToServer = (
-  question: Question,
+  submissionDetail: SubmissionDetail,
   user: User
 ): Promise<void> => {
   const body = {
-    ...question,
+    ...submissionDetail,
   };
   return new Promise((resolve, reject) => {
     fetch(`${SEND_QUESTION_API}`, {

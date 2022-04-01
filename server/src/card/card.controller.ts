@@ -26,6 +26,7 @@ export class CardController {
 
   @Get('/')
   @Serialize(CardDto)
+  @UseGuards(LocalAuthGuard)
   async getCards(@Req() req) {
     const cards = await this.cardService.findAll(req.user);
     const retCards = this.cardService.serializeCards(cards);
@@ -60,6 +61,4 @@ export class CardController {
     const retCard = this.cardService.serializeCard(updatedCard);
     return retCard;
   }
-
-  
 }
