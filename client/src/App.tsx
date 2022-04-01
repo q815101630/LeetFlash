@@ -3,8 +3,9 @@ import PopupModal from "components/PopupModal";
 import { Card } from "interfaces/interfaces";
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import { useAppSelector } from "redux/hooks";
+import { useAppDispatch, useAppSelector } from "redux/hooks";
 import { selectSettings, setSocket } from "redux/settings/settingsSlice";
+import { checkProfileAsync } from "redux/user/userSlice";
 import io from "socket.io-client";
 import "./App.css";
 import AboutPage from "./pages/about";
@@ -21,6 +22,8 @@ function App() {
 
   const [popupCards, setPopupCards] = useState<Card[]>([]);
 
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     const socket = createSocket();
     setSocket(socket);
@@ -36,6 +39,10 @@ function App() {
       socket.close();
     };
   }, [socket]);
+
+  useEffect(() => {
+    dispatch(checkProfileAsync());
+  }, [dispatch]);
 
   return (
     <>

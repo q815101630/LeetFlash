@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Stack,
@@ -14,15 +14,15 @@ import {
   HStack,
   LightMode,
   DarkMode,
-} from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { selectUser } from '../redux/user/userSlice';
-import { FaLanguage } from 'react-icons/fa';
-import { selectSettings, toggleLang } from 'redux/settings/settingsSlice';
-import { MdDarkMode } from 'react-icons/md';
-import logo from '../assets/logo.png';
+} from "@chakra-ui/react";
+import { HamburgerIcon } from "@chakra-ui/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { selectUser } from "../redux/user/userSlice";
+import { FaLanguage } from "react-icons/fa";
+import { selectSettings, toggleLang } from "redux/settings/settingsSlice";
+import { MdDarkMode } from "react-icons/md";
+import logo from "../assets/logo.png";
 
 {
   /*
@@ -40,20 +40,20 @@ import logo from '../assets/logo.png';
 
 const links = [
   {
-    name: 'Dashboard',
-    link: '/dashboard',
+    name: "Dashboard",
+    link: "/dashboard",
   },
   {
-    name: 'Daily Review',
-    link: '/review',
+    name: "Daily Review",
+    link: "/review",
   },
   {
-    name: 'Setting',
-    link: '/setting',
+    name: "Setting",
+    link: "/setting",
   },
   {
-    name: 'About',
-    link: '/about',
+    name: "About",
+    link: "/about",
   },
 ];
 
@@ -66,10 +66,10 @@ const Header = () => {
   const settings = useAppSelector(selectSettings);
   let navigate = useNavigate();
   const handleClick = () => {
-    if (user.status === 'active') {
-      navigate('/logout');
+    if (user.status === "active") {
+      navigate("/logout");
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
   const switchLang = () => {
@@ -95,9 +95,9 @@ const Header = () => {
         <Heading
           as="button"
           size="lg"
-          letterSpacing={'tighter'}
+          letterSpacing={"tighter"}
           onClick={() => {
-            navigate('/');
+            navigate("/");
           }}
         >
           <HStack>
@@ -107,17 +107,17 @@ const Header = () => {
         </Heading>
       </Flex>
 
-      <Box display={{ base: 'block', md: 'none' }} onClick={handleToggle}>
+      <Box display={{ base: "block", md: "none" }} onClick={handleToggle}>
         <DarkMode>
-          <IconButton icon={<HamburgerIcon />} aria-label={'icon'} />
+          <IconButton icon={<HamburgerIcon />} aria-label={"icon"} />
         </DarkMode>
       </Box>
 
       <Stack
-        direction={{ base: 'column', md: 'row' }}
+        direction={{ base: "column", md: "row" }}
         textAlign="center"
-        display={{ base: isOpen ? 'block' : 'none', md: 'flex' }}
-        width={{ base: 'full', md: 'auto' }}
+        display={{ base: isOpen ? "block" : "none", md: "flex" }}
+        width={{ base: "full", md: "auto" }}
         alignItems="center"
         flexGrow={1}
         spacing={{ base: 2, md: 5 }}
@@ -127,7 +127,11 @@ const Header = () => {
       >
         {links.map((link, index) => (
           <Link to={link.link} key={`link=${index}`}>
-            <Box _hover={{ bg: 'orange.700', borderColor: 'orange.700' }} p={2} rounded="md">
+            <Box
+              _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+              p={2}
+              rounded="md"
+            >
               {link.name}
             </Box>
           </Link>
@@ -135,22 +139,28 @@ const Header = () => {
       </Stack>
 
       <Box
-        display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
+        display={{ base: isOpen ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
-        w={{ base: 'full', md: 'auto' }}
+        w={{ base: "full", md: "auto" }}
         transition="all 0.5s"
       >
-        <Stack direction={{ base: 'column', md: 'row' }} spacing={3} align="center">
+        <Stack
+          direction={{ base: "column", md: "row" }}
+          spacing={3}
+          align="center"
+        >
           <Tooltip
             hasArrow
-            label={settings.lang === 'EN' ? 'Switch to Chinese' : 'Switch to English'}
+            label={
+              settings.lang === "EN" ? "Switch to Chinese" : "Switch to English"
+            }
             placement="auto-start"
           >
             <IconButton
               variant="ghost"
-              display={{ base: 'none', lg: 'block' }}
-              w={{ base: 'full', md: 'auto' }}
-              _hover={{ bg: 'orange.700', borderColor: 'orange.700' }}
+              display={{ base: "none", lg: "block" }}
+              w={{ base: "full", md: "auto" }}
+              _hover={{ bg: "orange.700", borderColor: "orange.700" }}
               aria-label="Switch language"
               icon={<FaLanguage size={28} />}
               onClick={switchLang}
@@ -160,9 +170,9 @@ const Header = () => {
           <Tooltip hasArrow label="Dark mode" placement="auto-start">
             <IconButton
               variant="ghost"
-              display={{ base: 'none', lg: 'block' }}
-              w={{ base: 'full', md: 'auto' }}
-              _hover={{ bg: 'orange.700', borderColor: 'orange.700' }}
+              display={{ base: "none", lg: "block" }}
+              w={{ base: "full", md: "auto" }}
+              _hover={{ bg: "orange.700", borderColor: "orange.700" }}
               aria-label="Switch language"
               icon={<MdDarkMode size={28} />}
               onClick={toggleColorMode}
@@ -172,11 +182,11 @@ const Header = () => {
           <LightMode>
             <Button
               variant="outline"
-              w={{ base: 'full', md: 'auto' }}
-              _hover={{ bg: 'orange.700', borderColor: 'orange.700' }}
+              w={{ base: "full", md: "auto" }}
+              _hover={{ bg: "orange.700", borderColor: "orange.700" }}
               onClick={handleClick}
             >
-              {user.status === 'active' ? 'Logout' : 'Login'}
+              {user.status === "active" ? "Logout" : "Login"}
             </Button>
           </LightMode>
         </Stack>

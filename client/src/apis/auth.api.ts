@@ -45,7 +45,7 @@ export const signOutUser = () =>
 export const checkProfile = () =>
   new Promise<UserInterface>((resolve, reject) => {
     client
-      .get("/users/profile")
+      .get("/user/profile")
       .then((response) => {
         resolve(response.data);
       })
