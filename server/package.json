@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "cd ../client/ && npm run build && cd ../server/ && nest build",
-    "heroku-postbuild": "cd ../client/ && npm install && npm run build && cd ../server/ && nest build",
+    "heroku-postbuild": "cd ../client/ && npm install && npm run build && cd ../server/ && nest build && cp ./.env.production ./dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "engines": {
       "node": "14.17.6"
