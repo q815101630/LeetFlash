@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -9,6 +8,7 @@ import { persistor, store } from './redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import Header from './components/Header';
 import { BrowserRouter } from 'react-router-dom';
+import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
