@@ -5,6 +5,6 @@
     "node": "14.17.6"
   },
   "scripts": {
-    "postinstall": "npm install --prefix client --production=false && npm run build --prefix client && npm install --prefix server --production=false && npm run build --prefix server && cp ./server/.env.production ./server/dist"
+    "postinstall": "npm install --prefix client --production=false && npm run build --prefix client && npm install --prefix server --production=false && npm run build --prefix server"
   }
 }
