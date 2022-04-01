@@ -47,7 +47,6 @@ export const signOutUserAsync = createAsyncThunk(
   "user/signOutUser",
   async () => {
     await signOutUser();
-    
   }
 );
 
@@ -129,8 +128,7 @@ export const userSlice = createSlice({
         state.error = undefined;
       })
       .addCase(checkProfileAsync.rejected, (state, action) => {
-        state.status = "inactive";
-        state.error = "Emmm... something went wrong ;(";
+        state = initialState;
       })
       .addCase(sendResetPasswordAsync.fulfilled, (state, action) => {
         state.error = "Already sent an password reset email to your inbox!";
