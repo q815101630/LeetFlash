@@ -3,7 +3,7 @@ import { Box, Button, Flex, Heading, Image, Text, LightMode } from '@chakra-ui/r
 
 const LandingPage = () => {
   return (
-    <Box minH="calc(100vh - 4rem)" bg="orange.500" px="2rem">
+    <Box minH="calc(100vh - 3rem)" bg="orange.500" px="2rem">
       <Flex
         direction={{ base: 'column', xl: 'row' }}
         pt={{ base: '8rem' }}

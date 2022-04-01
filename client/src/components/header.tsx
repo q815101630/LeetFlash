@@ -147,6 +147,7 @@ const Header = () => {
           >
             <IconButton
               variant="ghost"
+              display={{ base: 'none', lg: 'block' }}
               w={{ base: 'full', md: 'auto' }}
               _hover={{ bg: 'orange.700', borderColor: 'orange.700' }}
               aria-label="Switch language"
@@ -158,6 +159,7 @@ const Header = () => {
           <Tooltip hasArrow label="Dark mode" placement="auto-start">
             <IconButton
               variant="ghost"
+              display={{ base: 'none', lg: 'block' }}
               w={{ base: 'full', md: 'auto' }}
               _hover={{ bg: 'orange.700', borderColor: 'orange.700' }}
               aria-label="Switch language"
