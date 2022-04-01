@@ -32,7 +32,7 @@ export class User {
   description?: string;
 
   @Prop()
-  total_stages: string;
+  total_stages: number[];
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: Question.name }],

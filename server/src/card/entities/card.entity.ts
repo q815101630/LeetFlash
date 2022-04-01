@@ -41,14 +41,11 @@ export class Card {
   @Prop({ default: false })
   is_archived?: boolean;
 
-  @Prop({ default: 0 })
+  @Prop({ default: 1 })
   stage: number;
 
   @Prop()
-  max_stage?: number;
-
-  @Prop()
-  total_stages: string;
+  total_stages: number[];
 
   @Prop({ default: Date.now })
   last_rep_date?: Date;

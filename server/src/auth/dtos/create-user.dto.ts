@@ -21,7 +21,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  total_stages?: string;
+  total_stages?: number[];
 
   @IsOptional()
   source?: Source;

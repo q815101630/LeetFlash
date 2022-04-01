@@ -17,10 +17,23 @@ import { formatDate } from "utils";
 
 export interface PopupModelProps {
   card: Card;
+  text: string;
+  btn1Text: string;
+  btn2Text: string;
+  header: string;
+  btn1Handler: () => void;
   removePopup: () => void;
 }
 
-const PopupModal = ({ card, removePopup }: PopupModelProps) => {
+const PopupModal = ({
+  card,
+  text,
+  btn1Text,
+  btn2Text,
+  header,
+  btn1Handler,
+  removePopup,
+}: PopupModelProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -40,18 +53,24 @@ const PopupModal = ({ card, removePopup }: PopupModelProps) => {
         backdropFilter="blur(10px) hue-rotate(90deg)"
       />
       <ModalContent>
-        <ModalHeader>Good job!</ModalHeader>
+        <ModalHeader>{header}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          You just completed {card.question.title}. When do you prefer to review
-          for the next time?
-        </ModalBody>
+        <ModalBody>{text}</ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
-            {formatDate(card.next_rep_date)}
+          <Button
+            colorScheme="green"
+            mr={3}
+            onClick={() => {
+              btn1Handler();
+              onClose();
+            }}
+          >
+            {btn1Text}
           </Button>
-          <Button variant="ghost">Not sure? tomorrow again!</Button>
+          <Button variant="blue" onClick={onClose}>
+            {btn2Text}
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

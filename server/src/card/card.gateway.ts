@@ -76,15 +76,41 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let card = await this.cardService.findByQuestionAndUser(question, user);
     if (!card) {
       card = await this.cardService.create(user, submitQuestionDto, question);
-    } else {
-      card = this.cardService.computeUpdateCardInfo(card, submitQuestionDto);
-      card = await this.cardService.update(card);
+
+      // if it is a new card:
+      const socketId = this.cardService.getSocketId(card.owner._id.toString());
+      const success = this.server.to(socketId).emit('new-card', card);
+      console.log(`new-card: ${success}`);
+      return card;
     }
+    card = this.cardService.computeUpdateCardInfo(card, submitQuestionDto);
+    card = await this.cardService.update(card);
 
     const socketId = this.cardService.getSocketId(card.owner._id.toString());
-    if (socketId) {
-      const gg = this.server.to(socketId).emit('new-submit-today', card);
-      console.log(`socket success: ${gg}`);
+    if (!socketId) return card;
+
+    const activeCards = await this.cardService.findActiveCards(user);
+
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    // check if current card is an active card due today
+    if (
+      !!activeCards.find(
+        (currCard) =>
+          currCard.next_rep_date.getTime() <= today.getTime() &&
+          card._id.toString() === currCard._id.toString(),
+      )
+    ) {
+      // review card
+      const success = this.server.to(socketId).emit('review-today', card);
+      console.log(`review-today: ${success}`);
+    } else {
+      // this card is due future, ask if confirm early review
+      const success = this.server.to(socketId).emit('early-review', card);
+      console.log(`early-review: ${success}`);
     }
 
     return card;

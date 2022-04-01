@@ -28,7 +28,7 @@ export const fetchCards = () =>
 export const patchCard = (card: Card) => {
   new Promise<Card>((resolve, reject) => {
     client
-      .patch("/card/", card)
+      .patch(`/card/${card._id}`, card)
       .then((response: AxiosResponse) => resolve(response.data))
       .catch((error) => {
         reject(error);

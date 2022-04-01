@@ -1,4 +1,4 @@
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { isArray, IsArray } from 'class-validator';
 import { TopicTag } from 'src/common/types';
 import { Question } from '../../question/entities/question.entity';
@@ -13,19 +13,15 @@ class QuestionExposeDto {
   @Expose()
   difficulty: string;
 
-  titleSlug: string;
+  @Expose()
+  @Transform(({ obj }) => `https://leetcode.com/problems/${obj.titleSlug}/`)
+  url: string;
 
   @Expose()
-  get url(): string {
-    return `https://leetcode.com/problems/${this.titleSlug}/`;
-  }
+  @Transform(({ obj }) => `https://leetcode-cn.com/problems/${obj.titleSlug}/`)
+  translatedUrl: string;
 
   @Expose()
-  get translatedUrl(): string {
-    return `https://leetcode-cn.com/problems/${this.titleSlug}/`;
-  }
-  @Expose()
-  @IsArray()
   @Type(() => TopicTag)
   topicTags: TopicTag[];
 
@@ -48,7 +44,7 @@ export class CardDto {
   stage: number;
 
   @Expose()
-  max_stage: number;
+  total_stages: number[];
 
   @Expose()
   is_archived: boolean;
@@ -62,8 +58,6 @@ export class CardDto {
   @Expose()
   id: string;
 
-  titleSlug: string;
-
   @Expose()
   note: string;
 
@@ -74,10 +68,8 @@ export class CardDto {
   lang: string;
 
   @Expose()
-  get avgMemory(): string {
-    return `https://leetcode-cn.com/problems/${this.titleSlug}/`;
-  }
+  rawMemory: number;
 
   @Expose()
-  runtime: string;
+  runtime: number;
 }

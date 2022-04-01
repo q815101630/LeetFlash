@@ -1,15 +1,33 @@
-import { IsString, IsOptional, IsNumber, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsDate,
+  IsBoolean,
+} from 'class-validator';
 
 export class UpdateCardDto {
-  @IsOptional()
   @IsString()
+  @IsOptional()
   note?: string;
 
+  @IsString()
   @IsOptional()
+  code?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  is_archived?: boolean;
+
   @IsNumber()
+  @IsOptional()
   stage?: number;
 
+  @IsString()
   @IsOptional()
-  @IsDate()
-  next_rep_date?: Date;
+  next_rep_date?: string | Date;
+
+  @IsString()
+  @IsOptional()
+  last_rep_date?: string | Date;
 }

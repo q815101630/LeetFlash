@@ -51,7 +51,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
       },
       {
         name: 'Title',
-        compare: (a, b) => parseInt(a.question.question_id) - parseInt(b.question.question_id),
+        compare: (a, b) => parseInt(a.question.questionId) - parseInt(b.question.questionId),
       },
       {
         name: 'Difficulty',
@@ -78,7 +78,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
       {
         name: 'Progress',
         // @ts-ignore
-        compare: (a, b) => a.stage / a.max_stage - b.stage / b.max_stage,
+        compare: (a, b) => a.stage / a.total_stages.length - b.stage / b.total_stages.length,
       },
     ];
   }, []);
@@ -119,7 +119,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
       {
         render: (card) => (
           // @ts-ignore
-          <Progress w={100} hasStripe value={(card.stage / card.max_stage) * 100} />
+          <Progress w={100} hasStripe value={(card.stage / card.total_stages.length) * 100} />
         ),
       },
     ],
@@ -154,7 +154,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
       </Thead>
       <Tbody>
         {cards.map((card) => (
-          <Tr key={card.id}>
+          <Tr key={card._id}>
             {tableCells.map((cell, i) => (
               <Td key={`t-cell-${i}`}>{cell.render(card)}</Td>
             ))}

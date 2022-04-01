@@ -28,16 +28,16 @@ export class CardService {
     submitQuestionDto: SubmitQuestionDto,
     question: Question,
   ): Promise<Card> {
-    const initDay = parseInt(owner.total_stages.split(',')[0]);
     const today = new Date();
-    const nextDay = new Date(today.setDate(today.getDate() + initDay));
+    const nextDay = new Date(
+      today.setDate(today.getDate() + owner.total_stages[0]),
+    );
 
     const card = new this.cardModel({
       owner,
       question,
       next_rep_date: nextDay,
       total_stages: owner.total_stages,
-      max_stage: owner.total_stages.split(',').length,
 
       code: submitQuestionDto.code,
       lang: submitQuestionDto.lang,
@@ -59,7 +59,7 @@ export class CardService {
     const { _id } = card;
     delete card._id;
     const existingCard = await this.cardModel
-      .findByIdAndUpdate(_id, { card }, { new: true })
+      .findByIdAndUpdate({ _id }, { ...card }, { new: true })
       .populate('question')
       .exec();
     if (!existingCard) {
@@ -97,6 +97,17 @@ export class CardService {
       .populate('question')
       .exec();
     return card;
+  }
+
+  async findActiveCards(user: User): Promise<Card[]> {
+    const cards = await this.cardModel
+      .find({
+        owner: user,
+        is_archived: false,
+      })
+      .populate('question')
+      .exec();
+    return cards;
   }
 
   /**

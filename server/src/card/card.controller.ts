@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
@@ -53,6 +53,12 @@ export class CardController {
     const card = await this.cardService.findOne(id, req.user);
     if (!card || card === null) {
       throw new Error('Card not found');
+    }
+    updateCardDto.next_rep_date = new Date(updateCardDto.next_rep_date);
+    updateCardDto.last_rep_date = new Date(updateCardDto.last_rep_date);
+    if (updateCardDto.stage >= card.total_stages.length) {
+      updateCardDto.stage = card.total_stages.length;
+      updateCardDto.is_archived = true;
     }
     const updatedCard = await this.cardService.updateById(id, updateCardDto);
     const retCard = this.cardService.serializeCard(updatedCard);
