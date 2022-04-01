@@ -7,12 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "cd ../client/ && npm run build && cd ../server/ && nest build",
-    "heroku-postbuild": "cd ../client/ && npm install && npm run build && cd ../server/ && nest build && cp ./.env.production ./dist",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "engines": {
-      "node": "14.17.6"
-    },
     "start": "cross-env NODE_ENV=development nest start",
     "start:dev": "cross-env NODE_ENV=development nest start --watch",
     "start:debug": "cross-env NODE_ENV=development nest start --debug --watch",

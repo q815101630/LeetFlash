@@ -1,0 +1,10 @@
+{
+  "name": "leetflash-deploy",
+  "version": "0.1.0",
+  "engines": {
+    "node": "14.17.6"
+  },
+  "scripts": {
+    "postinstall": "npm install --prefix client && npm run build --prefix client && npm install --prefix server && npm run build --prefix server && cp ./server/.env.production ./server/dist"
+  }
+}
