@@ -88,6 +88,7 @@ const Header = () => {
       color="white"
       pos="sticky"
       top="0"
+      minH="4rem"
       zIndex={1}
     >
       <Flex align="center" mr={5}>

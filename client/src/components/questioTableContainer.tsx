@@ -20,6 +20,8 @@ import {
   MenuList,
   MenuItem,
   Tooltip,
+  Heading,
+  Divider,
 } from '@chakra-ui/react';
 import { Question, Card } from '../interfaces/interfaces';
 import { FiSearch } from 'react-icons/fi';
@@ -154,8 +156,15 @@ export const QuestionTableContainer: React.FC = () => {
 
   return (
     <Container maxW="container.xl">
+      <Stack spacing={2} py={6}>
+        <Heading size="lg" fontWeight="medium">
+          Dashboard
+        </Heading>
+        <Text>View problems you have submitted</Text>
+        <Divider bgColor={useColorModeValue('gray.300', 'gray.700')} />
+      </Stack>
       <Box
-        my={10}
+        py={10}
         bg={containerBg}
         boxShadow={useColorModeValue('md', 'md-dark')}
         borderRadius={useBreakpointValue({ base: 'none', md: 'lg' })}
