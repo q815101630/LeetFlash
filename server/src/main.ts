@@ -24,6 +24,8 @@ async function bootstrap() {
   };
   SwaggerModule.setup('api/swagger', app, document, customOptions);
 
-  await app.listen(process.env.NODE_ENV === 'production'? 80 : 3030);
+  await app.listen(
+    process.env.NODE_ENV === 'production' ? process.env.PORT : 3030,
+  );
 }
 bootstrap();
