@@ -10,7 +10,7 @@ export const getAPIUrl = () => {
   return `${
     process.env.NODE_ENV === "development"
       ? process.env.REACT_APP_BASE_URL
-      : process.env.REACT_DEPLOY_APP_BASE_URL
+      : process.env.REACT_APP_DEPLOY_BASE_URL
   }`;
 };
 
@@ -18,7 +18,7 @@ export const getSocketUrl = () => {
   return `${
     process.env.NODE_ENV === "development"
       ? process.env.REACT_APP_SOCKET_URL
-      : process.env.REACT_DEPLOY_APP_SOCKET_URL
+      : process.env.REACT_APP_DEPLOY_SOCKET_URL
   }`;
 };
 
