@@ -78,6 +78,9 @@ export class AuthController {
   async verifyApiToken(@Body() tokenData: TokenVerificationDto) {
     try {
       const user = await this.usersService.findOne(tokenData.token);
+      if (!user) {
+        throw new BadRequestException('Invalid token');
+      }
       return user;
     } catch (error) {
       throw new BadRequestException(error.message);

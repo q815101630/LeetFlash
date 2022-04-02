@@ -110,53 +110,6 @@ export class CardService {
     return cards;
   }
 
-  /**
-   * Fill in the empty card.question.translated_title/title card.question.translated_text/text
-   * translated_url, url
-   * @param cards - cards to process
-   * @returns cards
-   */
-  serializeCards(cards: CardDto[] | Card[]): CardDto[] {
-    const LC_CN_PREFIX = 'https://leetcode-cn.com/problems/';
-    const LC_EN_PREFIX = 'https://leetcode.com/problems/';
-
-    return cards.map((card) => {
-      if (!card.question.translated_text)
-        card.question.translated_text = card.question.text;
-      if (!card.question.text)
-        card.question.text = card.question.translated_text;
-      if (!card.question.translated_title)
-        card.question.translated_title = card.question.title;
-      if (!card.question.title)
-        card.question.title = card.question.translated_title;
-
-      const original_url = card.question.url;
-      card.question.url = LC_EN_PREFIX + original_url;
-      card.question.translated_url = LC_CN_PREFIX + original_url;
-
-      return card;
-    });
-  }
-
-  serializeCard(card: any): CardDto {
-    const LC_CN_PREFIX = 'https://leetcode-cn.com/problems/';
-    const LC_EN_PREFIX = 'https://leetcode.com/problems/';
-
-    if (!card.question.translated_text)
-      card.question.translated_text = card.question.text;
-    if (!card.question.text) card.question.text = card.question.translated_text;
-    if (!card.question.translated_title)
-      card.question.translated_title = card.question.title;
-    if (!card.question.title)
-      card.question.title = card.question.translated_title;
-
-    const original_url = card.question.url;
-    card.question.url = LC_EN_PREFIX + original_url;
-    card.question.translated_url = LC_CN_PREFIX + original_url;
-
-    return card;
-  }
-
   getSocketId(userId: string) {
     return this.userIdToSocketIdMap.get(userId);
   }

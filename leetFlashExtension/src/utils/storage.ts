@@ -1,10 +1,17 @@
 export interface SyncStorage {
-  user?: User;
+  user: User;
+  remindSettings: RemindSettings;
 }
+
 export interface LocalStorage {
   submissionIds: string[];
   onlyVisitor: false;
   date: string;
+}
+
+export interface RemindSettings {
+  timeSlots: number[];
+  delayMins: number;
 }
 
 export interface UserPerformance {
@@ -39,8 +46,14 @@ export const DefaultUserPerformance = {
 
 export const DefaultUser: User = {
   email: "",
-  uuid: "",
+  _id: "",
   performance: DefaultUserPerformance,
+};
+
+//[9, 12, 15, 18, 21]
+export const DefaultRemindSettings: RemindSettings = {
+  timeSlots: [540, 720, 900, 1080, 1260],
+  delayMins: 30,
 };
 
 export interface Question {
@@ -64,7 +77,7 @@ export enum Languages {
 
 export interface User {
   email: string;
-  uuid: string;
+  _id: string;
   performance: UserPerformance;
 }
 
@@ -197,11 +210,8 @@ export const findOneSubmissionId = (submissionId: string): Promise<string> => {
 };
 
 export const setStoredUser = (user: User): Promise<void> => {
-  const vals: SyncStorage = {
-    user,
-  };
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.set(vals, () => {
+    chrome.storage.sync.set({ user }, () => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError.message);
       } else {
@@ -218,6 +228,32 @@ export const getStoredUser = (): Promise<User> => {
         reject(chrome.runtime.lastError.message);
       } else {
         resolve(res.user);
+      }
+    });
+  });
+};
+
+export const setStoredRemindSettings = (
+  remindSettings: RemindSettings
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.set(remindSettings, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+export const getStoredRemindSettings = (): Promise<RemindSettings> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(["remindSettings"], (res: SyncStorage) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(res.remindSettings);
       }
     });
   });
@@ -249,6 +285,7 @@ export const todayTotalIncrement = (): Promise<void> => {
         reject(chrome.runtime.lastError.message);
       } else {
         const user = res.user;
+        console.log(user);
         if (user) {
           user.performance.today_num_question += 1;
           setStoredUser(user).then(() => resolve());
@@ -261,6 +298,9 @@ export const todayTotalIncrement = (): Promise<void> => {
 export const clearTodayPerformance = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     getStoredUser().then((user) => {
+      if (!user) {
+        user = DefaultUser;
+      }
       user.performance = DefaultUserPerformance;
       setStoredUser(user)
         .then(() => resolve())

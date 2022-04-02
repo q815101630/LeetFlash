@@ -8,7 +8,11 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
     credentials: true,
-    origin: ['http://localhost:3000', /^chrome-extension:\/\/*/],
+    origin: [
+      'http://localhost:3000',
+      /^chrome-extension:\/\/*/,
+      'https://leetflash.com/',
+    ],
   });
   app.setGlobalPrefix('api');
 

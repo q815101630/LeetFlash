@@ -30,20 +30,18 @@ const App: React.FC<{}> = () => {
   const [signIn, setSignIn] = useState<boolean>(false);
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   useEffect(() => {
-    getStoredUser().then((user) => {
-      console.log("Get user ");
-      console.log(user);
-
-      setUser(user);
-      if (!user.uuid) {
+    getStoredUser().then((currentUser) => {
+      console.log("Get currentUser ");
+      console.log(currentUser);
+      if (currentUser && currentUser.email) {
+        setUser(currentUser);
+        setSignIn(true);
+      } else {
         getStoredOnlyVisitor().then((onlyVisitor) => {
           setOnlyVisitor(onlyVisitor);
         });
         setSignIn(false);
-      } else {
-        setSignIn(true);
       }
-      console.log(user);
     });
   }, []);
 
@@ -51,7 +49,7 @@ const App: React.FC<{}> = () => {
     setFormState("saving");
     toast.info("Saving your info...");
 
-    verifyUser(user.uuid)
+    verifyUser(user._id)
       .then((returnUser: User) => {
         setUser(returnUser);
         setStoredUser(returnUser).then(() => {
@@ -158,9 +156,9 @@ const App: React.FC<{}> = () => {
               <Grid item>
                 <TextField
                   label="User "
-                  value={user.uuid}
+                  value={user._id}
                   variant="standard"
-                  onChange={(e) => setUser({ ...user, uuid: e.target.value })}
+                  onChange={(e) => setUser({ ...user, _id: e.target.value })}
                   disabled={isFieldsDisabled || onlyVisitor}
                 />
               </Grid>

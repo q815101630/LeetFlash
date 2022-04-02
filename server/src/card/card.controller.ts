@@ -26,8 +26,7 @@ export class CardController {
   @UseGuards(LocalAuthGuard)
   async getCards(@Req() req) {
     const cards = await this.cardService.findAll(req.user);
-    const retCards = this.cardService.serializeCards(cards);
-    return retCards;
+    return cards;
   }
 
   @Get('/:id')
@@ -38,8 +37,7 @@ export class CardController {
     if (!card || card === null) {
       throw new BadRequestException('Card not found');
     }
-    const retCard = this.cardService.serializeCard(card);
-    return retCard;
+    return card;
   }
 
   @Patch('/:id')
@@ -61,7 +59,6 @@ export class CardController {
       updateCardDto.is_archived = true;
     }
     const updatedCard = await this.cardService.updateById(id, updateCardDto);
-    const retCard = this.cardService.serializeCard(updatedCard);
-    return retCard;
+    return updatedCard;
   }
 }

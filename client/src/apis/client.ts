@@ -1,8 +1,9 @@
 import axios from "axios";
+import { getAPIUrl } from "./auth.api";
 
 //create a axios client
 const client = axios.create({
-  baseURL: process.env.REACT_APP_BASE_URL,
+  baseURL: getAPIUrl(),
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

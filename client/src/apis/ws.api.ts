@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
+import { getSocketUrl } from "./auth.api";
 
 export const createSocket = () =>
-  io(`${process.env.REACT_APP_SOCKET_URL}`, {
+  io(getSocketUrl(), {
     withCredentials: true,
   });

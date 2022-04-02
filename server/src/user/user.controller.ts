@@ -23,6 +23,9 @@ import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
 import { QuestionService } from 'src/question/question.service';
 import { UsersService } from './user.service';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { Card } from 'src/card/entities/card.entity';
+import { CardDto } from 'src/card/dto/card.dto';
+import { Reminder } from 'src/common/types';
 
 @ApiTags('api/user')
 @Controller('user')
@@ -93,5 +96,29 @@ export class UsersController {
     );
 
     return this.cardGateway.handleSubmit(user, submitQuestionDto, question);
+  }
+
+  @Get('/cards-today/:uuid')
+  async getCardsToday(@Param('uuid') uuid: string) {
+    const user = await this.usersService.findOne(uuid).catch(() => {
+      throw new NotFoundException('Cannot find the user');
+    });
+
+    let cards = await this.cardService.findActiveCards(user);
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    cards = cards.filter(
+      (card: Card) => card.next_rep_date.getTime() < todayEnd.getTime(),
+    );
+
+    const reminders: Reminder[] = cards.map((card: Card) => ({
+      next_rep_date: card.next_rep_date,
+      titleSlug: card.question.titleSlug,
+      title: card.question.title,
+      translatedTitle: card.question.translatedTitle,
+    }));
+
+    return reminders;
   }
 }

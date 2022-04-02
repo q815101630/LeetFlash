@@ -13,7 +13,14 @@
     "default_title": "LeetFlash",
     "default_icon": "iconOnly2.png"
   },
-  "permissions": ["storage", "tabs", "activeTab", "webRequest"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "webRequest",
+    "alarms",
+    "notifications"
+  ],
   "host_permissions": ["*://*.leetcode.com/*", "*://*.leetcode-cn.com/*"],
   "options_page": "options.html",
   "background": {

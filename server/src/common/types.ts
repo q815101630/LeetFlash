@@ -11,3 +11,10 @@ export class TopicTag {
   @IsOptional()
   translatedName?: string;
 }
+
+export interface Reminder {
+  titleSlug: string;
+  title: string;
+  translatedTitle?: string;
+  next_rep_date: Date;
+}
