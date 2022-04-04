@@ -15,6 +15,10 @@ import {
   clearTodayPerformance,
   DefaultUserPerformance,
   DefaultUser,
+  RemindSettings,
+  DefaultRemindSettings,
+  getStoredRemindSettings,
+  setStoredRemindSettings,
 } from "../utils/storage";
 import { ToastContainer, toast } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
@@ -22,6 +26,8 @@ import Switch from "@mui/material/Switch";
 import Link from "@mui/material/Link";
 import ClearAlert from "./ClearAlert";
 import { verifyUser } from "../utils/api";
+import { AxiosError } from "axios";
+import { alarmSetter } from "../background/background.api";
 type FormState = "ready" | "saving";
 const App: React.FC<{}> = () => {
   const [user, setUser] = useState<User>(DefaultUser);
@@ -29,7 +35,17 @@ const App: React.FC<{}> = () => {
   const [onlyVisitor, setOnlyVisitor] = useState<boolean>(false);
   const [signIn, setSignIn] = useState<boolean>(false);
   const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [settings, setSettings] = useState<RemindSettings>(
+    DefaultRemindSettings
+  );
+  const [hoursToSet, setHoursToSet] = useState<string>("");
   useEffect(() => {
+    getStoredRemindSettings().then((settings) => {
+      console.log("Current settings ");
+      console.log(settings);
+      setSettings(settings);
+      setHoursToSet(settings.timeSlots.map((slot) => slot / 60).toString());
+    });
     getStoredUser().then((currentUser) => {
       console.log("Get currentUser ");
       console.log(currentUser);
@@ -48,7 +64,6 @@ const App: React.FC<{}> = () => {
   const submitHandler = () => {
     setFormState("saving");
     toast.info("Saving your info...");
-
     verifyUser(user._id)
       .then((returnUser: User) => {
         setUser(returnUser);
@@ -62,21 +77,39 @@ const App: React.FC<{}> = () => {
           }, 1000);
         });
       })
-      .catch((status: number) => {
-        if (status == 401) {
+      .catch((status: AxiosError) => {
+        if (status.response.status == 401 || status.response.status == 400) {
           toast.error(
             "Cannot link your account with LeetFlash. Please check if the credential is valid. "
           );
-          setTimeout(() => {
-            setFormState("ready");
-          }, 1000);
         } else {
           toast.error(
             "Cannot connect to the server, use Only Extension mode first"
           );
-          setFormState("ready");
         }
+        setFormState("ready");
       });
+
+    const newTimeSlots = hoursToSet.split(",");
+    const newSlots = newTimeSlots.reduce((filteredSlots, slot) => {
+      !isNaN(parseFloat(slot)) && filteredSlots.push(parseFloat(slot) * 60);
+      return filteredSlots;
+    }, []);
+
+    setStoredRemindSettings({
+      timeSlots: newSlots,
+      delayMins: settings.delayMins,
+    })
+      .then(getStoredRemindSettings)
+      .then((settings) => {
+        setHoursToSet(settings.timeSlots.map((slot) => slot / 60).toString());
+        setSettings(settings);
+        console.log("fired!");
+        alarmSetter(settings);
+        toast.success("Reminder settings updated!");
+      })
+
+      .catch(() => toast.error("Reminder settings failed!"));
   };
 
   const handleOnlyVisitorChange = (
@@ -163,6 +196,39 @@ const App: React.FC<{}> = () => {
                 />
               </Grid>
             </Grid>
+            <Grid
+              item
+              py={5}
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-end"
+            >
+              <Grid item>
+                <Typography variant="h6">Remind Me at Hour</Typography>
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="hours"
+                  value={hoursToSet}
+                  variant="standard"
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    setHoursToSet(e.target.value);
+                  }}
+                  disabled={isFieldsDisabled}
+                />
+              </Grid>
+            </Grid>
+            <Typography variant="body2">
+              * a list of time you want LeetFlash to remind you, of 24 hours
+            </Typography>
+
+            <Typography variant="body2">
+              e.g. [9,15, 18]: You will receive reminder notifications at 9am,
+              3pm, 6pm
+            </Typography>
+
             <Grid
               item
               py={5}

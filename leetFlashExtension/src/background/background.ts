@@ -26,7 +26,7 @@ import {
   getStoredOnlyVisitor,
   setDate,
 } from "./../utils/storage";
-import { fetchSubmissionDetails } from "./background.api";
+import { alarmSetter, fetchSubmissionDetails } from "./background.api";
 
 const SUBMIT_FILTERS = {
   urls: [
@@ -35,64 +35,9 @@ const SUBMIT_FILTERS = {
   ],
 };
 
-chrome.runtime.onInstalled.addListener(() => {
-  getStoredUser().then((user) => {
-    if (!user || !user.email) {
-      chrome.runtime.openOptionsPage();
-
-      setStoredUser(DefaultUser);
-      setStoredRemindSettings(DefaultRemindSettings);
-    }
-  });
-
-  //Set alarm
-  alarmSetter(DefaultRemindSettings);
-});
-
-chrome.alarms.onAlarm.addListener(async (alarm) => {
-  //early return if the alarm has passed
-  if (alarm.scheduledTime < Date.now()) return;
-
-  const reminders: Reminder[] = await fetchRemindersToday();
-  if (reminders.length > 0) {
-    const remindSettings = await getStoredRemindSettings();
-
-    chrome.notifications.create({
-      iconUrl: "IconOnly2.png",
-      message: `${reminders.length} questions due today, click to open LeetFlash website`,
-      contextMessage: "you can also view questions by opening popup!",
-      title: "LeetFlash Review Reminder",
-      type: "basic",
-      requireInteraction: true,
-      buttons: [
-        {
-          title: "Take a look",
-        },
-        {
-          title: `Remind me in ${remindSettings.delayMins} mins`,
-        },
-      ],
-    });
-  }
-});
-
-chrome.notifications.onButtonClicked.addListener(
-  async (id: string, idx: number) => {
-    if (idx == 0) {
-      chrome.tabs.create({ url: LEETFLASH_DASHBOARD });
-    } else if (idx == 1) {
-      const remindSettings = await getStoredRemindSettings();
-
-      chrome.alarms.create("delayReminder", {
-        delayInMinutes: remindSettings.delayMins,
-      });
-    }
-  }
-);
-
-chrome.notifications.onClicked.addListener(() => {
-  chrome.tabs.create({ url: LEETFLASH_DASHBOARD });
-});
+/**
+ * Below are functions
+ */
 
 const getSubmissionId = (url: string) => {
   const regexp = /^https:\/\/(.+)\.com\/submissions\/detail\/([0-9]+)\/check\//;
@@ -151,13 +96,27 @@ const handleSendQuestionToServer = (
   submissionDetail: SubmissionDetail,
   user: User
 ) => {
-  console.log("shit");
-  console.log(user);
 
   if (user && user.email) {
     console.log("found user and start sending");
     sendQuestionToServer(submissionDetail, user)
-      .then(() => {
+      .then(async (res: Response) => {
+        const card: any = await res.json();
+        if (res.status == 201) {
+          chrome.notifications.create({
+            iconUrl: "IconOnly2.png",
+            message: `New question \`${card.question.title}\` sync success!`,
+            title: "New Question Submission Success",
+            type: "basic",
+          });
+        } else {
+          chrome.notifications.create({
+            iconUrl: "IconOnly2.png",
+            message: `New review record \`${card.question.title}\` sync success!`,
+            title: "New Review Submission Success",
+            type: "basic",
+          });
+        }
         console.log("sent to server!");
       })
       .catch(() => {
@@ -199,25 +158,79 @@ const checkIfNewDay = (): Promise<void> => {
   });
 };
 
+//chrome.runtime.onMessage.addListener(debounce(handleSubmitBtnHit, 3000));
+
+
+
+/**
+ * Below are listeners
+ */
+chrome.runtime.onInstalled.addListener(() => {
+  getStoredUser().then((user) => {
+    if (!user || !user.email) {
+      chrome.runtime.openOptionsPage();
+
+      setStoredUser(DefaultUser);
+      setStoredRemindSettings(DefaultRemindSettings);
+      setStoredRemindSettings(DefaultRemindSettings).then(() =>
+        chrome.alarms.clearAll(() => {
+          getStoredRemindSettings().then((remindSettings) => {
+            alarmSetter(DefaultRemindSettings);
+          });
+        })
+      );
+    }
+  });
+});
+
+console.log("registered");
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  //early return if the alarm has passed
+
+  if (alarm.scheduledTime < Date.now() - 5 * 1000) return;
+  const reminders: Reminder[] = await fetchRemindersToday();
+  if (reminders.length > 0) {
+    const remindSettings = await getStoredRemindSettings();
+
+    chrome.notifications.create({
+      iconUrl: "IconOnly2.png",
+      message: `${reminders.length} questions due today, click to open LeetFlash website`,
+      contextMessage: "you can also view questions by opening popup!",
+      title: "LeetFlash Review Reminder",
+      type: "basic",
+      requireInteraction: true,
+      buttons: [
+        {
+          title: "Take a look",
+        },
+        {
+          title: `Remind me in ${remindSettings.delayMins} mins`,
+        },
+      ],
+    });
+  }
+});
+
+chrome.notifications.onButtonClicked.addListener(
+  async (id: string, idx: number) => {
+    if (idx == 0) {
+      chrome.tabs.create({ url: LEETFLASH_DASHBOARD });
+    } else if (idx == 1) {
+      const remindSettings = await getStoredRemindSettings();
+
+      chrome.alarms.create("delayReminder", {
+        delayInMinutes: remindSettings.delayMins,
+      });
+    }
+  }
+);
+
+chrome.notifications.onClicked.addListener(() => {
+  chrome.tabs.create({ url: LEETFLASH_DASHBOARD });
+});
+
 chrome.webRequest.onCompleted.addListener(
   onCompleteHandlerDebounced,
   SUBMIT_FILTERS
 );
 chrome.runtime.onMessage.addListener(handleSubmitBtnHit);
-
-//chrome.runtime.onMessage.addListener(debounce(handleSubmitBtnHit, 3000));
-
-export const alarmSetter = (remindSettings: RemindSettings) => {
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-
-  chrome.alarms.clearAll(() => {
-    remindSettings.timeSlots.forEach((min) => {
-      const diff = todayStart.getTime() + min * 60 * 1000 - Date.now();
-      chrome.alarms.create(`reminder-${min}`, {
-        when: diff,
-        periodInMinutes: 24 * 60,
-      });
-    });
-  });
-};

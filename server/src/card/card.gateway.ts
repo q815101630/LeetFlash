@@ -8,12 +8,18 @@ import {
 } from '@nestjs/websockets';
 import { CardService } from './card.service';
 import { Server, Socket } from 'socket.io';
-import { forwardRef, Inject, Injectable, Session } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Session,
+} from '@nestjs/common';
 import { Card } from './entities/card.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Question } from 'src/question/entities/question.entity';
 import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
-
+import { Response } from 'express';
 const options = {
   cors: {
     origin: ['http://localhost:3000'],
@@ -69,6 +75,7 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleSubmit(
+    res: Response,
     user: User,
     submitQuestionDto: SubmitQuestionDto,
     question: Question,
@@ -81,13 +88,13 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const socketId = this.cardService.getSocketId(card.owner._id.toString());
       const success = this.server.to(socketId).emit('new-card', card);
       console.log(`new-card: ${success}`);
-      return card;
+      return { status: HttpStatus.CREATED, card };
     }
     card = this.cardService.computeUpdateCardInfo(card, submitQuestionDto);
     card = await this.cardService.update(card);
 
     const socketId = this.cardService.getSocketId(card.owner._id.toString());
-    if (!socketId) return card;
+    if (!socketId) return { status: HttpStatus.OK, card };
 
     const activeCards = await this.cardService.findActiveCards(user);
 
@@ -113,6 +120,6 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(`early-review: ${success}`);
     }
 
-    return card;
+    return { status: HttpStatus.OK, card };
   }
 }

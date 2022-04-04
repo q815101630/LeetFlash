@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -26,7 +27,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { Card } from 'src/card/entities/card.entity';
 import { CardDto } from 'src/card/dto/card.dto';
 import { Reminder } from 'src/common/types';
-
+import { Response } from 'express';
 @ApiTags('api/user')
 @Controller('user')
 export class UsersController {
@@ -87,6 +88,7 @@ export class UsersController {
   async submitQuestion(
     @Headers('UUID') uuid: string,
     @Body() submitQuestionDto: SubmitQuestionDto,
+    @Res() res: Response,
   ) {
     const user = await this.usersService.findOne(uuid).catch(() => {
       throw new NotFoundException('Cannot find the user');
@@ -95,7 +97,9 @@ export class UsersController {
       submitQuestionDto.question,
     );
 
-    return this.cardGateway.handleSubmit(user, submitQuestionDto, question);
+    const {status, card} = await this.cardGateway.handleSubmit(res, user, submitQuestionDto, question);
+     
+    res.status(status).send(card);
   }
 
   @Get('/cards-today/:uuid')

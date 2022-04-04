@@ -2,7 +2,7 @@
 export const BASE_URL = "http://localhost:3030";
 export const VERIFY_URL = `${BASE_URL}/api/auth/verify-api-token`;
 export const SEND_QUESTION_API = `${BASE_URL}/api/user/add-question/`;
-export const LEETFLASH_DASHBOARD = "https://leetflash.herokuapp.com/dashboard";
+export const LEETFLASH_DASHBOARD = "https://leetflash.com/dashboard";
 
 export interface TopicTag {
   name: string;

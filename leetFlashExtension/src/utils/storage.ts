@@ -237,7 +237,7 @@ export const setStoredRemindSettings = (
   remindSettings: RemindSettings
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.set(remindSettings, () => {
+    chrome.storage.sync.set({ remindSettings }, () => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError.message);
       } else {

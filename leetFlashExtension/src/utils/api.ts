@@ -16,7 +16,7 @@ import {
 export const sendQuestionToServer = (
   submissionDetail: SubmissionDetail,
   user: User
-): Promise<void> => {
+): Promise<Response> => {
   const body = {
     ...submissionDetail,
   };
@@ -29,9 +29,9 @@ export const sendQuestionToServer = (
       },
       body: JSON.stringify(body),
     })
-      .then((res) => {
+      .then(async (res) => {
         if (res.status === 200 || res.status === 201) {
-          resolve();
+          resolve(res);
         } else {
           reject(res.statusText);
         }
@@ -39,7 +39,6 @@ export const sendQuestionToServer = (
       .catch((err) => {
         reject(err);
       });
-    resolve();
   });
 };
 
@@ -69,9 +68,10 @@ export const verifyUser = (uuid: string): Promise<User> => {
           };
 
           resolve(returnUser);
-        } else {
-          reject(res.status);
         }
+      })
+      .catch((err) => {
+        reject(err);
       });
   });
 };
@@ -90,8 +90,6 @@ export const fetchRemindersToday = (): Promise<Reminder[]> => {
         return user;
       })
       .then((user: User) => {
-
-
         fetch(`${BASE_URL}/api/user/cards-today/${user._id}`, {
           method: "GET",
         }).then((res) => {

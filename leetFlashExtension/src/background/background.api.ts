@@ -1,3 +1,4 @@
+import { RemindSettings } from "../utils/storage";
 import { SubmissionDetail } from "../utils/types";
 
 const QUERY_STRING = `
@@ -84,5 +85,27 @@ export const fetchSubmissionDetails = async ({
         }
       })
       .catch((err) => reject(err));
+  });
+};
+
+
+export const alarmSetter = (remindSettings: RemindSettings) => {
+  console.log("setting!");
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  chrome.alarms.clearAll(() => {
+    remindSettings.timeSlots.forEach((min) => {
+      const time = todayStart.getTime() + min * 60 * 1000;
+      chrome.alarms.create(`reminder - ${min / 60}`, {
+        when: time,
+        periodInMinutes: 24 * 60,
+      });
+    });
+    chrome.alarms.getAll((alarms) => {
+      alarms.forEach((alarm) => {
+        console.log(`Set ${alarm.name} at ${alarm.scheduledTime}`);
+      });
+    });
   });
 };
