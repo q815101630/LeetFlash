@@ -32,7 +32,7 @@ const DailyReview = () => {
   const coontainerBg = useColorModeValue('white', 'gray.700');
 
   return (
-    <Flex w="full" bg={bg} minH="100vh">
+    <Flex w="full">
       <Container maxW="container.xl">
         <Stack spacing={2} py={6}>
           <Heading size="lg" fontWeight="medium">
@@ -46,9 +46,9 @@ const DailyReview = () => {
           columns={{ base: 1, xl: 2 }}
           boxShadow={useColorModeValue('md', 'md-dark')}
           bg={coontainerBg}
-          h={{ base: '100vh', xl: '70vh' }}
+          mb={10}
         >
-          <Flex minH="full">
+          <Flex>
             <Flex p={4} direction="column" minW="full" gap={4}>
               <HStack>
                 <QuestionIcon />
@@ -64,14 +64,14 @@ const DailyReview = () => {
               orientation={useBreakpointValue({ base: 'horizontal', xl: 'vertical' })}
             ></Divider>
           </Flex>
-          <Flex minH="full" p={4} direction="column" gap={4}>
+          <Flex p={4} direction="column" gap={4}>
             <HStack>
               <EditIcon />
               <Heading as="h2" fontWeight="semibold" size="md">
                 Note
               </Heading>
             </HStack>
-            <Box display="content">
+            <Box h="full">
               <MarkdownEditor />
             </Box>
           </Flex>

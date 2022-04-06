@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   HStack,
   Icon,
@@ -22,14 +22,14 @@ import {
   Tooltip,
   Heading,
   Divider,
-} from "@chakra-ui/react";
-import { Question, Card } from "../interfaces/interfaces";
-import { FiSearch } from "react-icons/fi";
-import { QuestionTable } from "./QuestionTable";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { fetchCards } from "apis/data.api";
+} from '@chakra-ui/react';
+import { Question, Card } from '../interfaces/interfaces';
+import { FiSearch } from 'react-icons/fi';
+import { QuestionTable } from './QuestionTable';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { fetchCards } from 'apis/data.api';
 // @ts-ignore
-const { faker } = require("@faker-js/faker");
+const { faker } = require('@faker-js/faker');
 
 // export const members = [
 //   {
@@ -85,30 +85,33 @@ const { faker } = require("@faker-js/faker");
 // ];
 
 // use faker to generate fake data
-// export const fakeData: Card[] = Array.from(Array(55).keys()).map((): Card => {
-//   return {
-//     created_at: faker.date.past(),
-//     is_archived: faker.random.boolean(),
-//     last_rep_date: faker.date.past(),
-//     next_rep_date: faker.date.future(),
-//     question: {
-//       questionId: faker.random.number({ min: 1, max: 100 }),
-//       difficulty: faker.random.arrayElement(['easy', 'medium', 'hard']),
-//       url: faker.internet.url(),
-//       translated_url: faker.internet.url(),
-//       text: faker.lorem.sentence(),
-//       translated_text: faker.lorem.sentence(),
-//       title: faker.lorem.sentence().slice(0, 30),
-//       translatedTitle: '阿斯顿撒大苏打',
-//     },
-//     stage: faker.random.number({ min: 0, max: 10 }),
-//     max_stage: 10,
-//     id: faker.random.uuid(),
-//   };
-// });
+export const fakeData: Card[] = Array.from(Array(55).keys()).map((): Card => {
+  return {
+    created_at: faker.date.past(),
+    is_archived: faker.random.boolean(),
+    last_rep_date: faker.date.past(),
+    next_rep_date: faker.date.future(),
+    question: {
+      questionId: faker.random.number({ min: 1, max: 100 }),
+      difficulty: faker.random.arrayElement(['easy', 'medium', 'hard']),
+      url: faker.internet.url(),
+      translatedUrl: faker.internet.url(),
+      content: faker.lorem.sentence(),
+      translatedContent: faker.lorem.sentence(),
+      title: faker.lorem.sentence().slice(0, 30),
+      translatedTitle: '阿斯顿撒大苏打',
+    },
+    stage: faker.random.number({ min: 0, max: 10 }),
+    total_stages: [10, 1, 1, 1, 1, 1],
+    _id: faker.random.uuid(),
+    rawMemory: faker.random.number({ min: 0, max: 100 }),
+    lang: 'python',
+    runtime: 111,
+  };
+});
 
 export const QuestionTableContainer: React.FC = () => {
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useState<string>('');
   const [rowCount, setRowCount] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [orderCol, setOrderCol] = useState(4);
@@ -116,9 +119,9 @@ export const QuestionTableContainer: React.FC = () => {
   const [questions, setQuestions] = useState<Card[]>([]);
   const compareFn = useRef<(a: Card, b: Card) => number>((a, b) => 0);
 
-  const containerBg = useColorModeValue("white", "gray.900");
-  const buttonColor = useColorModeValue("gray", "orange");
-  const buttonVariant = useColorModeValue("solid", "outline");
+  const containerBg = useColorModeValue('white', 'gray.900');
+  const buttonColor = useColorModeValue('gray', 'orange');
+  const buttonVariant = useColorModeValue('solid', 'outline');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleSortTable = (col: number, order: number, compare: any) => {
@@ -133,12 +136,8 @@ export const QuestionTableContainer: React.FC = () => {
 
     return sortedData.filter(
       (card) =>
-        `${card.question.questionId}. ${card.question.title}`.includes(
-          search
-        ) ||
-        `${card.question.questionId}. ${card.question.translatedTitle}`.includes(
-          search
-        )
+        `${card.question.questionId}. ${card.question.title}`.includes(search) ||
+        `${card.question.questionId}. ${card.question.translatedTitle}`.includes(search)
     );
   }, [search, questions, order, orderCol]);
 
@@ -149,7 +148,9 @@ export const QuestionTableContainer: React.FC = () => {
   // Get the original data
   useEffect(() => {
     fetchCards().then((cards) => {
-      setQuestions(cards);
+      compareFn.current = (a, b) =>
+        new Date(a.next_rep_date).getTime() - new Date(b.next_rep_date).getTime();
+      setQuestions(cards.sort(compareFn.current));
     });
   }, []);
 
@@ -165,27 +166,26 @@ export const QuestionTableContainer: React.FC = () => {
           Dashboard
         </Heading>
         <Text>View problems you have submitted</Text>
-        <Divider bgColor={useColorModeValue("gray.300", "gray.700")} />
+        <Divider bgColor={useColorModeValue('gray.300', 'gray.700')} />
       </Stack>
       <Box
-        py={10}
         bg={containerBg}
-        boxShadow={useColorModeValue("md", "md-dark")}
-        borderRadius={useBreakpointValue({ base: "none", md: "lg" })}
+        boxShadow={useColorModeValue('md', 'md-dark')}
+        borderRadius={useBreakpointValue({ base: 'none', md: 'lg' })}
       >
         <Stack spacing="5">
-          <Box px={{ base: "4", md: "6" }} pt="5">
+          <Box px={{ base: '4', md: '6' }} pt="5">
             <Flex
-              direction={{ base: "column", md: "row" }}
+              direction={{ base: 'column', md: 'row' }}
               justify="space-between"
-              gap={{ md: "none", base: 3 }}
+              gap={{ md: 'none', base: 3 }}
             >
               <Box>
                 <Text fontSize="lg" fontWeight="medium">
                   Leetcode Questions
                 </Text>
               </Box>
-              <InputGroup maxW={{ base: "full", md: "xs" }}>
+              <InputGroup maxW={{ base: 'full', md: 'xs' }}>
                 <InputLeftElement pointerEvents="none">
                   <Icon as={FiSearch} color="muted" boxSize="5" />
                 </InputLeftElement>
@@ -208,13 +208,11 @@ export const QuestionTableContainer: React.FC = () => {
             />
           </Box>
           {/* Footer */}
-          <Box px={{ base: "4", md: "6" }} pb="5">
+          <Box px={{ base: '4', md: '6' }} pb="5">
             <HStack spacing="3" justify="space-between">
               {!isMobile && (
                 <Text color="muted" fontSize="sm">
-                  {`Showing ${
-                    filteredData.length === 0 ? 0 : page * rowCount + 1
-                  } to ${Math.min(
+                  {`Showing ${filteredData.length === 0 ? 0 : page * rowCount + 1} to ${Math.min(
                     (page + 1) * rowCount,
                     filteredData.length
                   )} of ${filteredData.length} results`}
@@ -224,21 +222,12 @@ export const QuestionTableContainer: React.FC = () => {
               <ButtonGroup
                 spacing="3"
                 justifyContent="space-between"
-                width={{ base: "full", md: "auto" }}
+                width={{ base: 'full', md: 'auto' }}
                 variant="secondary"
               >
                 <Menu>
-                  <Tooltip
-                    label="Row per page"
-                    placement="top"
-                    hasArrow
-                    rounded="md"
-                  >
-                    <MenuButton
-                      as={Button}
-                      variant="outline"
-                      rightIcon={<ChevronDownIcon />}
-                    >
+                  <Tooltip label="Row per page" placement="top" hasArrow rounded="md">
+                    <MenuButton as={Button} variant="outline" rightIcon={<ChevronDownIcon />}>
                       {rowCount}
                     </MenuButton>
                   </Tooltip>
@@ -268,12 +257,7 @@ export const QuestionTableContainer: React.FC = () => {
                   variant={buttonVariant}
                   colorScheme={buttonColor}
                   onClick={() => {
-                    setPage(
-                      Math.min(
-                        Math.ceil(filteredData.length / rowCount) - 1,
-                        page + 1
-                      )
-                    );
+                    setPage(Math.min(Math.ceil(filteredData.length / rowCount) - 1, page + 1));
                   }}
                 >
                   Next

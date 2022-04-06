@@ -57,21 +57,21 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
         name: 'Difficulty',
         compare: (a, b) => {
           const orders = {
-            easy: 1,
-            medium: 2,
-            hard: 3,
+            Easy: 1,
+            Medium: 2,
+            Hard: 3,
           };
           // @ts-ignore
           return orders[a.question.difficulty] - orders[b.question.difficulty];
         },
       },
       {
-        name: 'Last Repition',
+        name: 'Last Repetition',
         compare: (a, b) =>
           new Date(a.last_rep_date).getTime() - new Date(b.last_rep_date).getTime(),
       },
       {
-        name: 'Next Repition',
+        name: 'Next Repetition',
         compare: (a, b) =>
           new Date(a.next_rep_date).getTime() - new Date(b.next_rep_date).getTime(),
       },
@@ -96,9 +96,9 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
       {
         render: (card) => {
           const colors = {
-            easy: 'green',
-            medium: 'yellow',
-            hard: 'red',
+            Easy: 'green',
+            Medium: 'yellow',
+            Hard: 'red',
           };
 
           return (
@@ -153,8 +153,8 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
         </Tr>
       </Thead>
       <Tbody>
-        {cards.map((card) => (
-          <Tr key={card._id}>
+        {cards.map((card, i) => (
+          <Tr key={`t-row-${i}`}>
             {tableCells.map((cell, i) => (
               <Td key={`t-cell-${i}`}>{cell.render(card)}</Td>
             ))}

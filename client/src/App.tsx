@@ -10,7 +10,6 @@ import { selectSettings, setSocket } from 'redux/settings/settingsSlice';
 import { checkProfileAsync } from 'redux/user/userSlice';
 import io from 'socket.io-client';
 import { formatDate } from 'utils';
-import './App.css';
 import AboutPage from './pages/about';
 import { Callback } from './pages/callback';
 import DailyReview from './pages/dailyReview';
@@ -73,7 +72,7 @@ function App() {
 
   return (
     <>
-      <Box minH="100vh" bg={bg}>
+      <Box bg={bg} h="100%">
         <Header />
         <Routes>
           <Route path="/login" element={<LoginPage />} />

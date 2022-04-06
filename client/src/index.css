@@ -2,12 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-body,
-html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
+html,
+body {
   height: 100%;
+}
+
+div[id='root'] {
+  min-height: 100%;
 }
 
 pre > pre {
@@ -16,4 +17,24 @@ pre > pre {
 
 pre {
   @apply w-full;
+}
+
+/* width */
+::-webkit-scrollbar {
+  @apply w-[10px] h-[10px];
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-zinc-300 rounded-md my-2 mx-2;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-600 transition opacity-80 rounded-md;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-zinc-700;
 }

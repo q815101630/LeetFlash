@@ -64,7 +64,7 @@ $$
   const blockquoteColor = useColorModeValue('gray.400', 'gray.500');
 
   return (
-    <Box h="60vh" overflow="scroll">
+    <Box>
       <ReactMarkdown
         children={markdownText}
         sourcePos

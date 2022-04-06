@@ -1,4 +1,4 @@
-import { Flex, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, useColorModeValue } from '@chakra-ui/react';
 import { QuestionTableContainer } from '../components/QuestionTableContainer';
 import * as React from 'react';
 import { fetchCards } from '../apis/data.api';
@@ -7,8 +7,6 @@ import { fetchCards } from '../apis/data.api';
 // to configure react-table typings
 
 export const Dashboard = () => {
-  const bg = useColorModeValue('gray.100', 'gray.800');
-
   React.useEffect(() => {
     const fetchData = async () => {
       const cards = await fetchCards();
@@ -19,7 +17,7 @@ export const Dashboard = () => {
   }, []);
 
   return (
-    <Flex direction="row" justify="center" bg={bg} minH="calc(100vh - 4rem)">
+    <Flex direction="row" justify="center" pb={4}>
       <QuestionTableContainer />
     </Flex>
   );

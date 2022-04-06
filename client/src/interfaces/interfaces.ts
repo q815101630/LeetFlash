@@ -8,7 +8,7 @@ export interface Question {
   questionId: string;
   title: string;
   translatedTitle?: string;
-  difficulty: "easy" | "hard" | "medium";
+  difficulty: 'Easy' | 'Hard' | 'Medium';
 
   url: string;
 
