@@ -98,6 +98,10 @@ const App: React.FC<{}> = () => {
               ) / 100
             ).toFixed(2)}
           />
+          <Item
+            label={"Avg Runtime"}
+            value={`${Math.round(user.performance.avg_time_percent)} ms`}
+          />
           <MyPie
             easy={user.performance.finishedEasy.length}
             medium={user.performance.finishedMedium.length}

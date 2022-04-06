@@ -143,21 +143,33 @@ export const getStoredOnlyVisitor = (): Promise<boolean> => {
 
 export const addQuestionToSet = (
   question_id: string,
-  question_type: string
+  question_type: string,
+  runtime: string
 ): Promise<void> => {
+  const time = parseInt(runtime.split(" ")[0]);
+
   return new Promise((resolve, reject) => {
     getStoredUser().then((user) => {
       let tempSet: Set<string>;
+
+      // update avg_time_percent
+      // At this moment, today_ac_count is not yet updated
+      const newAvg =
+        (user.performance.today_ac_count * user.performance.avg_time_percent +
+          time) /
+        (user.performance.today_ac_count + 1);
+      user.performance.avg_time_percent = newAvg;
+
       // console.log(user.performance.finishedEasy);
-      if (question_type === "easy") {
+      if (question_type.toLowerCase() === "easy") {
         tempSet = new Set(user.performance.finishedEasy);
         tempSet.add(question_id);
         user.performance.finishedEasy = Array.from(tempSet);
-      } else if (question_type === "medium") {
+      } else if (question_type.toLowerCase() === "medium") {
         tempSet = new Set(user.performance.finishedMedium);
         tempSet.add(question_id);
         user.performance.finishedMedium = Array.from(tempSet);
-      } else if (question_type === "hard") {
+      } else if (question_type.toLowerCase() === "hard") {
         tempSet = new Set(user.performance.finishedHard);
         tempSet.add(question_id);
         user.performance.finishedHard = Array.from(tempSet);

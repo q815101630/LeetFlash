@@ -1,3 +1,14 @@
+//content_script.js
+var wakeup = function () {
+  setTimeout(function () {
+    chrome.runtime.sendMessage("ping", function () {
+      console.log("pong");
+    });
+    wakeup();
+  }, 10000);
+};
+wakeup();
+
 // import { MessageType } from "../utils/messages";
 // import {
 //   getStoredQuestionInfo,
@@ -22,7 +33,6 @@
 //     } else {
 //       storedQuestionInfo[currentQuestionIdx].title = questionInfo.title;
 //       storedQuestionInfo[currentQuestionIdx].text = questionInfo.text;
-
 
 //       setStoredQuestionInfo(storedQuestionInfo).then(() => {
 //         getStoredQuestionInfo().then((storedQuestionInfo) => {
