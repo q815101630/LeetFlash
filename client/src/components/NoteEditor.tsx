@@ -18,7 +18,7 @@ export const MarkdownEditor = () => {
 #### Heading 4
 ##### Heading 5
 ###### Heading 6
-A paragraph with *emphasis* and **strong importance**.
+A paragraph with *emphasis* and **strong importance** $f(x) = 1$.
 
 > A block quote with ~strikethrough~ and a URL: https://reactjs.org.
 
@@ -64,7 +64,7 @@ $$
   const blockquoteColor = useColorModeValue('gray.400', 'gray.500');
 
   return (
-    <Box>
+    <Box h="60vh" overflow="scroll">
       <ReactMarkdown
         children={markdownText}
         sourcePos
