@@ -32,7 +32,7 @@ const DailyReview = () => {
   const coontainerBg = useColorModeValue('white', 'gray.700');
 
   return (
-    <Flex w="full" bg={bg} minH="calc(100vh - 4rem)">
+    <Flex w="full" bg={bg} minH="100vh">
       <Container maxW="container.xl">
         <Stack spacing={2} py={6}>
           <Heading size="lg" fontWeight="medium">
@@ -43,10 +43,10 @@ const DailyReview = () => {
         </Stack>
         <SimpleGrid
           rounded="md"
-          columns={2}
+          columns={{ base: 1, xl: 2 }}
           boxShadow={useColorModeValue('md', 'md-dark')}
           bg={coontainerBg}
-          minH="40rem"
+          h={{ base: '100vh', xl: '70vh' }}
         >
           <Flex minH="full">
             <Flex p={4} direction="column" minW="full" gap={4}>
@@ -60,7 +60,9 @@ const DailyReview = () => {
                 <Text>{problemDescription}</Text>
               </Flex>
             </Flex>
-            <Box minH="full" w="1.5rem" bg="gray.200" borderX={'1px'} borderColor="gray.300"></Box>
+            <Divider
+              orientation={useBreakpointValue({ base: 'horizontal', xl: 'vertical' })}
+            ></Divider>
           </Flex>
           <Flex minH="full" p={4} direction="column" gap={4}>
             <HStack>
