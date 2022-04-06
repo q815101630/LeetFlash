@@ -79,12 +79,13 @@ const onCompleteHandler = async ({
     await todayTotalIncrement();
 
     if (submissionDetail.statusDisplay === "Accepted") {
-      await todayACIncrement();
-
       await addQuestionToSet(
         submissionDetail.question.questionId,
-        submissionDetail.question.difficulty
+        submissionDetail.question.difficulty,
+        submissionDetail.runtime
       );
+      await todayACIncrement();
+
       const user = await getStoredUser();
       console.log(user);
       handleSendQuestionToServer(submissionDetail, user);

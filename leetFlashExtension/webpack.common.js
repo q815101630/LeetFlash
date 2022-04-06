@@ -66,7 +66,7 @@ function getHtmlPlugins(chunks) {
   return chunks.map(
     (chunk) =>
       new HtmlPlugin({
-        title: "React Extension",
+        title: "LeetFlash",
         filename: `${chunk}.html`,
         chunks: [chunk],
         template: `src/${chunk}/${chunk}.html`,

@@ -92,18 +92,25 @@ export const fetchRemindersToday = (): Promise<Reminder[]> => {
       .then((user: User) => {
         fetch(`${BASE_URL}/api/user/cards-today/${user._id}`, {
           method: "GET",
-        }).then((res) => {
-          if (res.status === 200 || res.status === 201) {
-            res
-              .json()
-              .then((data) => {
-                resolve(data);
-              })
-              .catch(() => {
-                reject(res.status);
-              });
-          }
-        });
+        })
+          .then((res) => {
+            console.log(res)
+            if (res.status === 200 || res.status === 201) {
+              res
+                .json()
+                .then((data) => {
+                  resolve(data);
+                })
+                .catch(() => {
+                  reject(res.status);
+                });
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+
+            reject(err);
+          });
       });
   });
 };

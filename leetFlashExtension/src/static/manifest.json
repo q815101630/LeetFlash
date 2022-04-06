@@ -25,5 +25,15 @@
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode-cn.com/problems/*/"],
+      "js": ["contentScript.js"]
+    },
+    {
+      "matches": ["https://leetcode.com/problems/*/"],
+      "js": ["contentScriptEN.js"]
+    }
+  ]
 }
