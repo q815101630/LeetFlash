@@ -79,7 +79,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/login/callback" element={<Callback />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/setting" element={<Setting />} />
+          {/* <Route path="/setting" element={<Setting />} /> */}
           <Route path="/review" element={<DailyReview />} />
           <Route path="/about" element={<AboutPage />} />
 

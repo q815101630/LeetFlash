@@ -195,8 +195,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
     chrome.notifications.create({
       iconUrl: "IconOnly2.png",
-      message: `${reminders.length} questions due today, click to open LeetFlash website`,
-      contextMessage: "you can also view questions by opening popup!",
+      message: `${reminders.length} questions due today`,
+      contextMessage: "Click to open LeetFlash web!",
       title: "LeetFlash Review Reminder",
       type: "basic",
       requireInteraction: true,

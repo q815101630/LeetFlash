@@ -11,6 +11,7 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
+  HStack,
 } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { generateApiTokenAsync, selectUser } from "../redux/user/userSlice";
@@ -23,7 +24,15 @@ export const enum DisplayType {
   COMMENTS,
 }
 
-const TokenSettingContent = () => {
+export const Setting = ({
+  isSettingsOpen,
+  onSettingsOpen,
+  onSettingsClose,
+}: {
+  isSettingsOpen: boolean;
+  onSettingsOpen: () => void;
+  onSettingsClose: () => void;
+}) => {
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
 
@@ -34,39 +43,25 @@ const TokenSettingContent = () => {
   }, [user.token]);
 
   return (
-    <Center h="100%" w="100%">
-      <Flex direction="column">
-        <Text> Your API Token is </Text>
-        <Text> {user.token}</Text>
-      </Flex>
-    </Center>
-  );
-};
-
-export const Setting = ({}) => {
-  const user = useAppSelector(selectUser);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [displayType, setDisplayType] = useState<DisplayType>(DisplayType.API);
-
-  useEffect(() => {
-    onOpen();
-  }, []);
-  
-  return (
     <>
-      <Flex>
+      {/* <Flex>
         <SideBar setDisplayType={setDisplayType} />
         <Box h="90vh" mt="2.5vh" mx="2.5vh" w="100%">
           {displayType === DisplayType.API && <TokenSettingContent />}
         </Box>
-      </Flex>
+      </Flex> */}
 
-      <Drawer onClose={onClose} isOpen={isOpen} size="sm">
+      <Drawer onClose={onSettingsClose} isOpen={isSettingsOpen} size="sm">
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader>{`Settings`}</DrawerHeader>
           <DrawerBody>
-            <TokenSettingContent />
+            <HStack>
+              <Box>
+                <Text>API Token:</Text>
+                <Text> {user.token}</Text>
+              </Box>
+            </HStack>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
