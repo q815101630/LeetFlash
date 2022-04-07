@@ -72,7 +72,7 @@ function App() {
 
   return (
     <>
-      <Box bg={bg} h="100%">
+      <Box h="100%">
         <Header />
         <Routes>
           <Route path="/login" element={<LoginPage />} />

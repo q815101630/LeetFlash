@@ -151,6 +151,7 @@ export const QuestionTableContainer: React.FC = () => {
       compareFn.current = (a, b) =>
         new Date(a.next_rep_date).getTime() - new Date(b.next_rep_date).getTime();
       setQuestions(cards.sort(compareFn.current));
+      // console.log(JSON.stringify(fakeData[0], null, 2));
     });
   }, []);
 
