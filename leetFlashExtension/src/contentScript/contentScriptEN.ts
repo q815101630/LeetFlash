@@ -1,13 +1,13 @@
-//content_script.js
-var wakeup = function () {
-  setTimeout(function () {
-    chrome.runtime.sendMessage("ping", function () {
-      console.log("pong");
-    });
-    wakeup();
-  }, 10000);
-};
-wakeup();
+// //content_script.js
+// var wakeup = function () {
+//   setTimeout(function () {
+//     chrome.runtime.sendMessage("ping", function () {
+//       console.log("pong");
+//     });
+//     wakeup();
+//   }, 10000);
+// };
+// wakeup();
 
 // import { MessageType } from "../utils/messages";
 // import {

@@ -97,7 +97,6 @@ const handleSendQuestionToServer = (
   submissionDetail: SubmissionDetail,
   user: User
 ) => {
-
   if (user && user.email) {
     console.log("found user and start sending");
     sendQuestionToServer(submissionDetail, user)
@@ -160,8 +159,6 @@ const checkIfNewDay = (): Promise<void> => {
 };
 
 //chrome.runtime.onMessage.addListener(debounce(handleSubmitBtnHit, 3000));
-
-
 
 /**
  * Below are listeners
@@ -234,4 +231,31 @@ chrome.webRequest.onCompleted.addListener(
   onCompleteHandlerDebounced,
   SUBMIT_FILTERS
 );
-chrome.runtime.onMessage.addListener(handleSubmitBtnHit);
+// chrome.runtime.onMessage.addListener(handleSubmitBtnHit);
+
+/**
+ * Following are workaround for problem that service worker does not wake after
+ * after a long period of inactive in M3
+ * https://stackoverflow.com/questions/66618136/persistent-service-worker-in-chrome-extension
+ */
+
+// Level 1: Redirect and make sure the service worker is awake
+chrome.webNavigation.onBeforeNavigate.addListener(
+  ({ url }) => {
+    console.log("AWAKE: urlContains redirecting to " + url);
+  },
+  { url: [{ urlContains: "leetcode" }] }
+);
+
+// Level 2: When submitting the question, make sure the service worker is awake
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  ({ url }) => {
+    console.log("AWAKE: BeforeSendHeaders " + url);
+  },
+  {
+    urls: [
+      "https://leetcode.com/problems/*/submit/",
+      "https://leetcode-cn.com/problems/*/submit/",
+    ],
+  }
+);

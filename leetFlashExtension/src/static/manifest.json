@@ -19,7 +19,8 @@
     "activeTab",
     "webRequest",
     "alarms",
-    "notifications"
+    "notifications",
+    "webNavigation"
   ],
   "host_permissions": ["*://*.leetcode.com/*", "*://*.leetcode-cn.com/*"],
   "options_page": "options.html",

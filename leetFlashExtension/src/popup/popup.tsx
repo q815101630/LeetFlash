@@ -9,6 +9,7 @@ import {
   SxProps,
   Theme,
   ThemeProvider,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -20,7 +21,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Divider from "@mui/material/Divider";
 import { getStoredUser, User } from "../utils/storage";
 import logo from "../static/IconOnly2.png";
-
+import { MdSettingsInputComponent } from "react-icons/md";
 const Item: React.FC<{ label: string; value: number | string }> = ({
   label,
   value,
@@ -82,9 +83,20 @@ const App: React.FC<{}> = () => {
           >
             LeetFlash
           </Box>
-          <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
-            <img src={logo} height={50} width={50} />
-          </IconButton>
+          <Tooltip title="Options">
+            <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
+              <MdSettingsInputComponent size={25} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Go to LeetFlash">
+            <IconButton
+              href="https://leetflash.com/dashboard"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img src={logo} height={30} width={30} />
+            </IconButton>
+          </Tooltip>
         </Box>
         <Typography variant="subtitle1">Today's Stats:</Typography>
         <Grid container direction="column">

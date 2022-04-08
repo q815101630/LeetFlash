@@ -78,7 +78,7 @@ const App: React.FC<{}> = () => {
         });
       })
       .catch((status: AxiosError) => {
-        if (status.response.status == 401 || status.response.status == 400) {
+        if (status.response?.status == 401 || status.response?.status == 400) {
           toast.error(
             "Cannot link your account with LeetFlash. Please check if the credential is valid. "
           );
@@ -261,11 +261,9 @@ const App: React.FC<{}> = () => {
               <Typography variant="body2"></Typography>
 
               <Link
-                component="button"
-                disabled
-                // href="http://localhost:300/user/sign-up"
+                rel="noreferrer"
+                href="https://leetflash.com/login"
                 target="_blank"
-                rel="noopener"
                 underline="hover"
               >
                 No Account? Sign up
