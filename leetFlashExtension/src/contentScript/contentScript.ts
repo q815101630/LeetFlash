@@ -1,13 +1,13 @@
-// //content_script.js
-// var wakeup = function(){
-//     setTimeout(function(){
-//         chrome.runtime.sendMessage('ping', function(){
-//             console.log("pong");
-//         });
-//         wakeup();
-//     }, 10000);
-// }
-// wakeup();
+//content_script.js
+var wakeup = function(){
+    setTimeout(function(){
+        chrome.runtime.sendMessage('ping', function(){
+            console.log("pong");
+        });
+        wakeup();
+    }, 10000);
+}
+wakeup();
 
 // // You can use `browser`/`chrome` here and interact with extension stuff like storage and tabs.
 // /* Inject ,currently not in use*/

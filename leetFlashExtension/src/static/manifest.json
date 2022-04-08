@@ -29,12 +29,8 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://leetcode-cn.com/problems/*/"],
+      "matches": ["https://leetcode-cn.com/problems/*/","https://leetcode.com/problems/*/"],
       "js": ["contentScript.js"]
-    },
-    {
-      "matches": ["https://leetcode.com/problems/*/"],
-      "js": ["contentScriptEN.js"]
     }
   ]
 }

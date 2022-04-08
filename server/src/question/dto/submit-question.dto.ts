@@ -17,6 +17,7 @@ export class SubmitQuestionDto {
   lang: string;
 
   @IsString()
+  @IsOptional()
   rawMemory: string;
 
   @IsObject()

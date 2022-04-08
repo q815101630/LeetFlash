@@ -26,7 +26,11 @@ import {
   getStoredOnlyVisitor,
   setDate,
 } from "./../utils/storage";
-import { alarmSetter, fetchSubmissionDetails } from "./background.api";
+import {
+  alarmSetter,
+  fetchSubmissionDetailsCN,
+  fetchSubmissionDetailsEN,
+} from "./background.api";
 
 const SUBMIT_FILTERS = {
   urls: [
@@ -39,10 +43,22 @@ const SUBMIT_FILTERS = {
  * Below are functions
  */
 
+const getCurrentTab = async () => {
+  let queryOptions = { active: true, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab.url;
+};
+
+const getTitleSlug = (url: string) => {
+  const regexp = /^https:\/\/(.+)\.com\/problems\/([a-zA-Z0-9-]+)\/*/;
+  const [_ignore, _site, slug] = url.match(regexp);
+  return slug;
+};
+
 const getSubmissionId = (url: string) => {
   const regexp = /^https:\/\/(.+)\.com\/submissions\/detail\/([0-9]+)\/check\//;
   const [_ignore, site, id] = url.match(regexp);
-  return { site, id };
+  return { site, id, url };
 };
 
 const onCompleteHandlerDebounced = (params: any) => {
@@ -60,7 +76,14 @@ const onCompleteHandlerDebounced = (params: any) => {
 const onCompleteHandler = async ({
   url,
 }: chrome.webRequest.WebResponseCacheDetails) => {
-  const submissionDetail = await fetchSubmissionDetails(getSubmissionId(url));
+  let submissionDetail: SubmissionDetail;
+  if (getSubmissionId(url).site === "leetcode-cn") {
+    submissionDetail = await fetchSubmissionDetailsCN(getSubmissionId(url).id);
+  } else {
+    const titleSlug = getTitleSlug(await getCurrentTab());
+    submissionDetail = await fetchSubmissionDetailsEN(url, titleSlug);
+  }
+  console.log("Here");
   console.log(submissionDetail);
 
   // push to submission ids if not found yet, increment total ,ac for today
@@ -133,11 +156,11 @@ const handleSendQuestionToServer = (
   }
 };
 
-const handleSubmitBtnHit = (msg: any, sender: any, sendResponse: Function) => {
-  if (msg == MessageType.SUBMIT) {
-    sendResponse();
-  }
-};
+// const handleSubmitBtnHit = (msg: any, sender: any, sendResponse: Function) => {
+//   if (msg == MessageType.SUBMIT) {
+//     sendResponse();
+//   }
+// };
 
 const getFullDate = (date: Date): string => {
   return (
@@ -231,6 +254,7 @@ chrome.webRequest.onCompleted.addListener(
   onCompleteHandlerDebounced,
   SUBMIT_FILTERS
 );
+
 // chrome.runtime.onMessage.addListener(handleSubmitBtnHit);
 
 /**

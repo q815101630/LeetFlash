@@ -1,7 +1,7 @@
 import { RemindSettings } from "../utils/storage";
-import { SubmissionDetail } from "../utils/types";
+import { SubmissionDetail, SubmissionQuestion } from "../utils/types";
 
-const QUERY_STRING = `
+const QUERY_STRING_CN = `
 query mySubmissionDetail($id: ID!) {
     submissionDetail(submissionId: $id) {
     id
@@ -50,27 +50,122 @@ query mySubmissionDetail($id: ID!) {
     }
 }
 `;
+const QUERY_RECENT_SUBMISSION_EN = `
+query recentAcSubmissions($username: String!, $limit: Int!) {
+  recentAcSubmissionList(username: $username, limit: $limit) {
+    id
+    runtime
+    memory
+    statusDisplay
+    timestamp
+    lang
+  }
+}
+`;
 
-export const fetchSubmissionDetails = async ({
-  site,
-  id,
-}: {
-  site: string;
-  id: string;
-}): Promise<SubmissionDetail> => {
-  const url =
-    site === "leetcode"
-      ? `https://leetcode.com/graphql/`
-      : `https://leetcode-cn.com/graphql/`;
+const QUERY_QUESTION_EN = `query questionData($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    questionId
+    questionFrontendId
+    title
+    titleSlug
+    content
+    translatedTitle
+    translatedContent
+    difficulty
+    topicTags {
+      name
+      slug
+      translatedName
+      __typename
+    }
+    __typename
+  }
+}
+`;
 
+/** Process to get the submission detail for US site
+ *  Get the title-slug from 2.a
+ *  Fetch question
+ *  Combine info
+ */
+
+export const fetchSubmissionDetailsEN = (
+  url: string,
+  titleSlug: string
+): Promise<SubmissionDetail> => {
   return new Promise((resolve, reject) => {
     fetch(url, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then(async (res) => {
+        if (res) {
+          console.log(res);
+          const submissionDetail = {
+            id: res.submission_id,
+            lang: res.lang,
+            runtime: res.status_runtime,
+            timestamp: res.task_finish_time,
+            statusDisplay: res.status_msg,
+            question: null,
+            sourceUrl: null,
+          };
+          const question = await fetchQuestionEN(titleSlug);
+
+          submissionDetail.question = question;
+          submissionDetail.sourceUrl = `/problems/${question.titleSlug}/`;
+
+          resolve(submissionDetail as SubmissionDetail);
+        } else {
+          reject(res);
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+export const fetchQuestionEN = (titleSlug: string): Promise<any> => {
+  const queryUrl = `https://leetcode.com/graphql/`;
+
+  return new Promise((resolve, reject) => {
+    fetch(queryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        query: QUERY_STRING,
+        query: QUERY_QUESTION_EN,
+        variables: {
+          titleSlug: titleSlug,
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.data) {
+          resolve(res.data.question);
+        } else {
+          reject(res);
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+export const fetchSubmissionDetailsCN = (
+  id: string
+): Promise<SubmissionDetail> => {
+  const queryUrl = `https://leetcode-cn.com/graphql/`;
+
+  return new Promise((resolve, reject) => {
+    fetch(queryUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: QUERY_STRING_CN,
         variables: {
           id: id.toString(),
         },
@@ -81,13 +176,12 @@ export const fetchSubmissionDetails = async ({
         if (res.data) {
           resolve(res.data.submissionDetail);
         } else {
-          reject("no data");
+          reject(res);
         }
       })
       .catch((err) => reject(err));
   });
 };
-
 
 export const alarmSetter = (remindSettings: RemindSettings) => {
   console.log("setting!");
