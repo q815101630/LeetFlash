@@ -1,24 +1,24 @@
-import { Box, useColorModeValue, useToast } from '@chakra-ui/react';
-import { patchCard } from 'apis/data.api';
-import { createSocket } from 'apis/ws.api';
-import PopupModal from 'components/PopupModal';
-import { Card } from 'interfaces/interfaces';
-import React, { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from 'redux/hooks';
-import { selectSettings, setSocket } from 'redux/settings/settingsSlice';
-import { checkProfileAsync } from 'redux/user/userSlice';
-import io from 'socket.io-client';
-import { formatDate } from 'utils';
-import AboutPage from './pages/about';
-import { Callback } from './pages/callback';
-import DailyReview from './pages/dailyReview';
-import { Dashboard } from './pages/dashboard';
-import LandingPage from './pages/landingPage';
-import LoginPage from './pages/login';
-import { Logout } from './pages/logout';
-import { Setting } from './pages/setting';
-import Header from './components/Header';
+import { Box, useColorModeValue, useToast } from "@chakra-ui/react";
+import { patchCard } from "apis/data.api";
+import { createSocket } from "apis/ws.api";
+import PopupModal from "components/PopupModal";
+import { Card } from "interfaces/interfaces";
+import React, { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "redux/hooks";
+import { selectSettings, setSocket } from "redux/settings/settingsSlice";
+import { checkProfileAsync } from "redux/user/userSlice";
+import io from "socket.io-client";
+import { formatDate } from "utils";
+import AboutPage from "./pages/about";
+import { Callback } from "./pages/callback";
+import DailyReview from "./pages/dailyReview";
+import { Dashboard } from "./pages/dashboard";
+import LandingPage from "./pages/landingPage";
+import LoginPage from "./pages/login";
+import { Logout } from "./pages/logout";
+import { Setting } from "./pages/setting";
+import Header from "./components/Header";
 
 function App() {
   const { socket } = useAppSelector(selectSettings);
@@ -28,42 +28,43 @@ function App() {
   const [earlyReviewCards, setEarlyReviewCards] = useState<Card[]>([]);
   const dispatch = useAppDispatch();
 
-  const bg = useColorModeValue('gray.100', 'gray.800');
+  const bg = useColorModeValue("gray.100", "gray.800");
 
   useEffect(() => {
-    const socket = createSocket();
-    setSocket(socket);
-
     const todayReviewListener = (card: Card) => {
-      console.log('listened today review!');
+      console.log("listened today review!");
       setPopupCards((popupCards) => [...popupCards, card]);
     };
 
     const earlyReviewListener = (card: Card) => {
-      console.log('listened early review!');
+      console.log("listened early review!");
       setEarlyReviewCards((earlyReviewCards) => [...earlyReviewCards, card]);
     };
 
     const newCardListener = (card: Card) => {
       toast({
-        title: 'Added New Question! 😊',
+        title: "Added New Question! 😊",
         description: `\`${
           card.question.title
-        }\` has been added to your list. next review date: ${formatDate(card.next_rep_date)}.`,
-        status: 'success',
+        }\` has been added to your list. next review date: ${formatDate(
+          card.next_rep_date
+        )}.`,
+        status: "success",
         duration: 9000,
-        position: 'top',
+        position: "top",
         isClosable: true,
       });
-      console.log('listened new-card!');
+      console.log("listened new-card!");
     };
+    if (socket) {
+      socket.on("review-today", todayReviewListener);
+      socket.on("new-card", newCardListener);
+      socket.on("early-review", earlyReviewListener);
 
-    socket.on('review-today', todayReviewListener);
-    socket.on('new-card', newCardListener);
-    socket.on('early-review', earlyReviewListener);
-    return () => {
-      socket.close();
-    };
+      return () => {
+        socket.close();
+      };
+    }
   }, [socket]);
 
   useEffect(() => {
@@ -91,7 +92,7 @@ function App() {
           key={`${card._id}-${i}`}
           card={card}
           text={`It seems you early reviewed \`${
-            lang === 'EN' ? card.question.title : card.question.translatedTitle
+            lang === "EN" ? card.question.title : card.question.translatedTitle
           }\`, good job! When do you prefer to review for the next time? 🐼`}
           header={`Keep it up! 💯`}
           btn1Text={`Go to next stage`}
@@ -108,22 +109,25 @@ function App() {
       ))}
 
       {popupCards.map((card, i) => {
-        const isToday = formatDate(card.next_rep_date) === formatDate(new Date());
+        const isToday =
+          formatDate(card.next_rep_date) === formatDate(new Date());
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
         return (
           <PopupModal
             text={`You reviewed \`${
-              lang === 'EN' ? card.question.title : card.question.translatedTitle
+              lang === "EN"
+                ? card.question.title
+                : card.question.translatedTitle
             }\`, due \`${
-              isToday ? 'Today' : formatDate(card.next_rep_date)
+              isToday ? "Today" : formatDate(card.next_rep_date)
             }\`. When do you prefer to review for the next time? 🐼`}
             header={`Reviewed a problem 😎`}
             btn1Text={`Not sure? Tomorrow!`}
             btn2Text={`${
               new Date(card.next_rep_date).getTime() < today.getTime()
-                ? 'Oops, late! Three days later 😒'
+                ? "Oops, late! Three days later 😒"
                 : formatDate(new Date(today.getTime() + 3 * 86400000))
             }`}
             btn1Handler={() => {
@@ -140,7 +144,9 @@ function App() {
             }}
             key={`${card._id}-${i}`}
             card={card}
-            removePopup={() => setPopupCards((popupCards) => popupCards.slice(0, -1))}
+            removePopup={() =>
+              setPopupCards((popupCards) => popupCards.slice(0, -1))
+            }
           />
         );
       })}
