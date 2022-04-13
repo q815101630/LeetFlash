@@ -132,13 +132,19 @@ export class CardService {
     const parsed = parse(cookie);
     const { session, Authentication } = parsed;
     const sig = parsed['session.sig'];
-    const headerInfo = !!Authentication
-      ? Authentication.split('.')[0]
-      : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
-    const token = `${headerInfo}.${session.slice(
-      0,
-      session.length - 2,
-    )}.${sig}`;
+
+    let token;
+    if (session[session.length - 1] === '=') {
+      const headerInfo = !!Authentication
+        ? Authentication.split('.')[0]
+        : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
+      token = `${headerInfo}.${session.slice(0, session.length - 2)}.${sig}`;
+    } else {
+      const headerInfo = !!Authentication
+        ? Authentication.split('.')[0]
+        : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
+      token = `${headerInfo}.${session}.${sig}`;
+    }
     const { user }: { user: User } = jwt_decode(token);
     if (!user || !user._id) {
       throw new WsException('Invalid credentials.');

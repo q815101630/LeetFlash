@@ -111,10 +111,12 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
           card._id.toString() === currCard._id.toString(),
       )
     ) {
+
       // review card
       const success = this.server.to(socketId).emit('review-today', card);
       console.log(`review-today: ${success}`);
     } else {
+
       // this card is due future, ask if confirm early review
       const success = this.server.to(socketId).emit('early-review', card);
       console.log(`early-review: ${success}`);

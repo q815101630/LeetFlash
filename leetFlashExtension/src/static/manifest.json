@@ -1,7 +1,7 @@
 {
   "name": "LeetFlash",
   "description": "A simple extension that record your LeetCode performance for everyday.",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "manifest_version": 3,
   "icons": {
     "16": "iconOnly2.png",
