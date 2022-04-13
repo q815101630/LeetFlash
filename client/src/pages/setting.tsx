@@ -36,11 +36,11 @@ export const Setting = ({
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (user.token === "invalid") {
-      dispatch(generateApiTokenAsync());
-    }
-  }, [user.token]);
+  // useEffect(() => {
+  //   if (user.token === "invalid") {
+  //     dispatch(generateApiTokenAsync());
+  //   }
+  // }, [user.token]);
 
   return (
     <>
@@ -59,7 +59,7 @@ export const Setting = ({
             <HStack>
               <Box>
                 <Text>API Token:</Text>
-                <Text> {user.token}</Text>
+                <Text> {user.id}</Text>
               </Box>
             </HStack>
           </DrawerBody>
