@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "redux/hooks";
 import { selectSettings, setSocket } from "redux/settings/settingsSlice";
-import { checkProfileAsync } from "redux/user/userSlice";
+import { checkProfileAsync, selectUser } from "redux/user/userSlice";
 import io from "socket.io-client";
 import { formatDate } from "utils";
 import AboutPage from "./pages/about";
@@ -21,7 +21,8 @@ import { Setting } from "./pages/setting";
 import Header from "./components/Header";
 
 function App() {
-  const { socket } = useAppSelector(selectSettings);
+  const user = useAppSelector(selectUser);
+
   const toast = useToast();
   const { lang } = useAppSelector(selectSettings);
   const [popupCards, setPopupCards] = useState<Card[]>([]);
@@ -31,6 +32,9 @@ function App() {
   const bg = useColorModeValue("gray.100", "gray.800");
 
   useEffect(() => {
+    const socket = createSocket();
+    setSocket(socket);
+
     const todayReviewListener = (card: Card) => {
       console.log("listened today review!");
       setPopupCards((popupCards) => [...popupCards, card]);
@@ -56,16 +60,15 @@ function App() {
       });
       console.log("listened new-card!");
     };
-    if (socket) {
-      socket.on("review-today", todayReviewListener);
-      socket.on("new-card", newCardListener);
-      socket.on("early-review", earlyReviewListener);
 
-      return () => {
-        socket.close();
-      };
-    }
-  }, [socket]);
+    socket.on("review-today", todayReviewListener);
+    socket.on("new-card", newCardListener);
+    socket.on("early-review", earlyReviewListener);
+
+    return () => {
+      socket.close();
+    };
+  }, [user]);
 
   useEffect(() => {
     dispatch(checkProfileAsync());
