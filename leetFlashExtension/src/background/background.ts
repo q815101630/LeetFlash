@@ -83,7 +83,7 @@ const onCompleteHandler = async ({
     const titleSlug = getTitleSlug(await getCurrentTab());
     submissionDetail = await fetchSubmissionDetailsEN(url, titleSlug);
   }
-  console.log("Here");
+  console.log("background submission detail:");
   console.log(submissionDetail);
 
   // push to submission ids if not found yet, increment total ,ac for today
@@ -168,12 +168,19 @@ const getFullDate = (date: Date): string => {
   );
 };
 
+/**
+ * A function that check if a new day comes, if comes, then reset performance and submissionIds
+ *
+ */
 const checkIfNewDay = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     getDate().then((date: Date) => {
       const newDate = new Date();
       if (getFullDate(date) !== getFullDate(newDate)) {
-        setDate(newDate).then(clearTodayPerformance).then(resolve, reject);
+        setDate(newDate)
+          .then(clearTodayPerformance)
+          .then(() => setStoredSubmissionIds([]))
+          .then(resolve, reject);
       } else {
         resolve();
       }
