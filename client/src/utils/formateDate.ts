@@ -7,3 +7,9 @@ export const formatDate = (date: Date) => {
   const day = date.getDate();
   return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 };
+
+export const getTodayLastSecond = () => {
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  return today;
+};

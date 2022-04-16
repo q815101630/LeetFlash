@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { Checkbox, Code, Link, useColorModeValue } from '@chakra-ui/react';
+import { Button, Checkbox, Code, Flex, Link, useColorModeValue } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Box, Divider, Heading, Text } from '@chakra-ui/react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -11,8 +11,7 @@ import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Markdown } from './Markdown';
 
-export const MarkdownPreview = () => {
-  const [markdownText, setMarkdownText] = React.useState<string>(`
+const markdownText = `
 # Heading 1
 ## Heading 2
 ### Heading 3
@@ -35,7 +34,7 @@ This is a inline code \`ReactiveEffect\`.
 
 ### This is a block code
 \`\`\`python
-const foo = 'bar';
+**const** foo = 'bar';
 
 class ReactiveEffect {
   private _fn: any;
@@ -85,11 +84,18 @@ $$
 f(x) = \\int_0^x \\sqrt{1-x^2} d x
 $$
 
-`);
+`;
 
+interface MarkdownPreviewProps {
+  markdown: string;
+  show: boolean;
+}
+
+export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown, show }) => {
   return (
-    <Box>
-      <Markdown text={markdownText} />
+    <Box position="relative" w="full">
+      {!show && <Flex className="absolute inset-0 backdrop-blur-sm z-10" justify="center"></Flex>}
+      <Markdown text={markdown === '' ? markdownText : markdown} />
     </Box>
   );
 };

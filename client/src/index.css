@@ -21,7 +21,7 @@ pre {
 
 /* width */
 ::-webkit-scrollbar {
-  @apply w-[8px] h-[8px];
+  @apply hidden;
 }
 
 /* Track */

@@ -10,81 +10,74 @@ import {
   Divider,
   HStack,
   SimpleGrid,
+  Button,
+  IconButton,
+  Tooltip,
+  VStack,
 } from '@chakra-ui/react';
-import { EditIcon, QuestionIcon } from '@chakra-ui/icons';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  EditIcon,
+  QuestionIcon,
+  TimeIcon,
+  ViewIcon,
+  ViewOffIcon,
+} from '@chakra-ui/icons';
+// @ts-ignore
+import TurndownService from 'turndown';
 import { MarkdownPreview } from 'components/MarkdownPreview';
+import { Fragment, useEffect, useState } from 'react';
+import { BsCalendarCheckFill } from 'react-icons/bs';
+import { MdFactCheck } from 'react-icons/md';
+import { fetchCards } from 'apis/data.api';
+import { Card } from 'interfaces/interfaces';
+import { getTodayLastSecond } from 'utils';
+import { useAppSelector } from 'redux/hooks';
+import { selectSettings } from 'redux/settings/settingsSlice';
 
-const problemDescription = `
-<p>给定一个整数数组 <code>nums</code>&nbsp;和一个整数目标值 <code>target</code>，请你在该数组中找出 <strong>和为目标值 </strong><em><code>target</code></em>&nbsp; 的那&nbsp;<strong>两个</strong>&nbsp;整数，并返回它们的数组下标。</p>
-
-<p>你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。</p>
-
-<p>你可以按任意顺序返回答案。</p>
-
-<p>&nbsp;</p>
-
-<p><strong>示例 1：</strong></p>
-
-<pre>
-<strong>输入：</strong>nums = [2,7,11,15], target = 9
-<strong>输出：</strong>[0,1]
-<strong>解释：</strong>因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
-</pre>
-
-<p><strong>示例 2：</strong></p>
-
-<pre>
-<strong>输入：</strong>nums = [3,2,4], target = 6
-<strong>输出：</strong>[1,2]
-</pre>
-
-<p><strong>示例 3：</strong></p>
-
-<pre>
-<strong>输入：</strong>nums = [3,3], target = 6
-<strong>输出：</strong>[0,1]
-</pre>
-
-<p>&nbsp;</p>
-
-<p><strong>提示：</strong></p>
-
-<ul>
-	<li><code>2 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></code></li>
-	<li><strong>只会存在一个有效答案</strong></li>
-</ul>
-
-<ul>
-	<li><code>2 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></code></li>
-	<li><strong>只会存在一个有效答案</strong></li>
-</ul>
-<ul>
-	<li><code>2 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></code></li>
-	<li><strong>只会存在一个有效答案</strong></li>
-</ul>
-<ul>
-	<li><code>2 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>
-	<li><code>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></code></li>
-	<li><strong>只会存在一个有效答案</strong></li>
-</ul>
-
-<p><strong>进阶：</strong>你可以想出一个时间复杂度小于 <code>O(n<sup>2</sup>)</code> 的算法吗？</p>
-`;
+const turndownService = new TurndownService();
+turndownService.addRule('code', {
+  filter: 'pre',
+  replacement: (content: string) => {
+    return `\`\`\` ${content} \`\`\``;
+  },
+});
 
 const DailyReview = () => {
-  const bg = useColorModeValue('gray.100', 'gray.800');
-  const coontainerBg = useColorModeValue('white', 'gray.700');
+  const contentHeight = '70vh';
+  const [showNote, setShowNote] = useState(false);
+  const [questions, setQuestions] = useState<Card[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const coontainerBg = useColorModeValue('white', 'gray.900');
+  const breakpoint = useBreakpointValue({ base: 'horizontal', xl: 'vertical' });
+  const { lang } = useAppSelector(selectSettings); // EN or CN
+
+  // Get the original data
+  useEffect(() => {
+    fetchCards().then((cards) => {
+      setQuestions(
+        cards.filter(
+          (card) => new Date(card.next_rep_date) <= getTodayLastSecond() && !card.is_archived
+        )
+      );
+    });
+  }, []);
+
+  const htmlToMarkdown = (html: string) => {
+    console.log(html);
+    return turndownService.turndown(html);
+  };
+
+  const updateProblem = (index: number) => {
+    setCurrentIndex(Math.min(Math.max(0, index), questions.length - 1));
+    setShowNote(false);
+  };
 
   return (
     <Flex w="full">
-      <Container maxW="container.xl">
+      <Container maxW={questions.length > 0 ? 'container.2xl' : 'container.lg'}>
         <Stack spacing={2} py={6}>
           <Heading size="lg" fontWeight="medium">
             Daily Review
@@ -92,41 +85,123 @@ const DailyReview = () => {
           <Text>View problems need to be reviewed</Text>
           <Divider bgColor={useColorModeValue('gray.300', 'gray.700')} />
         </Stack>
-        <SimpleGrid
-          rounded="md"
-          columns={{ base: 1, xl: 2 }}
-          boxShadow={useColorModeValue('lg', 'lg-dark')}
-          bg={coontainerBg}
-          mb={10}
-        >
-          <Flex h="75vh">
-            <Flex p={4} direction="column" minW="full" gap={4}>
-              <HStack>
-                <QuestionIcon />
-                <Heading as="h2" fontWeight="semibold" size="md">
-                  Problem
-                </Heading>
-              </HStack>
-              <Flex minW="full" className="overflow-y-scroll relative">
-                <Text dangerouslySetInnerHTML={{ __html: problemDescription }}></Text>
+        <Box rounded="md" boxShadow={useColorModeValue('lg', 'lg-dark')} bg={coontainerBg} mb={10}>
+          {questions.length > 0 && (
+            <Fragment>
+              <SimpleGrid rounded="md" columns={{ base: 1, xl: 2 }}>
+                <Flex h={contentHeight}>
+                  <Flex p={4} direction="column" minW="full" gap={4}>
+                    <HStack>
+                      <QuestionIcon w="6" h="6" />
+                      <Heading as="h2" fontWeight="semibold" size="md">
+                        Problem {currentIndex + 1}
+                      </Heading>
+                      <Flex flexGrow={1} justify="flex-end" gap={2}>
+                        <Tooltip label="Previous problem" placement="top" hasArrow>
+                          <IconButton
+                            variant="outline"
+                            colorScheme="blue"
+                            size="md"
+                            aria-label="previous"
+                            onClick={() => updateProblem(currentIndex - 1)}
+                            icon={<ChevronLeftIcon w="6" h="6" />}
+                          ></IconButton>
+                        </Tooltip>
+                        <Tooltip label="Next problem" placement="top" hasArrow>
+                          <IconButton
+                            variant="outline"
+                            colorScheme="blue"
+                            size="md"
+                            aria-label="previous"
+                            onClick={() => updateProblem(currentIndex + 1)}
+                            icon={<ChevronRightIcon w="6" h="6" />}
+                          ></IconButton>
+                        </Tooltip>
+                      </Flex>
+                    </HStack>
+                    <Flex
+                      minW="full"
+                      flexGrow={1}
+                      className="overflow-y-auto relative"
+                      px={3}
+                      py={2}
+                      border="gray.200"
+                      borderRadius="md"
+                      borderWidth={1}
+                    >
+                      <MarkdownPreview
+                        markdown={htmlToMarkdown(
+                          lang === 'EN'
+                            ? questions[currentIndex].question.content || ''
+                            : questions[currentIndex].question.translatedContent || ''
+                        )}
+                        show={true}
+                      />
+                    </Flex>
+                  </Flex>
+                  <Divider
+                    orientation={breakpoint as 'horizontal' | 'vertical' | undefined}
+                  ></Divider>
+                </Flex>
+                <Flex p={4} direction="column" gap={4} h={contentHeight}>
+                  <HStack>
+                    <EditIcon w="6" h="6" />
+                    <Heading as="h2" fontWeight="semibold" size="md">
+                      Note
+                    </Heading>
+                    <Flex flexGrow={1} justify="flex-end" gap={2}>
+                      <Tooltip
+                        label={showNote ? 'Hide note' : 'Show note'}
+                        placement="top"
+                        hasArrow
+                      >
+                        <IconButton
+                          variant="outline"
+                          colorScheme="blue"
+                          size="md"
+                          aria-label="previous"
+                          onClick={() => setShowNote(!showNote)}
+                          icon={showNote ? <ViewOffIcon w="4" h="4" /> : <ViewIcon w="4" h="4" />}
+                        ></IconButton>
+                      </Tooltip>
+                    </Flex>
+                  </HStack>
+                  <Box
+                    className="overflow-y-auto relative"
+                    border="gray.200"
+                    borderRadius="md"
+                    borderWidth={1}
+                  >
+                    <MarkdownPreview
+                      markdown={questions[currentIndex].note || ''}
+                      show={showNote}
+                    />
+                  </Box>
+                </Flex>
+              </SimpleGrid>
+              <Flex justify="flex-end" gap={4} p={4} pt={0}>
+                <Button variant="outline" colorScheme="orange" fontWeight="bold" gap={2}>
+                  <TimeIcon />
+                  Tomorrow
+                </Button>
+                <Button variant="outline" colorScheme="orange" fontWeight="bold" gap={2}>
+                  <BsCalendarCheckFill />
+                  Next Stage
+                </Button>
               </Flex>
+            </Fragment>
+          )}
+          {questions.length === 0 && (
+            <Flex justify="center" align="center" h={'40vh'}>
+              <VStack>
+                <MdFactCheck className="w-12 h-12 text-green-500" />
+                <Text fontSize="xl" fontWeight="semibold">
+                  🎉 There's no more problems needed to be reviewed. Good job 👏
+                </Text>
+              </VStack>
             </Flex>
-            <Divider
-              orientation={useBreakpointValue({ base: 'horizontal', xl: 'vertical' })}
-            ></Divider>
-          </Flex>
-          <Flex p={4} direction="column" gap={4} h="75vh">
-            <HStack>
-              <EditIcon />
-              <Heading as="h2" fontWeight="semibold" size="md">
-                Note
-              </Heading>
-            </HStack>
-            <Box className="overflow-y-scroll relative">
-              <MarkdownPreview />
-            </Box>
-          </Flex>
-        </SimpleGrid>
+          )}
+        </Box>
       </Container>
     </Flex>
   );
