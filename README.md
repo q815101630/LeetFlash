@@ -12,12 +12,14 @@
 [![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
+
 [![LeetFlash][website-shield]][website-url]
 [![LeetFlash][deployment-shield]][website-url]
 
 [![Chrome][chrome-users]][chrome-url]
 [![Chrome][chrome-version]][chrome-url]
 [![Chrome][chrome-price]][chrome-url]
+
 [![Follow][follows-shield]][follows-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
