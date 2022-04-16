@@ -12,11 +12,12 @@
 [![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
+[![LeetFlash][website-shield]][website-url]
+[![LeetFlash][deployment-shield]][website-url]
 
 [![Chrome][chrome-users]][chrome-url]
 [![Chrome][chrome-version]][chrome-url]
 [![Chrome][chrome-price]][chrome-url]
-
 [![Follow][follows-shield]][follows-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -163,3 +164,6 @@ Project Link: [https://github.com/q815101630/LeetFlash](https://github.com/q8151
 [chrome-url]: https://chrome.google.com/webstore/detail/leetflash/gffjifokdnkmfcjihfgnalbabnghedjc
 [chrome-version]: https://img.shields.io/chrome-web-store/v/gffjifokdnkmfcjihfgnalbabnghedjc?label=LeetFlash%20Chrome&style=flat-square
 [chrome-price]: https://img.shields.io/chrome-web-store/price/gffjifokdnkmfcjihfgnalbabnghedjc?style=flat-square
+[website-shield]: https://img.shields.io/website?down_message=offline&label=LeetFlash%20Web&style=for-the-badge&up_message=online&url=https%3A%2F%2Fleetflash.com
+[website-url]: https://leetflash.com
+[deployment-shield]: https://img.shields.io/github/deployments/q815101630/leetflash/leetflash?label=Deployment&style=for-the-badge
