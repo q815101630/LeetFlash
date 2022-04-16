@@ -69,7 +69,7 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.cardService.removeSocketId(user._id);
       console.log(`user: ${user.email} disconnect socket.io`);
     } catch (error) {
-      socket.emit('error', 'Failed authentication');
+      socket.emit('error', error);
       socket.disconnect();
     }
   }

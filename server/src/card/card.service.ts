@@ -130,21 +130,19 @@ export class CardService {
   async getUserFromSocket(socket: Socket) {
     const cookie = socket.handshake.headers.cookie;
     const parsed = parse(cookie);
-    const { session, Authentication } = parsed;
+    let { session, Authentication } = parsed;
     const sig = parsed['session.sig'];
 
-    let token;
-    if (session[session.length - 1] === '=') {
-      const headerInfo = !!Authentication
-        ? Authentication.split('.')[0]
-        : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
-      token = `${headerInfo}.${session.slice(0, session.length - 2)}.${sig}`;
-    } else {
-      const headerInfo = !!Authentication
-        ? Authentication.split('.')[0]
-        : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
-      token = `${headerInfo}.${session}.${sig}`;
+    const headerInfo = !!Authentication
+      ? Authentication.split('.')[0]
+      : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
+
+    while (session[session.length - 1] === '=') {
+      session = session.slice(0, session.length - 1);
     }
+
+    const token = `${headerInfo}.${session}.${sig}`;
+
     const { user }: { user: User } = jwt_decode(token);
     if (!user || !user._id) {
       throw new WsException('Invalid credentials.');
