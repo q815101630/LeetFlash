@@ -25,7 +25,6 @@ import {
   ViewOffIcon,
 } from '@chakra-ui/icons';
 // @ts-ignore
-import TurndownService from 'turndown';
 import { MarkdownPreview } from 'components/MarkdownPreview';
 import { Fragment, useEffect, useState } from 'react';
 import { BsCalendarCheckFill } from 'react-icons/bs';
@@ -35,14 +34,7 @@ import { Card } from 'interfaces/interfaces';
 import { getTodayLastSecond } from 'utils';
 import { useAppSelector } from 'redux/hooks';
 import { selectSettings } from 'redux/settings/settingsSlice';
-
-const turndownService = new TurndownService();
-turndownService.addRule('code', {
-  filter: 'pre',
-  replacement: (content: string) => {
-    return `\`\`\` ${content} \`\`\``;
-  },
-});
+import { htmlToMarkdown } from 'utils/htmlToarkdown';
 
 const DailyReview = () => {
   const contentHeight = '70vh';
@@ -64,11 +56,6 @@ const DailyReview = () => {
       );
     });
   }, []);
-
-  const htmlToMarkdown = (html: string) => {
-    console.log(html);
-    return turndownService.turndown(html);
-  };
 
   const updateProblem = (index: number) => {
     setCurrentIndex(Math.min(Math.max(0, index), questions.length - 1));

@@ -13,6 +13,8 @@ import {
 } from '@chakra-ui/react';
 import { Card } from '../interfaces/interfaces';
 import { defaultPopoverContentProps } from 'utils';
+import { MarkdownPreview } from './MarkdownPreview';
+import { htmlToMarkdown } from 'utils/htmlToarkdown';
 
 export const QuestionTitle: React.FC<{ card: Card; lang: string }> = ({ card, lang }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,11 +51,14 @@ export const QuestionTitle: React.FC<{ card: Card; lang: string }> = ({ card, la
         >
           <PopoverArrow />
           <PopoverHeader fontWeight="semibold">Question Prompt</PopoverHeader>
-          <PopoverBody
-            dangerouslySetInnerHTML={{
-              __html: lang === 'EN' ? card.question.content : card.question.translatedContent || '',
-            }}
-          ></PopoverBody>
+          <PopoverBody>
+            <MarkdownPreview
+              show={true}
+              markdown={htmlToMarkdown(
+                lang === 'EN' ? card.question.content : card.question.translatedContent || ''
+              )}
+            />
+          </PopoverBody>
         </PopoverContent>
       </Popover>
     </HStack>
