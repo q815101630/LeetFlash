@@ -32,7 +32,7 @@ import { BsCalendarCheckFill } from 'react-icons/bs';
 import { MdFactCheck } from 'react-icons/md';
 import { fetchCards } from 'apis/data.api';
 import { Card } from 'interfaces/interfaces';
-import { getTodayLastSecond } from 'utils';
+import { addTodayByDays, getTodayLastSecond } from 'utils';
 import { useAppSelector } from 'redux/hooks';
 import { selectSettings } from 'redux/settings/settingsSlice';
 import { htmlToMarkdown } from 'utils/htmlToarkdown';
