@@ -22,6 +22,7 @@ import { selectUser } from "../redux/user/userSlice";
 import { FaLanguage } from "react-icons/fa";
 import { selectSettings, toggleLang } from "redux/settings/settingsSlice";
 import { MdDarkMode, MdSettingsSuggest } from "react-icons/md";
+import { AiFillGithub } from "react-icons/ai";
 import logo from "../assets/logo.png";
 import { Setting } from "pages/setting";
 
@@ -143,6 +144,20 @@ const Header = () => {
           spacing={3}
           align="center"
         >
+          <Tooltip hasArrow label="Github Repository" placement="auto-start">
+            <IconButton
+              as="a"
+              variant="ghost"
+              display={{ base: "none", lg: "inherit" }}
+              _hover={{ bg: "orange.700", borderColor: "orange.700" }}
+              aria-label="Repository"
+              icon={<AiFillGithub size={28} />}
+              href="https://github.com/q815101630/LeetFlash"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          </Tooltip>
+
           <Tooltip hasArrow label="Settings" placement="auto-start">
             <IconButton
               variant="ghost"

@@ -14,7 +14,7 @@ import {
   IconButton,
   Tooltip,
   VStack,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -23,35 +23,35 @@ import {
   TimeIcon,
   ViewIcon,
   ViewOffIcon,
-} from '@chakra-ui/icons';
+} from "@chakra-ui/icons";
 // @ts-ignore
-import TurndownService from 'turndown';
-import { MarkdownPreview } from 'components/MarkdownPreview';
-import { Fragment, useEffect, useState } from 'react';
-import { BsCalendarCheckFill } from 'react-icons/bs';
-import { MdFactCheck } from 'react-icons/md';
-import { fetchCards } from 'apis/data.api';
-import { Card } from 'interfaces/interfaces';
-import { getTodayLastSecond } from 'utils';
-import { useAppSelector } from 'redux/hooks';
-import { selectSettings } from 'redux/settings/settingsSlice';
-
+import TurndownService from "turndown";
+import { MarkdownPreview } from "components/MarkdownPreview";
+import { Fragment, useEffect, useState } from "react";
+import { BsCalendarCheckFill } from "react-icons/bs";
+import { MdFactCheck } from "react-icons/md";
+import { fetchCards } from "apis/data.api";
+import { Card } from "interfaces/interfaces";
+import { addTodayByDays, getTodayLastSecond } from "utils";
+import { useAppSelector } from "redux/hooks";
+import { selectSettings } from "redux/settings/settingsSlice";
+import { Badge } from "@chakra-ui/react";
 const turndownService = new TurndownService();
-turndownService.addRule('code', {
-  filter: 'pre',
+turndownService.addRule("code", {
+  filter: "pre",
   replacement: (content: string) => {
     return `\`\`\` ${content} \`\`\``;
   },
 });
 
 const DailyReview = () => {
-  const contentHeight = '70vh';
+  const contentHeight = "70vh";
   const [showNote, setShowNote] = useState(false);
   const [questions, setQuestions] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const coontainerBg = useColorModeValue('white', 'gray.900');
-  const breakpoint = useBreakpointValue({ base: 'horizontal', xl: 'vertical' });
+  const coontainerBg = useColorModeValue("white", "gray.900");
+  const breakpoint = useBreakpointValue({ base: "horizontal", xl: "vertical" });
   const { lang } = useAppSelector(selectSettings); // EN or CN
 
   // Get the original data
@@ -59,7 +59,9 @@ const DailyReview = () => {
     fetchCards().then((cards) => {
       setQuestions(
         cards.filter(
-          (card) => new Date(card.next_rep_date) <= getTodayLastSecond() && !card.is_archived
+          (card) =>
+            new Date(card.next_rep_date) <= getTodayLastSecond() &&
+            !card.is_archived
         )
       );
     });
@@ -77,15 +79,20 @@ const DailyReview = () => {
 
   return (
     <Flex w="full">
-      <Container maxW={questions.length > 0 ? 'container.2xl' : 'container.lg'}>
+      <Container maxW={questions.length > 0 ? "container.2xl" : "container.lg"}>
         <Stack spacing={2} py={6}>
           <Heading size="lg" fontWeight="medium">
             Daily Review
           </Heading>
           <Text>View problems need to be reviewed</Text>
-          <Divider bgColor={useColorModeValue('gray.300', 'gray.700')} />
+          <Divider bgColor={useColorModeValue("gray.300", "gray.700")} />
         </Stack>
-        <Box rounded="md" boxShadow={useColorModeValue('lg', 'lg-dark')} bg={coontainerBg} mb={10}>
+        <Box
+          rounded="md"
+          boxShadow={useColorModeValue("lg", "lg-dark")}
+          bg={coontainerBg}
+          mb={10}
+        >
           {questions.length > 0 && (
             <Fragment>
               <SimpleGrid rounded="md" columns={{ base: 1, xl: 2 }}>
@@ -95,9 +102,20 @@ const DailyReview = () => {
                       <QuestionIcon w="6" h="6" />
                       <Heading as="h2" fontWeight="semibold" size="md">
                         Problem {currentIndex + 1}
+                        <Tooltip label="Due date" placement="top" hasArrow>
+                          <Badge mx={2}>
+                            {new Date(
+                              questions[currentIndex].next_rep_date
+                            ).toLocaleDateString()}
+                          </Badge>
+                        </Tooltip>
                       </Heading>
                       <Flex flexGrow={1} justify="flex-end" gap={2}>
-                        <Tooltip label="Previous problem" placement="top" hasArrow>
+                        <Tooltip
+                          label="Previous problem"
+                          placement="top"
+                          hasArrow
+                        >
                           <IconButton
                             variant="outline"
                             colorScheme="blue"
@@ -131,16 +149,19 @@ const DailyReview = () => {
                     >
                       <MarkdownPreview
                         markdown={htmlToMarkdown(
-                          lang === 'EN'
-                            ? questions[currentIndex].question.content || ''
-                            : questions[currentIndex].question.translatedContent || ''
+                          lang === "EN"
+                            ? questions[currentIndex].question.content || ""
+                            : questions[currentIndex].question
+                                .translatedContent || ""
                         )}
                         show={true}
                       />
                     </Flex>
                   </Flex>
                   <Divider
-                    orientation={breakpoint as 'horizontal' | 'vertical' | undefined}
+                    orientation={
+                      breakpoint as "horizontal" | "vertical" | undefined
+                    }
                   ></Divider>
                 </Flex>
                 <Flex p={4} direction="column" gap={4} h={contentHeight}>
@@ -151,7 +172,7 @@ const DailyReview = () => {
                     </Heading>
                     <Flex flexGrow={1} justify="flex-end" gap={2}>
                       <Tooltip
-                        label={showNote ? 'Hide note' : 'Show note'}
+                        label={showNote ? "Hide note" : "Show note"}
                         placement="top"
                         hasArrow
                       >
@@ -161,7 +182,13 @@ const DailyReview = () => {
                           size="md"
                           aria-label="previous"
                           onClick={() => setShowNote(!showNote)}
-                          icon={showNote ? <ViewOffIcon w="4" h="4" /> : <ViewIcon w="4" h="4" />}
+                          icon={
+                            showNote ? (
+                              <ViewOffIcon w="4" h="4" />
+                            ) : (
+                              <ViewIcon w="4" h="4" />
+                            )
+                          }
                         ></IconButton>
                       </Tooltip>
                     </Flex>
@@ -173,26 +200,50 @@ const DailyReview = () => {
                     borderWidth={1}
                   >
                     <MarkdownPreview
-                      markdown={questions[currentIndex].note || ''}
+                      markdown={questions[currentIndex].note || ""}
                       show={showNote}
                     />
                   </Box>
                 </Flex>
               </SimpleGrid>
               <Flex justify="flex-end" gap={4} p={4} pt={0}>
-                <Button variant="outline" colorScheme="orange" fontWeight="bold" gap={2}>
-                  <TimeIcon />
-                  Tomorrow
-                </Button>
-                <Button variant="outline" colorScheme="orange" fontWeight="bold" gap={2}>
-                  <BsCalendarCheckFill />
-                  Next Stage
-                </Button>
+                <Tooltip label="Review again in tomorrow" hasArrow>
+                  <Button
+                    variant="outline"
+                    colorScheme="orange"
+                    fontWeight="bold"
+                    gap={2}
+                  >
+                    <TimeIcon />
+                    Tomorrow
+                  </Button>
+                </Tooltip>
+                <Tooltip
+                  label={`Review in next stage: ${addTodayByDays(
+                    questions[currentIndex].total_stages[
+                      Math.min(
+                        questions[currentIndex].stage + 1,
+                        questions[currentIndex].total_stages.length
+                      )
+                    ]
+                  ).toLocaleDateString()}`}
+                  hasArrow
+                >
+                  <Button
+                    variant="outline"
+                    colorScheme="orange"
+                    fontWeight="bold"
+                    gap={2}
+                  >
+                    <BsCalendarCheckFill />
+                    Next Stage
+                  </Button>
+                </Tooltip>
               </Flex>
             </Fragment>
           )}
           {questions.length === 0 && (
-            <Flex justify="center" align="center" h={'40vh'}>
+            <Flex justify="center" align="center" h={"40vh"}>
               <VStack>
                 <MdFactCheck className="w-12 h-12 text-green-500" />
                 <Text fontSize="xl" fontWeight="semibold">
