@@ -128,6 +128,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
               onClick={onClickGitHubHandler}
               colorScheme="teal"
               variant="outline"
+              disabled
               leftIcon={<BsGithub />}
             >
               GitHub
@@ -135,6 +136,7 @@ const SignUpVStack = ({ toggleSignUp }: { toggleSignUp: () => void }) => {
           </GridItem>
           <GridItem colSpan={1}>
             <Button
+              disabled
               size="md"
               w="full"
               onClick={onClickWeChatHandler}
@@ -287,6 +289,7 @@ const SignInVStack = ({
           </GridItem>
           <GridItem colSpan={1}>
             <Button
+              disabled
               size="md"
               w="full"
               onClick={onClickGitHubHandler}
@@ -299,6 +302,7 @@ const SignInVStack = ({
           </GridItem>
           <GridItem colSpan={1}>
             <Button
+              disabled
               size="md"
               w="full"
               onClick={onClickWeChatHandler}

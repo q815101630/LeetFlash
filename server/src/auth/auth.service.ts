@@ -83,14 +83,16 @@ export class AuthService {
     const tokenInfo = await this.oauthClient.getTokenInfo(token);
 
     const email = tokenInfo.email;
-    const user = await this.usersService.findByEmailAndSource(
-      email,
-      Source.GOOGLE,
-    );
-    if (user) {
-      console.log('User used to login with Google', user.email);
+    try {
+      const user = await this.usersService.findByEmailAndSource(
+        email,
+        Source.GOOGLE,
+      );
+      console.log('User login with Google', user.email);
       return user;
-    } else {
+    } catch (err) {
+      console.log('User sign up with Google', email);
+
       return await this.googleSignUp(email);
     }
   }
