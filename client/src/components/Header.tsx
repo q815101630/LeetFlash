@@ -25,20 +25,6 @@ import { MdDarkMode, MdSettingsSuggest } from "react-icons/md";
 import logo from "../assets/logo.png";
 import { Setting } from "pages/setting";
 
-{
-  /*
-<Box _hover={{ bg: 'orange.700', borderColor: 'orange.700' }} p={2} rounded="md">
-<Link to="/review">Daily Review</Link>
-</Box>
-
-<Box _hover={{ bg: 'orange.700', borderColor: 'orange.700' }} p={2} rounded="md">
-<Link to="/setting">Setting</Link>
-</Box>
-<Box _hover={{ bg: 'orange.700', borderColor: 'orange.700' }} p={2} rounded="md">
-<Link to="/about">About</Link>
-</Box> */
-}
-
 const links = [
   {
     name: "Dashboard",
@@ -53,8 +39,8 @@ const links = [
   //   link: '/setting',
   // },
   {
-    name: "About",
-    link: "/about",
+    name: "Tutorial",
+    link: "/tutorial",
   },
 ];
 

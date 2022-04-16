@@ -10,7 +10,7 @@ import { selectSettings, setSocket } from "redux/settings/settingsSlice";
 import { checkProfileAsync, selectUser } from "redux/user/userSlice";
 import io from "socket.io-client";
 import { formatDate } from "utils";
-import AboutPage from "./pages/about";
+import TutorialPage from "./pages/tutorial";
 import { Callback } from "./pages/callback";
 import DailyReview from "./pages/dailyReview";
 import { Dashboard } from "./pages/dashboard";
@@ -85,7 +85,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           {/* <Route path="/setting" element={<Setting />} /> */}
           <Route path="/review" element={<DailyReview />} />
-          <Route path="/about" element={<AboutPage />} />
+          <Route path="/tutorial" element={<TutorialPage />} />
 
           <Route path="*" element={<LandingPage />} />
         </Routes>
