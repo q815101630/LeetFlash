@@ -11,7 +11,7 @@ import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Markdown } from './Markdown';
 
-export const MarkdownEditor = () => {
+export const MarkdownPreview = () => {
   const [markdownText, setMarkdownText] = React.useState<string>(`
 # Heading 1
 ## Heading 2
@@ -30,6 +30,33 @@ A paragraph with *emphasis* and **strong importance** $f(x) = 1$.
 1. This is an ordered list
 2. Some content
 3. More content
+
+This is a inline code \`ReactiveEffect\`.
+
+### This is a block code
+\`\`\`python
+const foo = 'bar';
+
+class ReactiveEffect {
+  private _fn: any;
+
+  constructor(fn) {
+    this._fn = fn;
+  }
+
+  run() {
+    activeEffect = this;
+    const res = this._fn();
+    activeEffect = null;
+
+    return res;
+  }
+}
+\`\`\`
+
+$$
+f(x) = \\int_0^x \\sqrt{1-x^2} d x
+$$
 
 This is a inline code \`ReactiveEffect\`.
 

@@ -21,20 +21,20 @@ pre {
 
 /* width */
 ::-webkit-scrollbar {
-  @apply w-[10px] h-[10px];
+  @apply w-[8px] h-[8px];
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  @apply bg-zinc-300 rounded-md my-2 mx-2;
+  @apply bg-zinc-400 rounded-md my-2 mx-2 opacity-30;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-600 transition opacity-80 rounded-md;
+  @apply bg-zinc-600 transition opacity-50 rounded-md;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-700;
+  @apply bg-zinc-600;
 }
