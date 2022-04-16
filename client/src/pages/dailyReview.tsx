@@ -14,6 +14,7 @@ import {
   IconButton,
   Tooltip,
   VStack,
+  Badge,
 } from "@chakra-ui/react";
 import {
   ChevronLeftIcon,
@@ -25,24 +26,16 @@ import {
   ViewOffIcon,
 } from "@chakra-ui/icons";
 // @ts-ignore
-import TurndownService from "turndown";
-import { MarkdownPreview } from "components/MarkdownPreview";
-import { Fragment, useEffect, useState } from "react";
-import { BsCalendarCheckFill } from "react-icons/bs";
-import { MdFactCheck } from "react-icons/md";
-import { fetchCards } from "apis/data.api";
-import { Card } from "interfaces/interfaces";
-import { addTodayByDays, getTodayLastSecond } from "utils";
-import { useAppSelector } from "redux/hooks";
-import { selectSettings } from "redux/settings/settingsSlice";
-import { Badge } from "@chakra-ui/react";
-const turndownService = new TurndownService();
-turndownService.addRule("code", {
-  filter: "pre",
-  replacement: (content: string) => {
-    return `\`\`\` ${content} \`\`\``;
-  },
-});
+import { MarkdownPreview } from 'components/MarkdownPreview';
+import { Fragment, useEffect, useState } from 'react';
+import { BsCalendarCheckFill } from 'react-icons/bs';
+import { MdFactCheck } from 'react-icons/md';
+import { fetchCards } from 'apis/data.api';
+import { Card } from 'interfaces/interfaces';
+import { getTodayLastSecond } from 'utils';
+import { useAppSelector } from 'redux/hooks';
+import { selectSettings } from 'redux/settings/settingsSlice';
+import { htmlToMarkdown } from 'utils/htmlToarkdown';
 
 const DailyReview = () => {
   const contentHeight = "70vh";
@@ -66,11 +59,6 @@ const DailyReview = () => {
       );
     });
   }, []);
-
-  const htmlToMarkdown = (html: string) => {
-    console.log(html);
-    return turndownService.turndown(html);
-  };
 
   const updateProblem = (index: number) => {
     setCurrentIndex(Math.min(Math.max(0, index), questions.length - 1));
