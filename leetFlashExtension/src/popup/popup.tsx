@@ -1,27 +1,22 @@
-import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-
+import {
+  createTheme, ThemeProvider,
+  Tooltip,
+  Typography
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import "./popup.css";
-import {
-  createTheme,
-  SxProps,
-  Theme,
-  ThemeProvider,
-  Tooltip,
-  Typography,
-} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-
-import { MyPie } from "./pie";
-
-import { AcStackBar } from "./AcStackBar";
-import SettingsIcon from "@mui/icons-material/Settings";
-import Divider from "@mui/material/Divider";
-import { getStoredUser, User } from "../utils/storage";
+import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
+import { AiFillSetting } from "react-icons/ai";
 import logo from "../static/IconOnly2.png";
-import { MdSettingsInputComponent } from "react-icons/md";
+import { getStoredUser, User } from "../utils/storage";
+import { AcStackBar } from "./AcStackBar";
+import { MyPie } from "./pie";
+import "./popup.css";
+
+
+``
 const Item: React.FC<{ label: string; value: number | string }> = ({
   label,
   value,
@@ -85,7 +80,7 @@ const App: React.FC<{}> = () => {
           </Box>
           <Tooltip title="Options">
             <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
-              <MdSettingsInputComponent size={25} />
+              <AiFillSetting size={25} />
             </IconButton>
           </Tooltip>
           <Tooltip title="Go to LeetFlash">
