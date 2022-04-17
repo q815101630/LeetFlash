@@ -4,6 +4,7 @@ export const BASE_URL =
     : "http://localhost:3030";
 export const VERIFY_URL = `${BASE_URL}/api/auth/verify-api-token`;
 export const SEND_QUESTION_API = `${BASE_URL}/api/user/add-question/`;
+export const SEND_NOTE_API = `${BASE_URL}/api/user/add-note/`;
 export const LEETFLASH_DASHBOARD = "https://leetflash.com/dashboard";
 
 export interface TopicTag {
@@ -49,4 +50,9 @@ export interface Reminder {
   title: string;
   translatedTitle?: string;
   next_rep_date: string;
+}
+
+export interface Note {
+  note: string;
+  questionId: string;
 }

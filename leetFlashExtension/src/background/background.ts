@@ -1,4 +1,8 @@
-import { fetchRemindersToday, sendQuestionToServer } from "../utils/api";
+import {
+  fetchRemindersToday,
+  sendNoteToServer,
+  sendQuestionToServer,
+} from "../utils/api";
 import { MessageType } from "../utils/messages";
 import {
   addQuestionToSet,
@@ -16,6 +20,7 @@ import {
 } from "../utils/storage";
 import {
   LEETFLASH_DASHBOARD,
+  Note,
   Reminder,
   SubmissionDetail,
 } from "../utils/types";
@@ -28,6 +33,8 @@ import {
 } from "./../utils/storage";
 import {
   alarmSetter,
+  fetchNoteCN,
+  fetchNoteEN,
   fetchSubmissionDetailsCN,
   fetchSubmissionDetailsEN,
 } from "./background.api";
@@ -261,6 +268,82 @@ chrome.webRequest.onCompleted.addListener(
   onCompleteHandlerDebounced,
   SUBMIT_FILTERS
 );
+
+/**
+ * A WebRequest interceptor that monitor the update of notes for EN site
+ */
+chrome.webRequest.onBeforeRequest.addListener(
+  (details) => {
+    if (details.method == "POST") {
+      const postedBody = JSON.parse(
+        decodeURIComponent(
+          String.fromCharCode.apply(
+            null,
+            new Uint8Array(details.requestBody.raw[0].bytes)
+          )
+        )
+      );
+      if (
+        !!postedBody &&
+        !!postedBody.operationName &&
+        postedBody.operationName === "updateNote"
+      ) {
+        const titleSlug = postedBody.variables.titleSlug;
+        setTimeout(async () => {
+          const note: Note = await fetchNoteEN(titleSlug);
+
+          const user = await getStoredUser();
+          if (!user || !user.email) {
+            return;
+          }
+
+          sendNoteToServer(note, user);
+        }, 3000);
+      }
+    }
+  },
+  { urls: ["https://leetcode.com/graphql"] },
+  ["requestBody"]
+);
+
+/**
+ * A WebRequest interceptor that monitor the update of notes for CN site
+ */
+ chrome.webRequest.onBeforeRequest.addListener(
+  (details) => {
+    if (details.method == "POST") {
+      const postedBody = JSON.parse(
+        decodeURIComponent(
+          String.fromCharCode.apply(
+            null,
+            new Uint8Array(details.requestBody.raw[0].bytes)
+          )
+        )
+      );
+      if (
+        !!postedBody &&
+        !!postedBody.operationName &&
+        (postedBody.operationName === "noteCreateCommonNote" || postedBody.operationName === "noteUpdateUserNote")
+      ) {
+        const titleSlug = postedBody.variables.targetId;
+        setTimeout(async () => {
+
+          const note = await fetchNoteCN(titleSlug);
+
+          const user = await getStoredUser();
+          if (!user || !user.email) {
+            return;
+          }
+
+          sendNoteToServer(note, user);
+        }, 3000);
+      }
+    }
+  },
+  { urls: ["https://leetcode-cn.com/graphql/"] },
+  ["requestBody"]
+);
+
 
 // chrome.runtime.onMessage.addListener(handleSubmitBtnHit);
 

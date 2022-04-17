@@ -7,8 +7,10 @@ import {
 } from "./storage";
 import {
   BASE_URL,
+  Note,
   Reminder,
   SEND_QUESTION_API,
+  SEND_NOTE_API,
   SubmissionDetail,
   VERIFY_URL,
 } from "./types";
@@ -41,6 +43,37 @@ export const sendQuestionToServer = (
       });
   });
 };
+
+
+export const sendNoteToServer = (
+  note: Note,
+  user: User
+): Promise<Response> => {
+  const body = {
+    ...note,
+  };
+  return new Promise((resolve, reject) => {
+    fetch(`${SEND_NOTE_API}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        uuid: `${user._id}`,
+      },
+      body: JSON.stringify(body),
+    })
+      .then(async (res) => {
+        if (res.status === 200 || res.status === 201) {
+          resolve(res);
+        } else {
+          reject(res.statusText);
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 
 interface returnUserData {
   email: string;

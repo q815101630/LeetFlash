@@ -1,5 +1,5 @@
 import { RemindSettings } from "../utils/storage";
-import { SubmissionDetail, SubmissionQuestion } from "../utils/types";
+import { Note, SubmissionDetail, SubmissionQuestion } from "../utils/types";
 
 const QUERY_STRING_CN = `
 query mySubmissionDetail($id: ID!) {
@@ -84,6 +84,36 @@ const QUERY_QUESTION_EN = `query questionData($titleSlug: String!) {
 }
 `;
 
+const QUERY_NOTE_EN = `
+query QuestionNote($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    questionId
+    note
+    __typename
+  }
+}
+`;
+
+const QUERY_NOTE_CN = `
+query noteOneTargetCommonNote($noteType: NoteCommonTypeEnum!, $targetId: String!, $limit: Int = 10, $skip: Int = 0) {
+  noteOneTargetCommonNote(noteType: $noteType, targetId: $targetId, limit: $limit, skip: $skip) {
+    count
+    userNotes {
+      config
+      content
+      id
+      noteType
+      status
+      summary
+      targetId
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+`;
+
 /** Process to get the submission detail for US site
  *  Get the title-slug from 2.a
  *  Fetch question
@@ -153,6 +183,67 @@ export const fetchQuestionEN = (titleSlug: string): Promise<any> => {
       .then((res) => {
         if (res.data) {
           resolve(res.data.question);
+        } else {
+          reject(res);
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+export const fetchNoteEN = (titleSlug: string): Promise<Note> => {
+  const queryUrl = `https://leetcode.com/graphql/`;
+
+  return new Promise((resolve, reject) => {
+    fetch(queryUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: QUERY_NOTE_EN,
+        variables: {
+          titleSlug: titleSlug,
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.data) {
+          resolve(res.data.question);
+        } else {
+          reject(res);
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+export const fetchNoteCN = (titleSlug: string): Promise<Note> => {
+  const queryUrl = `https://leetcode-cn.com/graphql/`;
+
+  return new Promise((resolve, reject) => {
+    fetch(queryUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: QUERY_NOTE_CN,
+        variables: {
+          limit: 1,
+          skip: 0,
+          targetId: titleSlug,
+          noteType: "COMMON_QUESTION",
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.data && res.data.noteOneTargetCommonNote.userNotes.length > 0) {
+          const rawData = res.data.noteOneTargetCommonNote.userNotes[0];
+
+          resolve({ note: rawData.content, questionId: rawData.targetId });
         } else {
           reject(res);
         }
