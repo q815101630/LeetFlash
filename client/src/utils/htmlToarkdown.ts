@@ -9,6 +9,5 @@ turndownService.addRule('code', {
 });
 
 export const htmlToMarkdown = (html: string) => {
-  console.log(html);
   return turndownService.turndown(html);
 };

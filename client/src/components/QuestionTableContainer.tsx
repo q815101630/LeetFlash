@@ -103,7 +103,7 @@ export const fakeData: Card[] = Array.from(Array(55).keys()).map((): Card => {
     },
     stage: faker.random.number({ min: 0, max: 10 }),
     total_stages: [10, 1, 1, 1, 1, 1],
-    _id: faker.random.uuid(),
+    id: faker.random.uuid(),
     rawMemory: faker.random.number({ min: 0, max: 100 }),
     lang: 'python',
     runtime: 111,

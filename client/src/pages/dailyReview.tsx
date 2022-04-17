@@ -15,6 +15,7 @@ import {
   Tooltip,
   VStack,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import {
   ChevronLeftIcon,
@@ -26,23 +27,25 @@ import {
   ViewOffIcon,
 } from "@chakra-ui/icons";
 // @ts-ignore
-import { MarkdownPreview } from 'components/MarkdownPreview';
-import { Fragment, useEffect, useState } from 'react';
-import { BsCalendarCheckFill } from 'react-icons/bs';
-import { MdFactCheck } from 'react-icons/md';
-import { fetchCards } from 'apis/data.api';
-import { Card } from 'interfaces/interfaces';
-import { addTodayByDays, getTodayLastSecond } from 'utils';
-import { useAppSelector } from 'redux/hooks';
-import { selectSettings } from 'redux/settings/settingsSlice';
-import { htmlToMarkdown } from 'utils/htmlToarkdown';
+import { MarkdownPreview } from "components/MarkdownPreview";
+import { Fragment, useEffect, useState } from "react";
+import { BsCalendarCheckFill } from "react-icons/bs";
+import { MdFactCheck } from "react-icons/md";
+import { fetchCards, moveNextStageCard, patchCard } from "apis/data.api";
+import { Card } from "interfaces/interfaces";
+import { addTodayByDays, formatDate, getTodayLastSecond } from "utils";
+import { useAppSelector } from "redux/hooks";
+import { selectSettings } from "redux/settings/settingsSlice";
+import { htmlToMarkdown } from "utils/htmlToarkdown";
 
 const DailyReview = () => {
   const contentHeight = "70vh";
+  const toast = useToast();
+
   const [showNote, setShowNote] = useState(false);
   const [questions, setQuestions] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [completedTitles, setCompletedTitles] = useState<string[]>([]);
   const coontainerBg = useColorModeValue("white", "gray.900");
   const breakpoint = useBreakpointValue({ base: "horizontal", xl: "vertical" });
   const { lang } = useAppSelector(selectSettings); // EN or CN
@@ -63,6 +66,55 @@ const DailyReview = () => {
   const updateProblem = (index: number) => {
     setCurrentIndex(Math.min(Math.max(0, index), questions.length - 1));
     setShowNote(false);
+  };
+
+  const tomorrowBtnHandler = () => {
+    const card = questions[currentIndex];
+    card.last_rep_date = new Date();
+    card.next_rep_date = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    // does not modify stage
+    patchCard(card).then(() => {
+      toast({
+        title: `Success`,
+        description: `You will review ${
+          lang === "EN" ? card.question.title : card.question.translatedTitle
+        } tomorrow 😊`,
+        status: "success",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+
+      setCompletedTitles([
+        questions[currentIndex].question.title,
+        ...completedTitles,
+      ]);
+    });
+  };
+
+  const nextBtnHandler = () => {
+    moveNextStageCard(questions[currentIndex]).then(() => {
+      toast({
+        title: "Good job! 😎",
+        description: `Next review date: ${addTodayByDays(
+          questions[currentIndex].total_stages[
+            Math.min(
+              questions[currentIndex].stage,
+              questions[currentIndex].total_stages.length - 1
+            )
+          ]
+        ).toLocaleDateString()}.`,
+        status: "success",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+
+      setCompletedTitles([
+        questions[currentIndex].question.title,
+        ...completedTitles,
+      ]);
+    });
   };
 
   return (
@@ -89,10 +141,11 @@ const DailyReview = () => {
                     <HStack>
                       <QuestionIcon w="6" h="6" />
                       <Heading as="h2" fontWeight="semibold" size="md">
-                        Problem {currentIndex + 1} - {lang === "EN"
-                            ? questions[currentIndex].question.title || ""
-                            : questions[currentIndex].question
-                                .translatedTitle || ""}
+                        Problem {currentIndex + 1} -{" "}
+                        {lang === "EN"
+                          ? questions[currentIndex].question.title || ""
+                          : questions[currentIndex].question.translatedTitle ||
+                            ""}
                         <Tooltip label="Due date" placement="top" hasArrow>
                           <Badge mx={2}>
                             {new Date(
@@ -100,6 +153,12 @@ const DailyReview = () => {
                             ).toLocaleDateString()}
                           </Badge>
                         </Tooltip>
+                        {completedTitles.filter(
+                          (title) =>
+                            title === questions[currentIndex].question.title
+                        ).length > 0 && (
+                          <MdFactCheck className="w-8 h-8 text-green-500 inline" />
+                        )}
                       </Heading>
                       <Flex flexGrow={1} justify="flex-end" gap={2}>
                         <Tooltip
@@ -204,6 +263,7 @@ const DailyReview = () => {
                     colorScheme="orange"
                     fontWeight="bold"
                     gap={2}
+                    onClick={tomorrowBtnHandler}
                   >
                     <TimeIcon />
                     Tomorrow
@@ -213,8 +273,8 @@ const DailyReview = () => {
                   label={`Review in next stage: ${addTodayByDays(
                     questions[currentIndex].total_stages[
                       Math.min(
-                        questions[currentIndex].stage + 1,
-                        questions[currentIndex].total_stages.length
+                        questions[currentIndex].stage,
+                        questions[currentIndex].total_stages.length - 1
                       )
                     ]
                   ).toLocaleDateString()}`}
@@ -225,6 +285,7 @@ const DailyReview = () => {
                     colorScheme="orange"
                     fontWeight="bold"
                     gap={2}
+                    onClick={nextBtnHandler}
                   >
                     <BsCalendarCheckFill />
                     Next Stage

@@ -36,7 +36,7 @@ export interface Card {
 
   created_at: Date;
 
-  _id: string;
+  id: string;
 
   note?: string;
 

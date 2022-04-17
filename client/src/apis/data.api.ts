@@ -25,13 +25,27 @@ export const fetchCards = () =>
  * patch to update a card, only update three fields: next_rep_date, note, stage
  * @param card card object
  */
-export const patchCard = (card: Card) => {
-  new Promise<Card>((resolve, reject) => {
+export const patchCard = (card: Card): Promise<Card> => {
+  return new Promise<Card>((resolve, reject) => {
     client
-      .patch(`/card/${card._id}`, card)
+      .patch(`/card/${card.id}`, card)
       .then((response: AxiosResponse) => resolve(response.data))
       .catch((error) => {
         reject(error);
       });
+  });
+};
+
+export const moveNextStageCard = (card: Card): Promise<Card> => {
+  return new Promise<Card>((resolve, reject) => {
+    card.last_rep_date = new Date();
+    card.next_rep_date = new Date(
+      new Date().getTime() +
+        card.total_stages[Math.min(card.stage, card.total_stages.length-1)] *
+          86400000
+    );
+    return patchCard(card)
+      .then((res) => resolve(res))
+      .catch((err) => reject(err));
   });
 };
