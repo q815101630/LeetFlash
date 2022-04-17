@@ -28,6 +28,7 @@ import { Card } from 'src/card/entities/card.entity';
 import { CardDto } from 'src/card/dto/card.dto';
 import { Reminder } from 'src/common/types';
 import { Response } from 'express';
+import { AddNoteDto } from 'src/common/add-note.dto';
 @ApiTags('api/user')
 @Controller('user')
 export class UsersController {
@@ -97,9 +98,39 @@ export class UsersController {
       submitQuestionDto.question,
     );
 
-    const {status, card} = await this.cardGateway.handleSubmit(res, user, submitQuestionDto, question);
-     
+    const { status, card } = await this.cardGateway.handleSubmit(
+      res,
+      user,
+      submitQuestionDto,
+      question,
+    );
+
     res.status(status).send(card);
+  }
+
+  @Post('/add-note')
+  async submitNote(
+    @Headers('UUID') uuid: string,
+    @Body() addNoteDTO: AddNoteDto,
+    @Res() res,
+  ) {
+    const user = await this.usersService.findOne(uuid).catch(() => {
+      throw new NotFoundException('Cannot find the user');
+    });
+
+    try {
+      const card = await this.cardService.findByQuestionIdAndUser(
+        addNoteDTO.questionId,
+        user,
+      );
+      if (card) {
+        card.note = addNoteDTO.note;
+        await this.cardService.update(card);
+        res.status(200).send(card);
+      }
+    } catch (err) {
+      throw new NotFoundException('Cannot find card');
+    }
   }
 
   @Get('/cards-today/:uuid')

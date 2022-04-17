@@ -80,7 +80,7 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
     submitQuestionDto: SubmitQuestionDto,
     question: Question,
   ) {
-    let card = await this.cardService.findByQuestionAndUser(question, user);
+    let card = await this.cardService.findByQuestionIdAndUser(question.questionId, user);
     if (!card) {
       card = await this.cardService.create(user, submitQuestionDto, question);
 

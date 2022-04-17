@@ -16,12 +16,16 @@ import { parse } from 'cookie';
 import jwt_decode from 'jwt-decode';
 import { WsException } from '@nestjs/websockets';
 import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
+import { QuestionService } from 'src/question/question.service';
 
 @Injectable()
 export class CardService {
   userIdToSocketIdMap: Map<string, string> = new Map();
 
-  constructor(@InjectModel(Card.name) private cardModel: Model<CardDocument>) {}
+  constructor(
+    @InjectModel(Card.name) private cardModel: Model<CardDocument>,
+    private questionService: QuestionService,
+  ) {}
 
   async create(
     owner: User,
@@ -91,11 +95,17 @@ export class CardService {
       .exec();
   }
 
-  async findByQuestionAndUser(question: Question, user: User): Promise<Card> {
+  async findByQuestionIdAndUser(questionId: string, user: User): Promise<Card> {
+    const question = await this.questionService.findByQuestionId(questionId);
+
     const card = await this.cardModel
-      .findOne({ question, owner: user })
-      .populate('question')
+      .findOne({
+        question,
+        owner: user,
+      })
+      .populate("question")
       .exec();
+
     return card;
   }
 
