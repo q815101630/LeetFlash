@@ -37,7 +37,7 @@ import { addTodayByDays, formatDate, getTodayLastSecond } from "utils";
 import { useAppSelector } from "redux/hooks";
 import { selectSettings } from "redux/settings/settingsSlice";
 import { htmlToMarkdown } from "utils/htmlToarkdown";
-
+import { SiLeetcode } from "react-icons/si";
 const DailyReview = () => {
   const contentHeight = "70vh";
   const toast = useToast();
@@ -152,6 +152,27 @@ const DailyReview = () => {
                               questions[currentIndex].next_rep_date
                             ).toLocaleDateString()}
                           </Badge>
+                        </Tooltip>
+                        <Tooltip
+                          hasArrow
+                          label="Go to leetcode"
+                          placement="auto-start"
+                        >
+                          <IconButton
+                            as="a"
+                            variant="outline"
+                            colorScheme="blue"
+                            size="md"
+                            aria-label="question url"
+                            icon={<SiLeetcode size={20} />}
+                            href={
+                              lang === "EN"
+                                ? questions[currentIndex].question.url
+                                : questions[currentIndex].question.translatedUrl
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          />
                         </Tooltip>
                         {completedTitles.filter(
                           (title) =>

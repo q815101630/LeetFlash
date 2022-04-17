@@ -101,6 +101,8 @@ function App() {
           btn1Text={`Go to next stage`}
           btn2Text={`No change`}
           btn1Handler={() => {
+            //@ts-ignore
+            card.id = card._id;
             moveNextStageCard(card);
           }}
           removePopup={() => setEarlyReviewCards((cards) => cards.slice(0, -1))}
@@ -125,10 +127,14 @@ function App() {
             btn1Handler={() => {
               card.last_rep_date = new Date();
               card.next_rep_date = new Date(Date.now() + 24 * 60 * 60 * 1000);
+              //@ts-ignore
+              card.id = card._id;
               // does not modify stage
               patchCard(card);
             }}
             btn2Handler={() => {
+              //@ts-ignore
+              card.id = card._id;
               moveNextStageCard(card);
             }}
             key={`${card.id}-${i}`}

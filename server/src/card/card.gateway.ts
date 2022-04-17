@@ -83,7 +83,7 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let card = await this.cardService.findByQuestionIdAndUser(question.questionId, user);
     if (!card) {
       card = await this.cardService.create(user, submitQuestionDto, question);
-
+      
       // if it is a new card:
       const socketId = this.cardService.getSocketId(card.owner._id.toString());
       const success = this.server.to(socketId).emit('new-card', card);
