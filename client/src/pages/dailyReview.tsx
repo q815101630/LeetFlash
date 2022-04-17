@@ -72,7 +72,7 @@ const DailyReview = () => {
           <Heading size="lg" fontWeight="medium">
             Daily Review
           </Heading>
-          <Text>View problems need to be reviewed</Text>
+          <Text>Review problems due today</Text>
           <Divider bgColor={useColorModeValue("gray.300", "gray.700")} />
         </Stack>
         <Box
@@ -89,7 +89,10 @@ const DailyReview = () => {
                     <HStack>
                       <QuestionIcon w="6" h="6" />
                       <Heading as="h2" fontWeight="semibold" size="md">
-                        Problem {currentIndex + 1}
+                        Problem {currentIndex + 1} - {lang === "EN"
+                            ? questions[currentIndex].question.title || ""
+                            : questions[currentIndex].question
+                                .translatedTitle || ""}
                         <Tooltip label="Due date" placement="top" hasArrow>
                           <Badge mx={2}>
                             {new Date(
