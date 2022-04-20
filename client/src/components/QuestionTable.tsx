@@ -37,10 +37,31 @@ export interface QuestionTableProps {
   orderCol: number;
   order: number;
   onSort: (col: number, order: number, compare: (a: Card, b: Card) => number) => void;
+  setCard: (id: string, card: Card) => void;
 }
 
-export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, order, onSort }) => {
+export const QuestionTable: React.FC<QuestionTableProps> = ({
+  cards,
+  orderCol,
+  order,
+  onSort,
+  setCard,
+}) => {
   const { lang } = useAppSelector(selectSettings); // EN or CN
+
+  const handleArchiveQuestion = (card: Card) => {
+    const newCard = {
+      ...card,
+      is_archived: !card.is_archived,
+    };
+
+    // TODO: post a request
+    // const result = await some request
+    // if result is success
+    // setCard(card.id, newCard);
+    // othrewise
+    return;
+  };
 
   const tableHeaders: TableHeadProps[] = useMemo(() => {
     return [
@@ -86,7 +107,9 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ cards, orderCol, o
   const tableCells: TableCellProps[] = useMemo(
     () => [
       {
-        render: (card) => <Checkbox isChecked={card.is_archived} />,
+        render: (card) => (
+          <Checkbox isChecked={card.is_archived} onChange={() => handleArchiveQuestion(card)} />
+        ),
       },
       {
         render: (card) => {

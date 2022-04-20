@@ -124,6 +124,18 @@ export const QuestionTableContainer: React.FC = () => {
   const buttonVariant = useColorModeValue('solid', 'outline');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
+  const updateCard = (id: string, newCard: Card) => {
+    console.log(id);
+    setQuestions(
+      questions.map((card) => {
+        if (card.id === id) {
+          return newCard;
+        }
+        return card;
+      })
+    );
+  };
+
   const handleSortTable = (col: number, order: number, compare: any) => {
     compareFn.current = compare;
     setOrderCol(col);
@@ -206,6 +218,7 @@ export const QuestionTableContainer: React.FC = () => {
               orderCol={orderCol}
               cards={paginatedData}
               onSort={handleSortTable}
+              setCard={updateCard}
             />
           </Box>
           {/* Footer */}

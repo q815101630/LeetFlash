@@ -16,7 +16,7 @@ import {
   VStack,
   Badge,
   useToast,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -25,29 +25,29 @@ import {
   TimeIcon,
   ViewIcon,
   ViewOffIcon,
-} from "@chakra-ui/icons";
+} from '@chakra-ui/icons';
 // @ts-ignore
-import { MarkdownPreview } from "components/MarkdownPreview";
-import { Fragment, useEffect, useState } from "react";
-import { BsCalendarCheckFill } from "react-icons/bs";
-import { MdFactCheck } from "react-icons/md";
-import { fetchCards, moveNextStageCard, patchCard } from "apis/data.api";
-import { Card } from "interfaces/interfaces";
-import { addTodayByDays, formatDate, getTodayLastSecond } from "utils";
-import { useAppSelector } from "redux/hooks";
-import { selectSettings } from "redux/settings/settingsSlice";
-import { htmlToMarkdown } from "utils/htmlToarkdown";
-import { SiLeetcode } from "react-icons/si";
+import { MarkdownPreview } from 'components/MarkdownPreview';
+import { Fragment, useEffect, useState } from 'react';
+import { BsCalendarCheckFill } from 'react-icons/bs';
+import { MdFactCheck } from 'react-icons/md';
+import { fetchCards, moveNextStageCard, patchCard } from 'apis/data.api';
+import { Card } from 'interfaces/interfaces';
+import { addTodayByDays, formatDate, getTodayLastSecond } from 'utils';
+import { useAppSelector } from 'redux/hooks';
+import { selectSettings } from 'redux/settings/settingsSlice';
+import { htmlToMarkdown } from 'utils/htmlToarkdown';
+import { SiLeetcode } from 'react-icons/si';
 const DailyReview = () => {
-  const contentHeight = "70vh";
+  const contentHeight = '70vh';
   const toast = useToast();
 
   const [showNote, setShowNote] = useState(false);
   const [questions, setQuestions] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [completedTitles, setCompletedTitles] = useState<string[]>([]);
-  const coontainerBg = useColorModeValue("white", "gray.900");
-  const breakpoint = useBreakpointValue({ base: "horizontal", xl: "vertical" });
+  const coontainerBg = useColorModeValue('white', 'gray.900');
+  const breakpoint = useBreakpointValue({ base: 'horizontal', xl: 'vertical' });
   const { lang } = useAppSelector(selectSettings); // EN or CN
 
   // Get the original data
@@ -55,9 +55,7 @@ const DailyReview = () => {
     fetchCards().then((cards) => {
       setQuestions(
         cards.filter(
-          (card) =>
-            new Date(card.next_rep_date) <= getTodayLastSecond() &&
-            !card.is_archived
+          (card) => new Date(card.next_rep_date) <= getTodayLastSecond() && !card.is_archived
         )
       );
     });
@@ -77,62 +75,48 @@ const DailyReview = () => {
       toast({
         title: `Success`,
         description: `You will review ${
-          lang === "EN" ? card.question.title : card.question.translatedTitle
+          lang === 'EN' ? card.question.title : card.question.translatedTitle
         } tomorrow 😊`,
-        status: "success",
+        status: 'success',
         duration: 3000,
-        position: "top",
+        position: 'top',
         isClosable: true,
       });
 
-      setCompletedTitles([
-        questions[currentIndex].question.title,
-        ...completedTitles,
-      ]);
+      setCompletedTitles([questions[currentIndex].question.title, ...completedTitles]);
     });
   };
 
   const nextBtnHandler = () => {
     moveNextStageCard(questions[currentIndex]).then(() => {
       toast({
-        title: "Good job! 😎",
+        title: 'Good job! 😎',
         description: `Next review date: ${addTodayByDays(
           questions[currentIndex].total_stages[
-            Math.min(
-              questions[currentIndex].stage,
-              questions[currentIndex].total_stages.length - 1
-            )
+            Math.min(questions[currentIndex].stage, questions[currentIndex].total_stages.length - 1)
           ]
         ).toLocaleDateString()}.`,
-        status: "success",
+        status: 'success',
         duration: 3000,
-        position: "top",
+        position: 'top',
         isClosable: true,
       });
 
-      setCompletedTitles([
-        questions[currentIndex].question.title,
-        ...completedTitles,
-      ]);
+      setCompletedTitles([questions[currentIndex].question.title, ...completedTitles]);
     });
   };
 
   return (
     <Flex w="full">
-      <Container maxW={questions.length > 0 ? "container.2xl" : "container.lg"}>
+      <Container maxW={questions.length > 0 ? 'container.2xl' : 'container.lg'}>
         <Stack spacing={2} py={6}>
           <Heading size="lg" fontWeight="medium">
             Daily Review
           </Heading>
           <Text>Review problems due today</Text>
-          <Divider bgColor={useColorModeValue("gray.300", "gray.700")} />
+          <Divider bgColor={useColorModeValue('gray.300', 'gray.700')} />
         </Stack>
-        <Box
-          rounded="md"
-          boxShadow={useColorModeValue("lg", "lg-dark")}
-          bg={coontainerBg}
-          mb={10}
-        >
+        <Box rounded="md" boxShadow={useColorModeValue('lg', 'lg-dark')} bg={coontainerBg} mb={10}>
           {questions.length > 0 && (
             <Fragment>
               <SimpleGrid rounded="md" columns={{ base: 1, xl: 2 }}>
@@ -141,23 +125,21 @@ const DailyReview = () => {
                     <HStack>
                       <QuestionIcon w="6" h="6" />
                       <Heading as="h2" fontWeight="semibold" size="md">
-                        Problem {currentIndex + 1} -{" "}
-                        {lang === "EN"
-                          ? questions[currentIndex].question.title || ""
-                          : questions[currentIndex].question.translatedTitle ||
-                            ""}
+                        Problem {currentIndex + 1} -{' '}
+                        {lang === 'EN'
+                          ? questions[currentIndex].question.title || ''
+                          : questions[currentIndex].question.translatedTitle || ''}
                         <Tooltip label="Due date" placement="top" hasArrow>
-                          <Badge mx={2}>
-                            {new Date(
-                              questions[currentIndex].next_rep_date
-                            ).toLocaleDateString()}
+                          <Badge mx={2} colorScheme="green" p={1} rounded="sm">
+                            {new Date(questions[currentIndex].next_rep_date).toLocaleDateString()}
                           </Badge>
                         </Tooltip>
-                        <Tooltip
-                          hasArrow
-                          label="Go to leetcode"
-                          placement="auto-start"
-                        >
+                        {completedTitles.filter(
+                          (title) => title === questions[currentIndex].question.title
+                        ).length > 0 && <MdFactCheck className="w-8 h-8 text-green-500 inline" />}
+                      </Heading>
+                      <Flex flexGrow={1} justify="flex-end" gap={2}>
+                        <Tooltip hasArrow label="Go to leetcode" placement="auto-start">
                           <IconButton
                             as="a"
                             variant="outline"
@@ -166,7 +148,7 @@ const DailyReview = () => {
                             aria-label="question url"
                             icon={<SiLeetcode size={20} />}
                             href={
-                              lang === "EN"
+                              lang === 'EN'
                                 ? questions[currentIndex].question.url
                                 : questions[currentIndex].question.translatedUrl
                             }
@@ -174,19 +156,7 @@ const DailyReview = () => {
                             rel="noopener noreferrer"
                           />
                         </Tooltip>
-                        {completedTitles.filter(
-                          (title) =>
-                            title === questions[currentIndex].question.title
-                        ).length > 0 && (
-                          <MdFactCheck className="w-8 h-8 text-green-500 inline" />
-                        )}
-                      </Heading>
-                      <Flex flexGrow={1} justify="flex-end" gap={2}>
-                        <Tooltip
-                          label="Previous problem"
-                          placement="top"
-                          hasArrow
-                        >
+                        <Tooltip label="Previous problem" placement="top" hasArrow>
                           <IconButton
                             variant="outline"
                             colorScheme="blue"
@@ -220,19 +190,16 @@ const DailyReview = () => {
                     >
                       <MarkdownPreview
                         markdown={htmlToMarkdown(
-                          lang === "EN"
-                            ? questions[currentIndex].question.content || ""
-                            : questions[currentIndex].question
-                                .translatedContent || ""
+                          lang === 'EN'
+                            ? questions[currentIndex].question.content || ''
+                            : questions[currentIndex].question.translatedContent || ''
                         )}
                         show={true}
                       />
                     </Flex>
                   </Flex>
                   <Divider
-                    orientation={
-                      breakpoint as "horizontal" | "vertical" | undefined
-                    }
+                    orientation={breakpoint as 'horizontal' | 'vertical' | undefined}
                   ></Divider>
                 </Flex>
                 <Flex p={4} direction="column" gap={4} h={contentHeight}>
@@ -243,7 +210,7 @@ const DailyReview = () => {
                     </Heading>
                     <Flex flexGrow={1} justify="flex-end" gap={2}>
                       <Tooltip
-                        label={showNote ? "Hide note" : "Show note"}
+                        label={showNote ? 'Hide note' : 'Show note'}
                         placement="top"
                         hasArrow
                       >
@@ -253,13 +220,7 @@ const DailyReview = () => {
                           size="md"
                           aria-label="previous"
                           onClick={() => setShowNote(!showNote)}
-                          icon={
-                            showNote ? (
-                              <ViewOffIcon w="4" h="4" />
-                            ) : (
-                              <ViewIcon w="4" h="4" />
-                            )
-                          }
+                          icon={showNote ? <ViewOffIcon w="4" h="4" /> : <ViewIcon w="4" h="4" />}
                         ></IconButton>
                       </Tooltip>
                     </Flex>
@@ -271,7 +232,7 @@ const DailyReview = () => {
                     borderWidth={1}
                   >
                     <MarkdownPreview
-                      markdown={questions[currentIndex].note || ""}
+                      markdown={questions[currentIndex].note || ''}
                       show={showNote}
                     />
                   </Box>
@@ -316,7 +277,7 @@ const DailyReview = () => {
             </Fragment>
           )}
           {questions.length === 0 && (
-            <Flex justify="center" align="center" h={"40vh"}>
+            <Flex justify="center" align="center" h={'40vh'}>
               <VStack>
                 <MdFactCheck className="w-12 h-12 text-green-500" />
                 <Text fontSize="xl" fontWeight="semibold">
