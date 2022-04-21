@@ -22,7 +22,7 @@ export const fetchCards = () =>
   });
 
 /**
- * patch to update a card, only update three fields: next_rep_date, note, stage
+ * patch to update a card, only update three fields: next_rep_date, stage, is_archived
  * @param card card object
  */
 export const patchCard = (card: Card): Promise<Card> => {

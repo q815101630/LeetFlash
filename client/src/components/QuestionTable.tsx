@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import {
   HStack,
   Icon,
@@ -15,13 +15,14 @@ import {
   Text,
   useColorModeValue,
   Progress,
-} from '@chakra-ui/react';
-import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
-import { Card } from '../interfaces/interfaces';
-import { selectSettings } from 'redux/settings/settingsSlice';
-import { useAppSelector } from 'redux/hooks';
-import { formatDate } from 'utils';
-import { QuestionTitle } from './QuestionTitle';
+} from "@chakra-ui/react";
+import { IoArrowDown, IoArrowUp } from "react-icons/io5";
+import { Card } from "../interfaces/interfaces";
+import { selectSettings } from "redux/settings/settingsSlice";
+import { useAppSelector } from "redux/hooks";
+import { formatDate } from "utils";
+import { QuestionTitle } from "./QuestionTitle";
+import { patchCard } from "apis/data.api";
 
 interface TableHeadProps {
   name: string;
@@ -36,7 +37,11 @@ export interface QuestionTableProps {
   cards: Card[];
   orderCol: number;
   order: number;
-  onSort: (col: number, order: number, compare: (a: Card, b: Card) => number) => void;
+  onSort: (
+    col: number,
+    order: number,
+    compare: (a: Card, b: Card) => number
+  ) => void;
   setCard: (id: string, card: Card) => void;
 }
 
@@ -55,27 +60,27 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
       is_archived: !card.is_archived,
     };
 
-    // TODO: post a request
-    // const result = await some request
-    // if result is success
-    // setCard(card.id, newCard);
-    // othrewise
+    patchCard(newCard)
+      .then(() => setCard(newCard.id, newCard))
+      .catch(console.log);
+
     return;
   };
 
   const tableHeaders: TableHeadProps[] = useMemo(() => {
     return [
       {
-        name: 'Archived',
+        name: "Archived",
         // @ts-ignore
         compare: (a, b) => a.is_archived - b.is_archived,
       },
       {
-        name: 'Title',
-        compare: (a, b) => parseInt(a.question.questionId) - parseInt(b.question.questionId),
+        name: "Title",
+        compare: (a, b) =>
+          parseInt(a.question.questionId) - parseInt(b.question.questionId),
       },
       {
-        name: 'Difficulty',
+        name: "Difficulty",
         compare: (a, b) => {
           const orders = {
             Easy: 1,
@@ -87,19 +92,22 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
         },
       },
       {
-        name: 'Last Repetition',
+        name: "Last Repetition",
         compare: (a, b) =>
-          new Date(a.last_rep_date).getTime() - new Date(b.last_rep_date).getTime(),
+          new Date(a.last_rep_date).getTime() -
+          new Date(b.last_rep_date).getTime(),
       },
       {
-        name: 'Next Repetition',
+        name: "Next Repetition",
         compare: (a, b) =>
-          new Date(a.next_rep_date).getTime() - new Date(b.next_rep_date).getTime(),
+          new Date(a.next_rep_date).getTime() -
+          new Date(b.next_rep_date).getTime(),
       },
       {
-        name: 'Progress',
+        name: "Progress",
         // @ts-ignore
-        compare: (a, b) => a.stage / a.total_stages.length - b.stage / b.total_stages.length,
+        compare: (a, b) =>
+          a.stage / a.total_stages.length - b.stage / b.total_stages.length,
       },
     ];
   }, []);
@@ -108,7 +116,10 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
     () => [
       {
         render: (card) => (
-          <Checkbox isChecked={card.is_archived} onChange={() => handleArchiveQuestion(card)} />
+          <Checkbox
+            isChecked={card.is_archived}
+            onChange={() => handleArchiveQuestion(card)}
+          />
         ),
       },
       {
@@ -119,14 +130,17 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
       {
         render: (card) => {
           const colors = {
-            Easy: 'green',
-            Medium: 'yellow',
-            Hard: 'red',
+            Easy: "green",
+            Medium: "yellow",
+            Hard: "red",
           };
 
           return (
             <Box pl={2}>
-              <Badge fontSize="sm" colorScheme={colors[card.question.difficulty]}>
+              <Badge
+                fontSize="sm"
+                colorScheme={colors[card.question.difficulty]}
+              >
                 {card.question.difficulty}
               </Badge>
             </Box>
@@ -142,14 +156,18 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
       {
         render: (card) => (
           // @ts-ignore
-          <Progress w={100} hasStripe value={(card.stage / card.total_stages.length) * 100} />
+          <Progress
+            w={100}
+            hasStripe
+            value={(card.stage / card.total_stages.length) * 100}
+          />
         ),
       },
     ],
     [lang]
   );
 
-  const tableHeadBg = useColorModeValue('gray.50', 'gray.700');
+  const tableHeadBg = useColorModeValue("gray.50", "gray.700");
   // const tableRowBg = useColorModeValue('gray.200', 'gray.300');
 
   return (
@@ -165,9 +183,19 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
                   variant="ghost"
                   aria-label="Sort"
                   opacity={orderCol === i ? 1 : 0.5}
-                  icon={<Icon as={orderCol !== i || order === 0 ? IoArrowUp : IoArrowDown} />}
+                  icon={
+                    <Icon
+                      as={
+                        orderCol !== i || order === 0 ? IoArrowUp : IoArrowDown
+                      }
+                    />
+                  }
                   onClick={() => {
-                    onSort(i, orderCol === i ? (order + 1) % 2 : 0, header.compare);
+                    onSort(
+                      i,
+                      orderCol === i ? (order + 1) % 2 : 0,
+                      header.compare
+                    );
                   }}
                 />
               </HStack>
