@@ -39,7 +39,7 @@
     <a href="https://leetflash.com"><strong>Explore the website »</strong></a>
     <br />
     <br />
-    <a href="https://leetflash.com/tutorial">View Tutorial</a>
+    <a href="https://lucheng.xyz/2022/04/14/leetflash/">View Tutorial</a>
     ·
     <a href="https://lucheng.xyz/2022/04/14/leetflash/">Leave Comments in My Blog</a>
     ·
