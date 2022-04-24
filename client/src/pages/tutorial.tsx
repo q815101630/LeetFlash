@@ -6,8 +6,8 @@ const TutorialPage = () => {
   useEffect(() => {
     window.open("https://lucheng.xyz/2022/04/14/leetflash/", "_blank");
 
-    //redirect to targetUrl
-    window.location.href = "https://leetflash.com";
+    //redirect to previous url
+    window.history.back();
   }, []);
 
   return <div> Tutorial Page </div>;
