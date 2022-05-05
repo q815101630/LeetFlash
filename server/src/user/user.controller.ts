@@ -59,7 +59,7 @@ export class UsersController {
       updateUserDto.total_stages = defaultStages;
     }
 
-    return this.usersService.updateByUsername(req.user.username, updateUserDto);
+    return this.usersService.update(req.user._id, updateUserDto);
   }
 
   @UseGuards(SuperUserAuthGuard)
