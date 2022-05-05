@@ -67,6 +67,13 @@
   </ol>
 </details>
 
+## Updates
+
+5/4/2022： Allow users to set a custom review sequence. 
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
