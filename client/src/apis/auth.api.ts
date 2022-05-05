@@ -4,6 +4,7 @@ import client from "./client";
 interface UserInterface {
   id: string;
   email: string;
+  total_stages: number[];
 }
 
 export const getAPIUrl = () => {

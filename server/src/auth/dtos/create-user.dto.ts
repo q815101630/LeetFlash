@@ -4,6 +4,7 @@ import {
   MaxLength,
   IsOptional,
   IsString,
+  IsNumber,
 } from 'class-validator';
 import { Source } from 'src/user/entities/user.entity';
 
@@ -20,7 +21,7 @@ export class CreateUserDto {
   description?: string;
 
   @IsOptional()
-  @IsString()
+  @IsNumber({}, { each: true })
   total_stages?: number[];
 
   @IsOptional()

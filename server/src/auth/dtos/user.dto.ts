@@ -6,4 +6,6 @@ export class UserDto {
   id: string;
   @Expose()
   email: string;
+  @Expose()
+  total_stages: number[];
 }

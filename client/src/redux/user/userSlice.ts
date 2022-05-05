@@ -8,13 +8,15 @@ import {
   signOutUser,
   signUpUser,
 } from "../../apis/auth.api";
-
+import { patchUser } from "../../apis/data.api";
+import { socket } from "App";
 export interface userState {
   id: string;
   email: string;
   status: "active" | "loading" | "inactive";
   error: string | undefined;
   token: string;
+  total_stages: number[];
 }
 
 const initialState: userState = {
@@ -23,6 +25,7 @@ const initialState: userState = {
   status: "inactive",
   error: undefined,
   token: "invalid",
+  total_stages: [0, 0, 0],
 };
 
 export const loginUserAsync = createAsyncThunk(
@@ -72,6 +75,14 @@ export const generateApiTokenAsync = createAsyncThunk(
   }
 );
 
+export const patchUserAsync = createAsyncThunk(
+  "user/patchUser",
+  async (user: userState) => {
+    const newUser = await patchUser(user);
+    return newUser;
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -82,6 +93,7 @@ export const userSlice = createSlice({
       state.email = initialState.email;
       state.id = initialState.id;
       state.token = initialState.token;
+      state.total_stages = initialState.total_stages;
     },
   },
   extraReducers: (builder) => {
@@ -96,13 +108,19 @@ export const userSlice = createSlice({
         state.status = "active";
         state.id = action.payload.id;
         state.email = action.payload.email;
+        state.total_stages = action.payload.total_stages;
         state.error = undefined;
+        socket.connect();
+
         // invoke useEffect in app.tsx
       })
       .addCase(signUpUserAsync.fulfilled, (state, action) => {
         state.status = "active";
         state.id = action.payload.id;
         state.email = action.payload.email;
+        state.total_stages = action.payload.total_stages;
+        socket.connect();
+
         state.error = undefined;
       })
       .addCase(loginUserAsync.rejected, (state, action) => {
@@ -120,6 +138,7 @@ export const userSlice = createSlice({
         state.status = "active";
         state.id = action.payload.id;
         state.email = action.payload.email;
+        state.total_stages = action.payload.total_stages;
         state.error = undefined;
       })
       .addCase(checkProfileAsync.rejected, (state, action) => {
@@ -133,6 +152,12 @@ export const userSlice = createSlice({
       })
       .addCase(generateApiTokenAsync.fulfilled, (state, action) => {
         state.token = action.payload;
+      })
+      .addCase(patchUserAsync.fulfilled, (state, action) => {
+        state.status = "active";
+        state.id = action.payload.id;
+        state.email = action.payload.email;
+        state.total_stages = action.payload.total_stages;
       });
   },
 });

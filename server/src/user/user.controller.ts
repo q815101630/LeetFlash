@@ -29,6 +29,7 @@ import { CardDto } from 'src/card/dto/card.dto';
 import { Reminder } from 'src/common/types';
 import { Response } from 'express';
 import { AddNoteDto } from 'src/common/add-note.dto';
+import { defaultStages } from 'src/utils/constant';
 @ApiTags('api/user')
 @Controller('user')
 export class UsersController {
@@ -44,13 +45,20 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Get('/profile')
   getMe(@Req() req) {
-    console.log(req.user);
+    console.log(`check profile:${req.user.email}`);
     return req.user;
   }
   @Serialize(UserDto)
   @UseGuards(LocalAuthGuard)
   @Patch('/profile/')
   update(@Body() updateUserDto: UpdateUserDto, @Req() req) {
+    if (
+      !!updateUserDto.total_stages &&
+      updateUserDto.total_stages.length === 0
+    ) {
+      updateUserDto.total_stages = defaultStages;
+    }
+
     return this.usersService.updateByUsername(req.user.username, updateUserDto);
   }
 

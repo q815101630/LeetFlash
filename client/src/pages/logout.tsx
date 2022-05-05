@@ -1,22 +1,20 @@
-import React from "react";
-
 import {
   AlertDialog,
   AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
   Button,
 } from "@chakra-ui/react";
-import { clearUserState, signOutUserAsync } from "../redux/user/userSlice";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { socket } from "App";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { selectSettings } from "redux/settings/settingsSlice";
+import { useAppDispatch } from "../redux/hooks";
+import { clearUserState, signOutUserAsync } from "../redux/user/userSlice";
+
 export const Logout = () => {
   const [isOpen, setIsOpen] = React.useState(true);
-
-  const { socket } = useAppSelector(selectSettings);
 
   const cancelRef = React.useRef(null);
   const dispatch = useAppDispatch();
@@ -26,6 +24,7 @@ export const Logout = () => {
 
     dispatch(clearUserState());
     dispatch(signOutUserAsync());
+    socket.disconnect();
     navigate("/");
   };
   const onClose = () => {

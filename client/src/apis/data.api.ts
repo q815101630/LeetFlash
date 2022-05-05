@@ -1,4 +1,5 @@
 import { AxiosResponse } from "axios";
+import { userState } from "redux/user/userSlice";
 import { Card, Question } from "../interfaces/interfaces";
 import client from "./client";
 export const fetchQuestions = () =>
@@ -41,11 +42,22 @@ export const moveNextStageCard = (card: Card): Promise<Card> => {
     card.last_rep_date = new Date();
     card.next_rep_date = new Date(
       new Date().getTime() +
-        card.total_stages[Math.min(card.stage, card.total_stages.length-1)] *
+        card.total_stages[Math.min(card.stage, card.total_stages.length - 1)] *
           86400000
     );
     return patchCard(card)
       .then((res) => resolve(res))
       .catch((err) => reject(err));
+  });
+};
+
+export const patchUser = (user: userState): Promise<userState> => {
+  return new Promise<userState>((resolve, reject) => {
+    client
+      .patch(`user/profile/`, user)
+      .then((response: AxiosResponse) => resolve(response.data))
+      .catch((error) => {
+        reject(error);
+      });
   });
 };

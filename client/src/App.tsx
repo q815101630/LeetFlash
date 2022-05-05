@@ -6,7 +6,7 @@ import { Card } from "interfaces/interfaces";
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "redux/hooks";
-import { selectSettings, setSocket } from "redux/settings/settingsSlice";
+import { selectSettings } from "redux/settings/settingsSlice";
 import { checkProfileAsync, selectUser } from "redux/user/userSlice";
 import io from "socket.io-client";
 import { formatDate } from "utils";
@@ -20,6 +20,8 @@ import { Logout } from "./pages/logout";
 import { Setting } from "./pages/setting";
 import Header from "./components/Header";
 
+export const socket = createSocket();
+
 function App() {
   const user = useAppSelector(selectUser);
 
@@ -32,9 +34,6 @@ function App() {
   const bg = useColorModeValue("gray.100", "gray.800");
 
   useEffect(() => {
-    const socket = createSocket();
-    setSocket(socket);
-
     const todayReviewListener = (card: Card) => {
       console.log("listened today review!");
       setPopupCards((popupCards) => [...popupCards, card]);
@@ -68,7 +67,7 @@ function App() {
     return () => {
       socket.close();
     };
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     dispatch(checkProfileAsync());
