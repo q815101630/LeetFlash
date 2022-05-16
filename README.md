@@ -70,6 +70,7 @@
 ## Updates
 
 5/4/2022： Allow users to set a custom review sequence. 
+
 5/16/2022: 发现中文leetcode最近换域名了，将会最近适配新域名
 
 <p align="right">(<a href="#top">back to top</a>)</p>
