@@ -14,14 +14,14 @@
     "default_icon": "iconOnly2.png"
   },
   "permissions": ["storage", "tabs", "activeTab", "webRequest"],
-  "host_permissions": ["*://*.leetcode.com/*", "*://*.leetcode-cn.com/*"],
+  "host_permissions": ["*://*.leetcode.com/*", "*://*.leetcode.cn/*"],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://leetcode-cn.com/problems/*/"],
+      "matches": ["https://leetcode.cn/problems/*/"],
       "run_at": "document_end",
       "js": ["contentScript.js", "injectCN.js"]
     },
@@ -38,7 +38,7 @@
     },
     {
       "resources": ["submitBtnInjectCN.js"],
-      "matches": ["*://*.leetcode-cn.com/*"]
+      "matches": ["*://*.leetcode.cn/*"]
     }
   ]
 }

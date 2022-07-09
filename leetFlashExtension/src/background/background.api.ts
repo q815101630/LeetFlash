@@ -220,7 +220,7 @@ export const fetchNoteEN = (titleSlug: string): Promise<Note> => {
 };
 
 export const fetchNoteCN = (titleSlug: string): Promise<Note> => {
-  const queryUrl = `https://leetcode-cn.com/graphql/`;
+  const queryUrl = `https://leetcode.cn/graphql/`;
 
   return new Promise((resolve, reject) => {
     fetch(queryUrl, {
@@ -255,7 +255,7 @@ export const fetchNoteCN = (titleSlug: string): Promise<Note> => {
 export const fetchSubmissionDetailsCN = (
   id: string
 ): Promise<SubmissionDetail> => {
-  const queryUrl = `https://leetcode-cn.com/graphql/`;
+  const queryUrl = `https://leetcode.cn/graphql/`;
 
   return new Promise((resolve, reject) => {
     fetch(queryUrl, {
@@ -302,3 +302,4 @@ export const alarmSetter = (remindSettings: RemindSettings) => {
     });
   });
 };
+

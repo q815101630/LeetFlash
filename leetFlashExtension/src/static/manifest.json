@@ -1,7 +1,7 @@
 {
   "name": "LeetFlash",
   "description": "A simple extension that record your LeetCode performance for everyday.",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "manifest_version": 3,
   "icons": {
     "16": "iconOnly2.png",
@@ -21,14 +21,14 @@
     "notifications",
     "webNavigation"
   ],
-  "host_permissions": ["*://*.leetcode.com/*", "*://*.leetcode-cn.com/*"],
+  "host_permissions": ["*://*.leetcode.com/*", "*://*.leetcode.cn/*"],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://leetcode-cn.com/problems/*/","https://leetcode.com/problems/*/"],
+      "matches": ["https://leetcode.cn/problems/*/","https://leetcode.com/problems/*/"],
       "js": ["contentScript.js"]
     }
   ]

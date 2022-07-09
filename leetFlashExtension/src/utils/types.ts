@@ -5,6 +5,7 @@ export const BASE_URL =
 export const VERIFY_URL = `${BASE_URL}/api/auth/verify-api-token`;
 export const SEND_QUESTION_API = `${BASE_URL}/api/user/add-question/`;
 export const SEND_NOTE_API = `${BASE_URL}/api/user/add-note/`;
+export const ARCHIVE_CARD_API = `${BASE_URL}/api/card/archive/`;
 export const LEETFLASH_DASHBOARD = "https://leetflash.com/dashboard";
 
 export interface TopicTag {
@@ -55,4 +56,57 @@ export interface Reminder {
 export interface Note {
   note: string;
   questionId: string;
+}
+export enum CardInfo {
+  ARCHIVED = "archived",
+  NEW = "new",
+  REVIEW = "review",
+  EARLY_REVIEW = "early_review",
+}
+
+export interface Card {
+  question: Question;
+
+  next_rep_date: Date;
+
+  stage: number;
+
+  total_stages: number[];
+
+  is_archived: boolean;
+
+  last_rep_date: Date;
+
+  created_at: Date;
+
+  id?: string;
+
+  _id?: string;
+
+  note?: string;
+
+  code?: string;
+
+  lang: string;
+
+  rawMemory: number;
+
+  runtime: number;
+}
+
+export interface Question {
+  questionId: string;
+  title: string;
+  translatedTitle?: string;
+  difficulty: "Easy" | "Hard" | "Medium";
+
+  url: string;
+
+  translatedUrl: string;
+
+  topicTags?: TopicTag[];
+
+  content: string;
+
+  translatedContent?: string;
 }

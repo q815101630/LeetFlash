@@ -1,9 +1,9 @@
 import {
+  archiveCard,
   fetchRemindersToday,
   sendNoteToServer,
   sendQuestionToServer,
 } from "../utils/api";
-import { MessageType } from "../utils/messages";
 import {
   addQuestionToSet,
   DefaultRemindSettings,
@@ -19,6 +19,8 @@ import {
   User,
 } from "../utils/storage";
 import {
+  Card,
+  CardInfo,
   LEETFLASH_DASHBOARD,
   Note,
   Reminder,
@@ -42,9 +44,16 @@ import {
 const SUBMIT_FILTERS = {
   urls: [
     "https://leetcode.com/submissions/detail/*/check/",
-    "https://leetcode-cn.com/submissions/detail/*/check/",
+    "https://leetcode.cn/submissions/detail/*/check/",
   ],
 };
+
+enum NOTIFICATION_ID {
+  NEW_QUESTION = "NEW_QUESTION",
+  NEW_REVIEW = "NEW_REVIEW",
+  DAILY_REVIEW = "DAILY_ALARM",
+  ARCHIVED = "ARCHIVED",
+}
 
 /**
  * Below are functions
@@ -57,13 +66,14 @@ const getCurrentTab = async () => {
 };
 
 const getTitleSlug = (url: string) => {
-  const regexp = /^https:\/\/(.+)\.com\/problems\/([a-zA-Z0-9-]+)\/*/;
+  const regexp = /^https:\/\/.+\.(com|cn)\/problems\/([a-zA-Z0-9-]+)\/*/;
   const [_ignore, _site, slug] = url.match(regexp);
   return slug;
 };
 
 const getSubmissionId = (url: string) => {
-  const regexp = /^https:\/\/(.+)\.com\/submissions\/detail\/([0-9]+)\/check\//;
+  const regexp =
+    /^https:\/\/.+\.(com|cn)\/submissions\/detail\/([0-9]+)\/check\//;
   const [_ignore, site, id] = url.match(regexp);
   return { site, id, url };
 };
@@ -71,7 +81,7 @@ const getSubmissionId = (url: string) => {
 const onCompleteHandlerDebounced = (params: any) => {
   if (
     params.initiator !== "https://leetcode.com" &&
-    params.initiator !== "https://leetcode-cn.com"
+    params.initiator !== "https://leetcode.cn"
   ) {
     return;
   }
@@ -84,7 +94,7 @@ const onCompleteHandler = async ({
   url,
 }: chrome.webRequest.WebResponseCacheDetails) => {
   let submissionDetail: SubmissionDetail;
-  if (getSubmissionId(url).site === "leetcode-cn") {
+  if (getSubmissionId(url).site === "cn") {
     submissionDetail = await fetchSubmissionDetailsCN(getSubmissionId(url).id);
   } else {
     const titleSlug = getTitleSlug(await getCurrentTab());
@@ -131,19 +141,44 @@ const handleSendQuestionToServer = (
     console.log("found user and start sending");
     sendQuestionToServer(submissionDetail, user)
       .then(async (res: Response) => {
-        const card: any = await res.json();
-        if (res.status == 201) {
+        const { card, info }: { card: Card; info: CardInfo } = await res.json();
+        if (info == CardInfo.NEW) {
+          chrome.notifications.create(
+            `${NOTIFICATION_ID.NEW_QUESTION}-${card._id}-${user._id}`,
+            {
+              iconUrl: "IconOnly2.png",
+              message: `Do you want to archive this question? Archiving it will not show this question in the daily review any more.`,
+              title: `Detected New Question \`${card.question.title}\` Submission!`,
+              type: "basic",
+              requireInteraction: true,
+              buttons: [
+                {
+                  title: "Archive Now",
+                },
+              ],
+            }
+          );
+        } else if (info == CardInfo.REVIEW) {
+          chrome.notifications.create(
+            `${NOTIFICATION_ID.NEW_REVIEW}-${card._id}-${user._id}`,
+            {
+              iconUrl: "IconOnly2.png",
+              message: `New review record \`${card.question.title}\` sync success! Achieved stage ${card.stage} of ${card.total_stages.length}`,
+              title: "New Review Submission Success",
+              type: "basic",
+              requireInteraction: true,
+              buttons: [
+                {
+                  title: "Do not want reviewing it anymore. Archive Now",
+                },
+              ],
+            }
+          );
+        } else if (info == CardInfo.ARCHIVED) {
           chrome.notifications.create({
             iconUrl: "IconOnly2.png",
-            message: `New question \`${card.question.title}\` sync success!`,
-            title: "New Question Submission Success",
-            type: "basic",
-          });
-        } else {
-          chrome.notifications.create({
-            iconUrl: "IconOnly2.png",
-            message: `New review record \`${card.question.title}\` sync success!`,
-            title: "New Review Submission Success",
+            message: `\`${card.question.title}\` is archived, No Action Needed`,
+            title: "Archived Question",
             type: "basic",
           });
         }
@@ -227,7 +262,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (reminders.length > 0) {
     const remindSettings = await getStoredRemindSettings();
 
-    chrome.notifications.create({
+    chrome.notifications.create(NOTIFICATION_ID.DAILY_REVIEW, {
       iconUrl: "IconOnly2.png",
       message: `${reminders.length} questions due today`,
       contextMessage: "Click to open LeetFlash web!",
@@ -248,14 +283,28 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 chrome.notifications.onButtonClicked.addListener(
   async (id: string, idx: number) => {
-    if (idx == 0) {
-      chrome.tabs.create({ url: LEETFLASH_DASHBOARD });
-    } else if (idx == 1) {
-      const remindSettings = await getStoredRemindSettings();
+    if (id === NOTIFICATION_ID.DAILY_REVIEW) {
+      if (idx == 0) {
+        chrome.tabs.create({ url: LEETFLASH_DASHBOARD });
+      } else if (idx == 1) {
+        const remindSettings = await getStoredRemindSettings();
 
-      chrome.alarms.create("delayReminder", {
-        delayInMinutes: remindSettings.delayMins,
-      });
+        chrome.alarms.create("delayReminder", {
+          delayInMinutes: remindSettings.delayMins,
+        });
+      }
+    } else {
+      // id === NOTIFICATION_ID.NEW_QUESTION or
+      // id === NOTIFICATION_ID.NEW_REVIEW
+      // Archive Question
+      const [, cardId, userId] = id.split("-");
+      archiveCard(cardId, userId)
+        .then((card) => {
+          console.log(`archived ${card.id}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
 );
@@ -309,7 +358,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 /**
  * A WebRequest interceptor that monitor the update of notes for CN site
  */
- chrome.webRequest.onBeforeRequest.addListener(
+chrome.webRequest.onBeforeRequest.addListener(
   (details) => {
     if (details.method == "POST") {
       const postedBody = JSON.parse(
@@ -323,11 +372,11 @@ chrome.webRequest.onBeforeRequest.addListener(
       if (
         !!postedBody &&
         !!postedBody.operationName &&
-        (postedBody.operationName === "noteCreateCommonNote" || postedBody.operationName === "noteUpdateUserNote")
+        (postedBody.operationName === "noteCreateCommonNote" ||
+          postedBody.operationName === "noteUpdateUserNote")
       ) {
         const titleSlug = postedBody.variables.targetId;
         setTimeout(async () => {
-
           const note = await fetchNoteCN(titleSlug);
 
           const user = await getStoredUser();
@@ -340,10 +389,9 @@ chrome.webRequest.onBeforeRequest.addListener(
       }
     }
   },
-  { urls: ["https://leetcode-cn.com/graphql/"] },
+  { urls: ["https://leetcode.cn/graphql/"] },
   ["requestBody"]
 );
-
 
 // chrome.runtime.onMessage.addListener(handleSubmitBtnHit);
 
@@ -369,7 +417,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   {
     urls: [
       "https://leetcode.com/problems/*/submit/",
-      "https://leetcode-cn.com/problems/*/submit/",
+      "https://leetcode.cn/problems/*/submit/",
     ],
   }
 );

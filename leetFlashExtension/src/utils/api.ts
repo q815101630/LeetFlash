@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ARCHIVE_CARD_API, Card } from "./types";
 import {
   DefaultUserPerformance,
   getStoredOnlyVisitor,
@@ -44,11 +45,7 @@ export const sendQuestionToServer = (
   });
 };
 
-
-export const sendNoteToServer = (
-  note: Note,
-  user: User
-): Promise<Response> => {
+export const sendNoteToServer = (note: Note, user: User): Promise<Response> => {
   const body = {
     ...note,
   };
@@ -73,7 +70,6 @@ export const sendNoteToServer = (
       });
   });
 };
-
 
 interface returnUserData {
   email: string;
@@ -127,7 +123,7 @@ export const fetchRemindersToday = (): Promise<Reminder[]> => {
           method: "GET",
         })
           .then((res) => {
-            console.log(res)
+            console.log(res);
             if (res.status === 200 || res.status === 201) {
               res
                 .json()
@@ -140,10 +136,42 @@ export const fetchRemindersToday = (): Promise<Reminder[]> => {
             }
           })
           .catch((err) => {
-            console.log(err)
+            console.log(err);
 
             reject(err);
           });
+      });
+  });
+};
+
+export const archiveCard = (cardId: string, userId: string): Promise<Card> => {
+  return new Promise((resolve, reject) => {
+    fetch(`${ARCHIVE_CARD_API}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        uuid: `${userId}`,
+      },
+      body: JSON.stringify({
+        cardId: cardId,
+      }),
+    })
+      .then(async (res) => {
+        if (res.status === 200 || res.status === 201) {
+          res
+            .json()
+            .then((data: Card) => {
+              resolve(data);
+            })
+            .catch(() => {
+              reject(res.status);
+            });
+        } else {
+          reject(res);
+        }
+      })
+      .catch((err) => {
+        reject(err);
       });
   });
 };
