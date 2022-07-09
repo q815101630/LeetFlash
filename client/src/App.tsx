@@ -36,12 +36,12 @@ function App() {
   useEffect(() => {
     const todayReviewListener = (card: Card) => {
       console.log("listened today review!");
-      setPopupCards((popupCards) => [...popupCards, card]);
+      // setPopupCards((popupCards) => [...popupCards, card]);
     };
 
     const earlyReviewListener = (card: Card) => {
       console.log("listened early review!");
-      setEarlyReviewCards((earlyReviewCards) => [...earlyReviewCards, card]);
+      // setEarlyReviewCards((earlyReviewCards) => [...earlyReviewCards, card]);
     };
 
     const newCardListener = (card: Card) => {
