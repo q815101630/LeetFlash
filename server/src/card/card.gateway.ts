@@ -20,6 +20,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Question } from 'src/question/entities/question.entity';
 import { SubmitQuestionDto } from 'src/question/dto/submit-question.dto';
 import { Response } from 'express';
+import { CardInfo } from '../common/types';
 const options = {
   cors: {
     origin: ['http://localhost:3000'],
@@ -80,28 +81,48 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
     submitQuestionDto: SubmitQuestionDto,
     question: Question,
   ) {
-    let card = await this.cardService.findByQuestionIdAndUser(question.questionId, user);
+    let card = await this.cardService.findByQuestionIdAndUser(
+      question.questionId,
+      user,
+    );
     if (!card) {
       card = await this.cardService.create(user, submitQuestionDto, question);
-      
+
       // if it is a new card:
       const socketId = this.cardService.getSocketId(card.owner._id.toString());
       const success = this.server.to(socketId).emit('new-card', card);
       console.log(`new-card: ${success}`);
-      return { status: HttpStatus.CREATED, card };
+      return { status: HttpStatus.CREATED, info: CardInfo.NEW, card };
     }
+
+    // if the card is already archived:
+    if (card.is_archived) {
+      return { status: HttpStatus.OK, info: CardInfo.ARCHIVED, card };
+    }
+
+    // if it is an existing card:
     card = this.cardService.computeUpdateCardInfo(card, submitQuestionDto);
+    // Automatically review this question if it is not reviewed :
+    card.last_rep_date = new Date();
+    card.next_rep_date = new Date(
+      new Date().getTime() +
+        card.total_stages[Math.min(card.stage, card.total_stages.length - 1)] *
+          86400000,
+    );
+    card.stage = Math.min(card.stage + 1, card.total_stages.length - 1);
+
     card = await this.cardService.update(card);
-
-    const socketId = this.cardService.getSocketId(card.owner._id.toString());
-    if (!socketId) return { status: HttpStatus.OK, card };
-
-    const activeCards = await this.cardService.findActiveCards(user);
 
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
+
+    const socketId = this.cardService.getSocketId(card.owner._id.toString());
+    if (!socketId)
+      return { status: HttpStatus.OK, info: CardInfo.REVIEW, card };
+
+    const activeCards = await this.cardService.findActiveCards(user);
 
     // check if current card is an active card due today
     if (
@@ -111,17 +132,15 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
           card._id.toString() === currCard._id.toString(),
       )
     ) {
-
       // review card
       const success = this.server.to(socketId).emit('review-today', card);
       console.log(`review-today: ${success}`);
     } else {
-
       // this card is due future, ask if confirm early review
       const success = this.server.to(socketId).emit('early-review', card);
       console.log(`early-review: ${success}`);
     }
 
-    return { status: HttpStatus.OK, card };
+    return { status: HttpStatus.OK, card, info: CardInfo.REVIEW };
   }
 }

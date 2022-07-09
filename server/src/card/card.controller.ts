@@ -5,7 +5,10 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Req,
+  Res,
+  Headers,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,6 +16,7 @@ import { ObjectId } from 'mongoose';
 import { LocalAuthGuard } from 'src/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CardService } from './card.service';
+import { ArchiveCardDto } from './dto/archive-card.dto';
 import { CardDto } from './dto/card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 
@@ -59,6 +63,26 @@ export class CardController {
       updateCardDto.is_archived = true;
     }
     const updatedCard = await this.cardService.updateById(id, updateCardDto);
+    return updatedCard;
+  }
+
+  /**
+   * A special method to archive card from extension
+   * @param uuid user's uuid
+   */
+  @Post('/archive')
+  @Serialize(CardDto)
+  async archiveCard(
+    @Headers('UUID') uuid: string,
+    @Body() archiveCardDto: ArchiveCardDto,
+  ) {
+    const card = await this.cardService.findOne(archiveCardDto.cardId, uuid);
+
+    if (!card || card === null) {
+      throw new Error('Card not found');
+    }
+    card.is_archived = true;
+    const updatedCard = await this.cardService.update(card);
     return updatedCard;
   }
 }

@@ -103,7 +103,7 @@ export class CardService {
         question,
         owner: user,
       })
-      .populate("question")
+      .populate('question')
       .exec();
 
     return card;

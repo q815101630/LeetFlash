@@ -18,3 +18,10 @@ export interface Reminder {
   translatedTitle?: string;
   next_rep_date: Date;
 }
+
+export enum CardInfo {
+  ARCHIVED = 'archived',
+  NEW = 'new',
+  REVIEW = 'review',
+  EARLY_REVIEW = 'early_review',
+}

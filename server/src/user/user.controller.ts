@@ -106,14 +106,14 @@ export class UsersController {
       submitQuestionDto.question,
     );
 
-    const { status, card } = await this.cardGateway.handleSubmit(
+    const { status, card, info } = await this.cardGateway.handleSubmit(
       res,
       user,
       submitQuestionDto,
       question,
     );
 
-    res.status(status).send(card);
+    res.status(status).send({ card, info });
   }
 
   @Post('/add-note')
