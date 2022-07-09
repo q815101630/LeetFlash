@@ -109,8 +109,8 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
         card.total_stages[Math.min(card.stage, card.total_stages.length - 1)] *
           86400000,
     );
-    card.stage = Math.min(card.stage + 1, card.total_stages.length - 1);
-
+    card.stage = Math.min(card.stage + 1, card.total_stages.length);
+    card.is_archived = card.stage >= card.total_stages.length;
     card = await this.cardService.update(card);
 
     const today = new Date();
