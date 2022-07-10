@@ -71,7 +71,13 @@
 
 5/4/2022： Allow users to set a custom review sequence. 
 
-5/16/2022: 发现中文leetcode最近换域名了，将会最近适配新域名
+5/16/2022: 发现中文leetcode最近换域名了，已经适配新域名
+
+7/9/2022:
+
+1. Disabled the popup window on the website, now the extension automatically increment the review stage after every review.
+2. Users can archive a question from the Chrome notification after each new submission.
+3. Allow users to archive a question from the daily review page. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
