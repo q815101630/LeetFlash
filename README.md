@@ -77,7 +77,9 @@
 
 1. Disabled the popup window on the website, now the extension automatically increment the review stage after every review.
 2. Users can archive a question from the Chrome notification after each new submission.
-3. Allow users to archive a question from the daily review page. 
+3. Allow users to archive a question from the daily review page.
+
+By 7/9/2022, it requires several days to publish the newest version (2.1.0) on the Chrome Extension Store. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
