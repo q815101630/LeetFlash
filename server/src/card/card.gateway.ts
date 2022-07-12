@@ -100,23 +100,32 @@ export class CardGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { status: HttpStatus.OK, info: CardInfo.ARCHIVED, card };
     }
 
-    // if it is an existing card:
-    card = this.cardService.computeUpdateCardInfo(card, submitQuestionDto);
-    // Automatically review this question if it is not reviewed :
-    card.last_rep_date = new Date();
-    card.next_rep_date = new Date(
-      new Date().getTime() +
-        card.total_stages[Math.min(card.stage, card.total_stages.length - 1)] *
-          86400000,
-    );
-    card.stage = Math.min(card.stage + 1, card.total_stages.length);
-    card.is_archived = card.stage >= card.total_stages.length;
-    card = await this.cardService.update(card);
-
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
+
+    // if it is an existing card:
+    card = this.cardService.computeUpdateCardInfo(card, submitQuestionDto);
+
+    // check if the last repetition is today, only update if it is not today
+    const last_rep_date = card.last_rep_date;
+    last_rep_date.setHours(0, 0, 0, 0);
+    if (last_rep_date.getTime() !== today.getTime()) {
+      // Automatically update this question if it is not archived:
+      card.last_rep_date = new Date();
+      card.next_rep_date = new Date(
+        new Date().getTime() +
+          card.total_stages[
+            Math.min(card.stage, card.total_stages.length - 1)
+          ] *
+            86400000,
+      );
+      card.stage = Math.min(card.stage + 1, card.total_stages.length);
+      card.is_archived = card.stage >= card.total_stages.length;
+      card = await this.cardService.update(card);
+    }
 
     const socketId = this.cardService.getSocketId(card.owner._id.toString());
     if (!socketId)
