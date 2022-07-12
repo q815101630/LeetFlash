@@ -117,10 +117,10 @@ If you want to use the app, visit https://leetflash.com
 
 ## Roadmap
 
-- [] Finish the `Daily Review` page
-- [] Allow users to clear states for one question
-- [] Manually archive questions
-- [] Allow users to filter by `Archive` AND `question topic`
+- [ ] Finish the `Daily Review` page
+- [ ] Allow users to clear states for one question
+- [ ] Manually archive questions
+- [ ] Allow users to filter by `Archive` AND `question topic`
 
 See the [open issues](https://github.com/q815101630/LeetFlash/issues) for a full list of proposed features (and known issues).
 
