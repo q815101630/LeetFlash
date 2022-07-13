@@ -10,6 +10,7 @@ import {
   Res,
   Headers,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
@@ -18,6 +19,7 @@ import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CardService } from './card.service';
 import { ArchiveCardDto } from './dto/archive-card.dto';
 import { CardDto } from './dto/card.dto';
+import { MultipleCardsDto } from './dto/multiple-cards.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 
 @ApiTags('Card')
@@ -64,6 +66,55 @@ export class CardController {
     }
     const updatedCard = await this.cardService.updateById(id, updateCardDto);
     return updatedCard;
+  }
+
+  @Post('/delete-many')
+  @Serialize(CardDto)
+  @UseGuards(LocalAuthGuard)
+  async deleteCardsById(@Req() req, @Body() deleteCardsDto: MultipleCardsDto) {
+    const cards = await this.cardService.findAll(req.user);
+    const idsToDelete = cards
+      .filter((card) => deleteCardsDto.ids.includes(card._id.toString()))
+      .map((card) => card._id);
+
+    await this.cardService.deleteMany(idsToDelete);
+    return this.getCards(req);
+  }
+
+  @Post('/archive-many')
+  @Serialize(CardDto)
+  async archiveMany(@Req() req, @Body() ids: MultipleCardsDto) {
+    const cards = await this.cardService.findAll(req.user);
+    const idsToArchive = cards
+      .filter((card) => ids.ids.includes(card._id.toString()))
+      .map((card) => card._id);
+
+    await this.cardService.archiveMany(idsToArchive);
+    return this.getCards(req);
+  }
+
+  @Post('/activate-many')
+  @Serialize(CardDto)
+  async activateMany(@Req() req, @Body() ids: MultipleCardsDto) {
+    const cards = await this.cardService.findAll(req.user);
+    const idsToActivate = cards
+      .filter((card) => ids.ids.includes(card._id.toString()))
+      .map((card) => card._id);
+
+    await this.cardService.activateMany(idsToActivate);
+    return this.getCards(req);
+  }
+
+  @Post('/reset-many')
+  @Serialize(CardDto)
+  async resetMany(@Req() req, @Body() ids: MultipleCardsDto) {
+    const cards = await this.cardService.findAll(req.user);
+    const idsToReset = cards
+      .filter((card) => ids.ids.includes(card._id.toString()))
+      .map((card) => card._id);
+
+    await this.cardService.resetMany(req.user, idsToReset);
+    return this.getCards(req);
   }
 
   /**

@@ -120,6 +120,36 @@ export class CardService {
     return cards;
   }
 
+  async deleteMany(ids: string[] | ObjectId[]) {
+    return await this.cardModel.deleteMany({ _id: { $in: ids } });
+  }
+
+  async resetMany(owner: User, ids: string[] | ObjectId[]) {
+    return await this.cardModel.updateMany(
+      { _id: { $in: ids } },
+      {
+        next_rep_date: new Date(),
+        is_archived: false,
+        stage: 1,
+        total_stages: owner.total_stages,
+      },
+    );
+  }
+
+  async activateMany(ids: string[] | ObjectId[]) {
+    return await this.cardModel.updateMany(
+      { _id: { $in: ids } },
+      { is_archived: false },
+    );
+  }
+
+  async archiveMany(ids: string[] | ObjectId[]) {
+    return await this.cardModel.updateMany(
+      { _id: { $in: ids } },
+      { is_archived: true },
+    );
+  }
+
   getSocketId(userId: string) {
     return this.userIdToSocketIdMap.get(userId);
   }
@@ -140,6 +170,7 @@ export class CardService {
   async getUserFromSocket(socket: Socket) {
     const cookie = socket.handshake.headers.cookie;
     const parsed = parse(cookie);
+    // eslint-disable-next-line prefer-const
     let { session, Authentication } = parsed;
     const sig = parsed['session.sig'];
 
