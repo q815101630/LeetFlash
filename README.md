@@ -79,6 +79,9 @@
 2. Users can archive a question from the Chrome notification after each new submission.
 3. Allow users to archive a question from the daily review page.
 
+7/12/2022:
+Allow users to perform Archive, Reset, Activate, Delete multiple questions at once on dashboard
+
 ~~By 7/9/2022, it requires several days to publish the newest version (2.1.0) on the Chrome Extension Store.~~ Published, please update the version!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
