@@ -23,6 +23,7 @@ import { useAppSelector } from "redux/hooks";
 import { formatDate } from "utils";
 import { QuestionTitle } from "./QuestionTitle";
 import { patchCard } from "apis/data.api";
+import { TableAction } from "./QuestionTableContainer";
 
 interface TableHeadProps {
   name: string;
@@ -43,6 +44,10 @@ export interface QuestionTableProps {
     compare: (a: Card, b: Card) => number
   ) => void;
   setCard: (id: string, card: Card) => void;
+  appendSelected: (id: string) => void;
+  removeSelected: (id: string) => void;
+  tableAction: TableAction;
+  selected: string[];
 }
 
 export const QuestionTable: React.FC<QuestionTableProps> = ({
@@ -51,26 +56,30 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
   order,
   onSort,
   setCard,
+  appendSelected,
+  removeSelected,
+  tableAction,
+  selected,
 }) => {
   const { lang } = useAppSelector(selectSettings); // EN or CN
 
-  const handleArchiveQuestion = (card: Card) => {
-    const newCard = {
-      ...card,
-      is_archived: !card.is_archived,
-    };
+  // const handleSelect = (card: Card) => {
+  //   const newCard = {
+  //     ...card,
+  //     is_archived: !card.is_archived,
+  //   };
 
-    patchCard(newCard)
-      .then(() => setCard(newCard.id, newCard))
-      .catch(console.log);
+  //   patchCard(newCard)
+  //     .then(() => setCard(newCard.id, newCard))
+  //     .catch(console.log);
 
-    return;
-  };
+  //   return;
+  // };
 
   const tableHeaders: TableHeadProps[] = useMemo(() => {
     return [
       {
-        name: "Archived",
+        name: tableAction === TableAction.NORMAL ? "Archived" : "Select",
         // @ts-ignore
         compare: (a, b) => a.is_archived - b.is_archived,
       },
@@ -110,15 +119,28 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
           a.stage / a.total_stages.length - b.stage / b.total_stages.length,
       },
     ];
-  }, []);
+  }, [tableAction]);
 
   const tableCells: TableCellProps[] = useMemo(
     () => [
       {
         render: (card) => (
           <Checkbox
-            isChecked={card.is_archived}
-            onChange={() => handleArchiveQuestion(card)}
+            isDisabled={tableAction === TableAction.NORMAL}
+            isChecked={
+              tableAction === TableAction.NORMAL
+                ? card.is_archived
+                : selected.indexOf(card.id) > -1
+            }
+            onChange={(e) => {
+              if (e.target.checked) {
+                appendSelected(
+                  card.id
+                  );
+              } else {
+                removeSelected(card.id);
+              }
+            }}
           />
         ),
       },
@@ -164,7 +186,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
         ),
       },
     ],
-    [lang]
+    [lang, tableAction, selected]
   );
 
   const tableHeadBg = useColorModeValue("gray.50", "gray.700");

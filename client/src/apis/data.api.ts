@@ -61,3 +61,49 @@ export const patchUser = (user: userState): Promise<userState> => {
       });
   });
 };
+
+export const deleteCards = (ids: string[]): Promise<Card[]> => {
+  return new Promise<Card[]>((resolve, reject) => {
+    client
+      .post(`/card/delete-many`, { ids })
+      .then((response: AxiosResponse) => resolve(response.data))
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const archiveCards = (ids: string[]): Promise<Card[]> => {
+  return new Promise<Card[]>((resolve, reject) => {
+    client
+      .post(`/card/archive-many`, { ids })
+      .then((response: AxiosResponse) => resolve(response.data))
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const resetCards = (ids: string[]): Promise<Card[]> => {
+  return new Promise<Card[]>((resolve, reject) => {
+    client
+      .post(`/card/reset-many`, { ids })
+      .then((response: AxiosResponse) => resolve(response.data))
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const activateCards = (ids: string[]): Promise<Card[]> => {
+  return new Promise<Card[]>((resolve, reject) => {
+    client
+      .post(`/card/activate-many`, { ids })
+      .then((response: AxiosResponse) => resolve(response.data))
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+
