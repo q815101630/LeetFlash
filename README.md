@@ -41,7 +41,7 @@
     <br />
     <a href="https://lucheng.xyz/2022/04/14/leetflash/">View Tutorial</a>
     ·
-    <a href="https://lucheng.xyz/2022/04/14/leetflash/">Leave Comments in My Blog</a>
+    <a href="https://www.bilibili.com/video/BV1fg411f7aC/">Video Intro (Chinese)</a>
     ·
     <a href="https://github.com/q815101630/LeetFlash/issues">Request Feature</a>
   </p>
