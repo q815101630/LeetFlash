@@ -82,7 +82,7 @@
 7/12/2022:
 Allow users to perform Archive, Reset, Activate, Delete multiple questions at once on dashboard
 
-~~By 7/9/2022, it requires several days to publish the newest version (2.1.0) on the Chrome Extension Store.~~ Published, please update the version!
+请尽量通过Chrome Extension 商店下载插件。如果因为网络原因，的确需要离线下载，[链接](https://github.com/q815101630/LeetFlash/releases/download/offline-package/LeetFlash.zip)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
