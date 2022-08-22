@@ -144,6 +144,8 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+If you have any questions on how to contribute to this project, please contact me at lqing3@illinois.edu 
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- LICENSE -->
