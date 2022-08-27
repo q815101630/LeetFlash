@@ -17,6 +17,8 @@ import { Dashboard } from "./pages/dashboard";
 import LandingPage from "./pages/landingPage";
 import LoginPage from "./pages/login";
 import { Logout } from "./pages/logout";
+import ResetPassword  from "./pages/resetpassword";
+
 import { Setting } from "./pages/setting";
 import Header from "./components/Header";
 
@@ -85,6 +87,7 @@ function App() {
           {/* <Route path="/setting" element={<Setting />} /> */}
           <Route path="/review" element={<DailyReview />} />
           <Route path="/tutorial" element={<TutorialPage />} />
+          <Route path="/resetpassword" element={<ResetPassword />} />
 
           <Route path="*" element={<LandingPage />} />
         </Routes>

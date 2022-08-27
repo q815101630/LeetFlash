@@ -1,4 +1,3 @@
-/*
 import {
   Controller,
   ClassSerializerInterceptor,
@@ -10,36 +9,45 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
-import RequestWithUser from 'src/auth/interfaces/requestWithUser.interface';
-import JwtAuthGuard from 'src/guards/jwt-auth.guard';
-import ConfirmEmailDto from './dtos/confirmEmail.dto';
-import { EmailConfirmationService } from './email-confirmation.service';
+import ResetPasswordDto from './dtos/resetPassword.dto';
+
+import { UsersService } from 'src/user/user.service';
 
 @Controller('email-confirmation')
 @UseInterceptors(ClassSerializerInterceptor)
 export class EmailConfirmationController {
   constructor(
-    private readonly emailConfirmationService: EmailConfirmationService,
+    private readonly usersService: UsersService,
   ) {}
 
-  // TODO: this should be changed to TODO and handled by the front-end, then send the request to the server
-  @Get('confirm')
-  async confirm(
-    @Query('token') token,
-    //@Body() confirmationData: ConfirmEmailDto,
-  ) {
-    const email = await this.emailConfirmationService.decodeConfirmationToken(
-      token,
-      //confirmationData.token,
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    const user = await this.usersService.findOne(resetPasswordDto.token);
+
+    await this.usersService.updatePassword(
+      user.email,
+      resetPasswordDto.password,
     );
-    await this.emailConfirmationService.confirmEmail(email);
-    return 'Success to verify your email confirmation';
+    return 'Success to reset your email password';
   }
 
-  @Post('resend-confirmation-link')
-  @UseGuards(JwtAuthGuard)
-  async resendConfirmationLink(@Req() request: RequestWithUser) {
-    await this.emailConfirmationService.resendConfirmationLink(request.user.id);
-  }
+  // TODO: this should be changed to TODO and handled by the front-end, then send the request to the server
+  // @Get('confirm')
+  // async confirm(
+  //   @Query('token') token,
+  //   //@Body() confirmationData: ConfirmEmailDto,
+  // ) {
+  //   const email = await this.emailConfirmationService.decodeConfirmationToken(
+  //     token,
+  //     //confirmationData.token,
+  //   );
+  //   await this.emailConfirmationService.confirmEmail(email);
+  //   return 'Success to verify your email confirmation';
+  // }
+
+  // @Post('resend-confirmation-link')
+  // @UseGuards(JwtAuthGuard)
+  // async resendConfirmationLink(@Req() request: RequestWithUser) {
+  //   await this.emailConfirmationService.resendConfirmationLink(request.user.id);
+  // }
 }
- */

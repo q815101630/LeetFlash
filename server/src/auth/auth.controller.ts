@@ -11,6 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
+import { EmailConfirmationService } from 'src/email-confirmation/email-confirmation.service';
+
+import EmailService from 'src/email/email.service';
 import { LocalAuthGuard } from 'src/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -25,6 +28,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly EmailService: EmailService,
+    private readonly emailConfirmationService: EmailConfirmationService,
   ) {}
 
   @Serialize(UserDto)

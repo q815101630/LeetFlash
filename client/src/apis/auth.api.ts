@@ -14,6 +14,7 @@ export const getAPIUrl = () => {
       : process.env.REACT_APP_DEPLOY_BASE_URL
   }`;
 };
+// console.log(getAPIUrl());
 
 export const getSocketUrl = () => {
   return `${
@@ -22,6 +23,15 @@ export const getSocketUrl = () => {
       : process.env.REACT_APP_DEPLOY_SOCKET_URL
   }`;
 };
+
+
+// export const getSocketUrl = () => {
+//   return `${
+//     process.env.NODE_ENV === "development"
+//       ? "localhost"
+//       : "localhost:"
+//   }`;
+// };
 
 export const signInUser = (email: string, password: string) =>
   new Promise<UserInterface>((resolve, reject) => {
@@ -75,6 +85,18 @@ export const sendResetPassword = (email: string) =>
   new Promise<UserInterface>((resolve, reject) => {
     client
       .post("/auth/forget-password", { email })
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error: AxiosError) => {
+        reject(error.response?.data);
+      });
+  });
+
+  export const setNewPassword = (token: string,password:string) =>
+  new Promise<UserInterface>((resolve, reject) => {
+    client
+      .post("/email-confirmation/reset-password", { token,password })
       .then((response) => {
         resolve(response.data);
       })

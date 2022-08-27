@@ -12,6 +12,7 @@ import { UsersService } from 'src/user/user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
 import { ResetPasswordDto } from './dtos/reset-password-dto';
+import { EmailConfirmationService } from 'src/email-confirmation/email-confirmation.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
+    private readonly emailConfirmationService: EmailConfirmationService,
   ) {
     const clientID = this.configService.get('GOOGLE_CLIENT_ID');
     const clientSecret = this.configService.get('GOOGLE_SECRET');
@@ -79,6 +81,15 @@ export class AuthService {
     return user;
   }
 
+  async resetPassword(email: string) {
+    const user = await this.usersService.create({
+      email,
+      source: Source.GOOGLE,
+    } as CreateUserDto);
+
+    return user;
+  }
+
   async authenticateByGoogleToken(token: string): Promise<User> {
     const tokenInfo = await this.oauthClient.getTokenInfo(token);
 
@@ -97,13 +108,22 @@ export class AuthService {
     }
   }
 
-  //TODO
+  TODO;
   async sendResetPasswordEmail(resetPasswordDto: ResetPasswordDto) {
     const { email } = resetPasswordDto;
     const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new NotFoundException(`User #${email} not found`);
     }
-    return user;
+    // console.log('Found user.');
+    var isEmailSent = await this.emailConfirmationService.sendEmailResetLink(
+      email,
+    );
+
+    if (isEmailSent) {
+      return user;
+    } else {
+      throw new NotFoundException(`New Password not found`);
+    }
   }
 }
