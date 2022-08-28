@@ -40,7 +40,6 @@ export class EmailConfirmationController {
     const email = await this.emailConfirmationService.decodeConfirmationToken(
       resetPasswordDto.token,
     );
-    console.log(`email${email}`);
 
     await this.usersService.updatePassword(email, resetPasswordDto.password);
     return 'Success to reset your email password';

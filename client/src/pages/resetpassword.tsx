@@ -73,7 +73,7 @@ const ResetPage = () => {
   };
 
   return (
-    <>
+    <Container h="100vh" maxW="container.sm" px={0} py={20}>
       <ScaleFade initialScale={0.95} in={true}>
         <VStack w="full" p={10} alignItems="flex-start" bg={bgColor}>
           <VStack spacing="3" alignItems="flex-start">
@@ -120,7 +120,7 @@ const ResetPage = () => {
           </SimpleGrid>
         </VStack>
       </ScaleFade>
-    </>
+    </Container>
   );
 };
 

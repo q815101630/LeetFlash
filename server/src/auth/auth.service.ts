@@ -81,15 +81,6 @@ export class AuthService {
     return user;
   }
 
-  async resetPassword(email: string) {
-    const user = await this.usersService.create({
-      email,
-      source: Source.GOOGLE,
-    } as CreateUserDto);
-
-    return user;
-  }
-
   async authenticateByGoogleToken(token: string): Promise<User> {
     const tokenInfo = await this.oauthClient.getTokenInfo(token);
 
@@ -108,13 +99,19 @@ export class AuthService {
     }
   }
 
-  TODO;
   async sendResetPasswordEmail(resetPasswordDto: ResetPasswordDto) {
     const { email } = resetPasswordDto;
+    
     const user = await this.usersService.findByEmail(email);
+
     if (!user) {
       throw new NotFoundException(`User #${email} not found`);
+    } else if (user.source != Source.WEB) {
+      throw new BadRequestException(
+        `User #${email} is not registered with local system`,
+      );
     }
+
     // console.log('Found user.');
     var isEmailSent = await this.emailConfirmationService.sendEmailResetLink(
       email,
@@ -123,7 +120,7 @@ export class AuthService {
     if (isEmailSent) {
       return user;
     } else {
-      throw new NotFoundException(`New Password not found`);
+      throw new Error(`Cannot send email to ${email}`);
     }
   }
 }

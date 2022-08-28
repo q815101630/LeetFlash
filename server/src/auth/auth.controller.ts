@@ -53,7 +53,7 @@ export class AuthController {
   }
   @Post('/forget-password')
   async sendResetPasswordEmail(@Body() resetPasswordDto: ResetPasswordDto) {
-    await this.authService.sendResetPasswordEmail(resetPasswordDto);
+    return await this.authService.sendResetPasswordEmail(resetPasswordDto);
   }
 
   @Post('/signout')

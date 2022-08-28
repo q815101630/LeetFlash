@@ -12,12 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
     forwardRef(() => UsersModule),
     ConfigModule,
     EmailModule,
-    JwtModule.register({
-      secret: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
-      signOptions: {
-        expiresIn: process.env.JWT_ACCESS_TOKEN_SECRET,
-      },
-    }),
+    JwtModule.register({}),
   ],
   providers: [EmailConfirmationService],
   exports: [EmailConfirmationService],

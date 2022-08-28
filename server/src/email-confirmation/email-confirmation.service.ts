@@ -40,7 +40,7 @@ export class EmailConfirmationService {
       resetLink,
       expires_minutes: (this.emailExpiration / 60).toFixed(),
     } as const;
-    const text = `Welcome to LeetFlash. To reset password, click here: ${resetLink}. This link would invalid in 30 minutes.`;
+    const text = `Welcome to LeetFlash. To reset password, click here: ${resetLink} This link will expire in 30 minutes.`;
     let mailOptions = {
       from: '"LeetFlash" <' + this.configService.get('EMAIL_USER') + '>',
       to: email,
@@ -57,12 +57,10 @@ export class EmailConfirmationService {
     }
   }
   public async decodeConfirmationToken(token: string) {
-    console.log(`start decoding ${token}`);
     try {
       const payload = await this.jwtService.verify(token, {
         secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
       });
-      console.log('payload');
 
       if (typeof payload === 'object' && 'email' in payload) {
         return payload.email;
@@ -72,9 +70,6 @@ export class EmailConfirmationService {
       if (error?.name === 'TokenExpiredError') {
         throw new BadRequestException('Email confirmation token expired');
       }
-      console.log(error.name);
-      console.log(error.message);
-      console.log(error.expiredAt);
       throw new BadRequestException('Bad confirmation token');
     }
   }
