@@ -1,8 +1,14 @@
 import { ConfigService } from '@nestjs/config';
 import EmailService from 'src/email/email.service';
 import { UsersService } from 'src/user/user.service';
+import { JwtService } from '@nestjs/jwt';
+import VerificationTokenPayload from './interfaces/verificationTokenPayload.interface';
 
-import { NotFoundException, Injectable } from '@nestjs/common';
+import {
+  NotFoundException,
+  Injectable,
+  BadRequestException,
+} from '@nestjs/common';
 
 /**
  * A service that sends email verification tokens to users.
@@ -13,14 +19,20 @@ export class EmailConfirmationService {
   private readonly emailExpiration: number;
 
   constructor(
+    private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
     private readonly usersService: UsersService,
   ) {}
 
   public async sendEmailResetLink(email: string) {
-    const user = await this.usersService.findByEmail(email);
-    const token = user._id;
+    const payload: VerificationTokenPayload = { email };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
     const resetLink = `${this.configService.get(
       'RESET_PASSWORD_URL',
     )}?token=${token}`;
@@ -28,7 +40,7 @@ export class EmailConfirmationService {
       resetLink,
       expires_minutes: (this.emailExpiration / 60).toFixed(),
     } as const;
-    const text = `Welcome to LeetFlash. To reset password, click here: ${resetLink}.`;
+    const text = `Welcome to LeetFlash. To reset password, click here: ${resetLink}. This link would invalid in 30 minutes.`;
     let mailOptions = {
       from: '"LeetFlash" <' + this.configService.get('EMAIL_USER') + '>',
       to: email,
@@ -39,10 +51,31 @@ export class EmailConfirmationService {
     };
     const sent = await this.emailService.sendMail(mailOptions);
     if (sent) {
-      // console.log('Reset Password Email Sent');
       return true;
     } else {
       throw new NotFoundException(`Unable to send email. Try again.`);
+    }
+  }
+  public async decodeConfirmationToken(token: string) {
+    console.log(`start decoding ${token}`);
+    try {
+      const payload = await this.jwtService.verify(token, {
+        secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      });
+      console.log('payload');
+
+      if (typeof payload === 'object' && 'email' in payload) {
+        return payload.email;
+      }
+      throw new BadRequestException();
+    } catch (error) {
+      if (error?.name === 'TokenExpiredError') {
+        throw new BadRequestException('Email confirmation token expired');
+      }
+      console.log(error.name);
+      console.log(error.message);
+      console.log(error.expiredAt);
+      throw new BadRequestException('Bad confirmation token');
     }
   }
 

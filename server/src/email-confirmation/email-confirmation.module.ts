@@ -13,8 +13,10 @@ import { JwtModule } from '@nestjs/jwt';
     ConfigModule,
     EmailModule,
     JwtModule.register({
-      secret: 'secretKey',
-      signOptions: { expiresIn: '60s' },
+      secret: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
+      signOptions: {
+        expiresIn: process.env.JWT_ACCESS_TOKEN_SECRET,
+      },
     }),
   ],
   providers: [EmailConfirmationService],
