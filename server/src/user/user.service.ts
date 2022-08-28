@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { defaultStages } from 'src/utils/constant';
 import * as mongoose from 'mongoose';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { UpdateUserDto } from 'src/auth/dtos/update-user.dto';
+import * as argon2 from 'argon2';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -104,5 +107,19 @@ export class UsersService {
   async remove(userId: string): Promise<any> {
     const deletedUser = await this.userModel.findByIdAndRemove(userId);
     return deletedUser;
+  }
+
+  async updatePassword(email: string, newPassword: string): Promise<boolean> {
+    var user = await this.userModel.findOne({ email: email });
+    console.log(`Found user ${user.email}`)
+    if (!user)
+      throw new HttpException('LOGIN.USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const saltRounds = 10;
+    let password = await bcrypt.hashSync(newPassword, saltRounds);
+    await this.userModel.findOneAndUpdate(
+      { email: email },
+      { password: password },
+    );
+    return true;
   }
 }
