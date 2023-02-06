@@ -15,6 +15,9 @@ import {
   Text,
   useColorModeValue,
   Progress,
+  Tooltip,
+  Stack,
+
 } from "@chakra-ui/react";
 import { IoArrowDown, IoArrowUp } from "react-icons/io5";
 import { Card } from "../interfaces/interfaces";
@@ -136,7 +139,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
               if (e.target.checked) {
                 appendSelected(
                   card.id
-                  );
+                );
               } else {
                 removeSelected(card.id);
               }
@@ -178,11 +181,14 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
       {
         render: (card) => (
           // @ts-ignore
-          <Progress
-            w={100}
-            hasStripe
-            value={(card.stage / card.total_stages.length) * 100}
-          />
+          <HStack>
+            <Progress
+              w={100}
+              hasStripe
+              value={(card.stage / card.total_stages.length) * 100}
+            />
+            <Badge colorScheme='purple'>{card.stage} / {card.total_stages.length}</Badge>
+          </HStack>
         ),
       },
     ],

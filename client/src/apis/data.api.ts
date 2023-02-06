@@ -45,6 +45,8 @@ export const moveNextStageCard = (card: Card): Promise<Card> => {
         card.total_stages[Math.min(card.stage, card.total_stages.length - 1)] *
           86400000
     );
+    card.stage += 1;
+
     return patchCard(card)
       .then((res) => resolve(res))
       .catch((err) => reject(err));
