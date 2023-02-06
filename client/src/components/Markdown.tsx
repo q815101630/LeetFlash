@@ -14,9 +14,11 @@ export const Markdown: React.FC<{ text: string }> = ({ text }) => {
   const codeColor = useColorModeValue('#171923', '#F7FAFC');
   const codeBlockBg = useColorModeValue('gray.100', 'gray.800');
   const blockquoteColor = useColorModeValue('gray.400', 'gray.500');
-
-  let textHack = text.replaceAll("```", "").replaceAll("**Output", "\n**Output").replaceAll("**Explanation", "\n**Explanation");
-  textHack = textHack.replaceAll("**输入：**", "\n**输入**：").replaceAll("**输出：**", "\n**输出**：").replaceAll("**解释：**", "\n**解释**：");
+  let textHack = text;
+  if (text.includes("**Output")) {
+    textHack = textHack.replaceAll("```", "").replaceAll("**Output", "\n**Output").replaceAll("**Explanation", "\n**Explanation");
+    textHack = textHack.replaceAll("**输入：**", "\n**输入**：").replaceAll("**输出：**", "\n**输出**：").replaceAll("**解释：**", "\n**解释**：");
+  }
 
   return (
     <Box px={3} py={2}>
