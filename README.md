@@ -80,7 +80,10 @@
 3. Allow users to archive a question from the daily review page.
 
 7/12/2022:
-Allow users to perform Archive, Reset, Activate, Delete multiple questions at once on dashboard
+Allow users to perform Archive, Reset, Activate, Delete multiple questions at once on dashboard.
+
+2/6/2023:
+Fixed some open bugs: question format in daily review page and the problem about clicking Next stage has no effect.
 
 请尽量通过Chrome Extension 商店下载插件。如果因为网络原因，的确需要离线下载，[链接](https://github.com/q815101630/LeetFlash/releases/tag/offline-package)
 
