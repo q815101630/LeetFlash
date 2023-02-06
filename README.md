@@ -85,7 +85,8 @@ Allow users to perform Archive, Reset, Activate, Delete multiple questions at on
 2/6/2023:
 Fixed some open bugs: question format in daily review page and the problem about clicking Next stage has no effect.
 
-请尽量通过Chrome Extension 商店下载插件。如果因为网络原因，的确需要离线下载，[链接](https://github.com/q815101630/LeetFlash/releases/tag/offline-package)
+
+**请尽量通过Chrome Extension 商店下载插件**。如果因为网络原因，的确需要离线下载，[链接](https://github.com/q815101630/LeetFlash/releases/tag/offline-package)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
