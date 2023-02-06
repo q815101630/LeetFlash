@@ -133,7 +133,6 @@ export const Markdown: React.FC<{ text: string }> = ({ text }) => {
           },
           pre: (props) => {
             const { children, node } = props;
-            console.log(children);
             return (
               <Box as="pre" w="full" bg={codeBlockBg} p={3}>
                 {children}
@@ -178,7 +177,7 @@ export const Markdown: React.FC<{ text: string }> = ({ text }) => {
                 {children}
               </Box>
             );
-          }
+          },
         }}
       />
     </Box>
