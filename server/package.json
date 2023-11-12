@@ -52,6 +52,7 @@
     "googleapis": "^95.0.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
+    "leetflash-deploy": "file:..",
     "mongoose": "^6.1.4",
     "nodemailer": "^6.7.8",
     "passport": "^0.5.2",

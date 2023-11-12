@@ -287,7 +287,6 @@ export const QuestionTableContainer: React.FC = () => {
                       setAction(TableAction.NORMAL);
                       setSelected([]);
                     }}
-                    a
                   >
                     Cancel
                   </Button>

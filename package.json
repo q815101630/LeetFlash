@@ -5,6 +5,6 @@
     "node": "14.17.6"
   },
   "scripts": {
-    "postinstall": "npm install --prefix client --production=false && npm run build --prefix client && npm install --prefix server --production=false && npm run build --prefix server"
+    "build": "npm install --force --prefix client --production=false && npm install --prefix client react@latest react-dom@latest && npm run build --prefix client && npm install --prefix server --production=false && npm run build --prefix server"
   }
 }
