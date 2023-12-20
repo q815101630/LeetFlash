@@ -11,8 +11,8 @@ import {
 } from "@chakra-ui/react";
 import { Card } from "interfaces/interfaces";
 import { useAppSelector } from "redux/hooks";
-import { selectSettings } from "redux/settings/settingsSlice";
 import { TableAction } from "./QuestionTableContainer";
+import { selectUser } from "redux/user/userSlice";
 
 export interface ActionConfirmationModelProps {
   isOpen: boolean;
@@ -41,7 +41,8 @@ const ActionConfirmationModel = ({
       return "Confirm to reset following questions to stage 1";
     }
   };
-  const { lang } = useAppSelector(selectSettings);
+  const { lang } = useAppSelector(selectUser);
+
   return (
     <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -53,7 +54,7 @@ const ActionConfirmationModel = ({
             .filter((card) => selected.indexOf(card.id) > -1)
             .map((card, index) => (
               <Text key={`${card.id}-${index}`}>
-                    {card.question.questionId}.{" "}
+                {card.question.questionId}.{" "}
                 {lang === "EN"
                   ? card.question.title
                   : card.question.translatedTitle}

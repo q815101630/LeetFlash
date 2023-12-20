@@ -17,6 +17,8 @@ export interface userState {
   error: string | undefined;
   token: string;
   total_stages: number[];
+  lang: "EN" | "CN";
+  display_sponsor_msg: boolean;
 }
 
 const initialState: userState = {
@@ -26,6 +28,8 @@ const initialState: userState = {
   error: undefined,
   token: "invalid",
   total_stages: [0, 0, 0],
+  lang: "EN",
+  display_sponsor_msg: true,
 };
 
 export const loginUserAsync = createAsyncThunk(
@@ -95,6 +99,16 @@ export const userSlice = createSlice({
       state.token = initialState.token;
       state.total_stages = initialState.total_stages;
     },
+    toggleLang: (state) => {
+      if (state.lang === "EN") {
+        state.lang = "CN";
+      } else {
+        state.lang = "EN";
+      }
+    },
+    toggleSponsorMsg: (state) => {
+      state.display_sponsor_msg = !state.display_sponsor_msg;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -162,7 +176,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { clearUserState } = userSlice.actions;
+export const { clearUserState, toggleLang, toggleSponsorMsg } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 

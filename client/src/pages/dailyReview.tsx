@@ -38,6 +38,7 @@ import { useAppSelector } from "redux/hooks";
 import { selectSettings } from "redux/settings/settingsSlice";
 import { htmlToMarkdown } from "utils/htmlToarkdown";
 import { SiLeetcode } from "react-icons/si";
+import { selectUser } from "redux/user/userSlice";
 const DailyReview = () => {
   const contentHeight = "70vh";
   const toast = useToast();
@@ -50,7 +51,7 @@ const DailyReview = () => {
 
   const coontainerBg = useColorModeValue("white", "gray.900");
   const breakpoint = useBreakpointValue({ base: "horizontal", xl: "vertical" });
-  const { lang } = useAppSelector(selectSettings); // EN or CN
+  const { lang } = useAppSelector(selectUser);
 
   // Get the original data
   useEffect(() => {

@@ -27,6 +27,7 @@ import { formatDate } from "utils";
 import { QuestionTitle } from "./QuestionTitle";
 import { patchCard } from "apis/data.api";
 import { TableAction } from "./QuestionTableContainer";
+import { selectUser } from "redux/user/userSlice";
 
 interface TableHeadProps {
   name: string;
@@ -64,7 +65,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
   tableAction,
   selected,
 }) => {
-  const { lang } = useAppSelector(selectSettings); // EN or CN
+  const { lang } = useAppSelector(selectUser);
 
   // const handleSelect = (card: Card) => {
   //   const newCard = {

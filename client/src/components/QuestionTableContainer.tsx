@@ -39,6 +39,8 @@ import {
 } from "apis/data.api";
 import ActionConfirmationModel from "./ActionConfirmationModel";
 import { deleteCards } from "../apis/data.api";
+import { useAppSelector } from "redux/hooks";
+import { selectUser } from "redux/user/userSlice";
 
 export enum TableAction {
   NORMAL,
@@ -65,6 +67,7 @@ export const QuestionTableContainer: React.FC = () => {
   const buttonColor = useColorModeValue("gray", "orange");
   const buttonVariant = useColorModeValue("solid", "outline");
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const user = useAppSelector(selectUser);
 
   const appendSelected = (id: string) => {
     setSelected((prevSelected) => [...prevSelected, id]);
@@ -134,6 +137,69 @@ export const QuestionTableContainer: React.FC = () => {
         new Date(a.next_rep_date).getTime() -
         new Date(b.next_rep_date).getTime();
       setQuestions(cards.sort(compareFn.current));
+    });
+
+    user.lang === "EN" && user.display_sponsor_msg &&
+      toast({
+        position: "top",
+        title: "Please Support LeetFlash!",
+        description:
+          "LeetFlash is a free open-source project. To ensure the normal operation of the application, I personally have to bear the server costs every month. This has become increasingly difficult for me and has forced me to consider new solutions. If your finances allow, please consider donating to help pay for server costs. Thank you for your support!",
+        status: "success",
+        duration: 30000,
+        isClosable: true,
+      });
+    user.lang === "EN" && user.display_sponsor_msg &&
+    toast({
+      position: "top",
+      title: "Please Support LeetFlash!",
+      description:
+        "You can close this message permanently in the setting.",
+      status: "success",
+      duration: 30000,
+      isClosable: true,
+    });
+
+    user.lang === "CN" && user.display_sponsor_msg &&
+      toast({
+        position: "top",
+        title: "请支持LeetFlash！",
+        description:
+          "LeetFlash是一项免费的开源项目。为了保证应用的正常运营，自2022上半年到现在，我个人每个月都需要承担服务器费用。这对于我来说变得越来越困难，也使得我必须考虑新的解决方案。如果经济允许，请考虑捐款以帮助支付服务器费用。谢谢你的支持！",
+        status: "success",
+        duration: 30000,
+        isClosable: true,
+      });
+    user.lang === "CN" && user.display_sponsor_msg && 
+      toast({
+        position: "top",
+        title: "请支持LeetFlash！",
+        description:
+          "您可以在设置中永久关闭此消息。",
+        status: "success",
+        duration: 30000,
+        isClosable: true,
+      });
+    
+    toast({
+      position: "bottom-left",
+      render: () => (
+        <Box >
+          <Button
+            color="white" bgColor="orange" 
+            onClick={() => {
+              window.open(
+                "https://lucheng.xyz/2022/04/14/leetflash/#%E5%85%B3%E4%BA%8ELeetFlash%F0%9F%98%8A"
+              );
+            }}
+          >
+            LeetFlash 赞助链接 / 给我留言 / Sponsorship Link / Leave me a message
+          </Button>
+        </Box>
+      ),
+      status: "success",
+      duration: 30000,
+      isClosable: true,
     });
   }, []);
 

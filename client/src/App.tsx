@@ -28,7 +28,6 @@ function App() {
   const user = useAppSelector(selectUser);
 
   const toast = useToast();
-  const { lang } = useAppSelector(selectSettings);
   const [popupCards, setPopupCards] = useState<Card[]>([]);
   const [earlyReviewCards, setEarlyReviewCards] = useState<Card[]>([]);
   const dispatch = useAppDispatch();
@@ -97,7 +96,7 @@ function App() {
           key={`${card.id}-${i}`}
           card={card}
           text={`It seems you early reviewed \`${
-            lang === "EN" ? card.question.title : card.question.translatedTitle
+            user.lang === "EN" ? card.question.title : card.question.translatedTitle
           }\`, good job! When do you prefer to review for the next time? 🐼`}
           header={`Keep it up! 💯`}
           btn1Text={`Go to next stage`}
@@ -118,7 +117,7 @@ function App() {
           <PopupModal
             header={`Reviewed a problem 😎`}
             text={`You reviewed \`${
-              lang === "EN"
+              user.lang === "EN"
                 ? card.question.title
                 : card.question.translatedTitle
             }\`, due \`${formatDate(

@@ -29,6 +29,7 @@ import {
   generateApiTokenAsync,
   patchUserAsync,
   selectUser,
+  toggleSponsorMsg,
 } from "../redux/user/userSlice";
 import SideBar from "../components/SideBar";
 import { useEffect, useState } from "react";
@@ -182,7 +183,25 @@ export const Setting = ({
                   Save
                 </Button>
               </HStack>
-              <HStack></HStack>
+              <Divider />
+              <Button
+                onClick={() => {
+                  dispatch(toggleSponsorMsg());
+
+                  toast({
+                    position: "top",
+                    title: "Sponsor Message Updated. 👌",
+                    description: `Sponsor Message has been ${
+                      user.display_sponsor_msg ? "disable" : "enable"
+                    }`,
+                    status: "success",
+                    duration: 4000,
+                    isClosable: true,
+                  });
+                }}
+              >
+                {user.display_sponsor_msg ? "Disable Sponsor Message" : "Enable Sponsor Message"}
+              </Button>
             </VStack>
           </DrawerBody>
         </DrawerContent>

@@ -18,9 +18,8 @@ import {
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { selectUser } from "../redux/user/userSlice";
+import { selectUser, toggleLang } from "../redux/user/userSlice";
 import { FaLanguage } from "react-icons/fa";
-import { selectSettings, toggleLang } from "redux/settings/settingsSlice";
 import { MdDarkMode, MdSettingsSuggest } from "react-icons/md";
 import { AiFillGithub } from "react-icons/ai";
 import logo from "../assets/logo.png";
@@ -51,7 +50,6 @@ const Header = () => {
   const { toggleColorMode } = useColorMode();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
-  const settings = useAppSelector(selectSettings);
   let navigate = useNavigate();
 
   const {
@@ -171,7 +169,7 @@ const Header = () => {
           <Tooltip
             hasArrow
             label={
-              settings.lang === "EN" ? "Switch to Chinese" : "Switch to English"
+              user.lang === "EN" ? "Switch to Chinese" : "Switch to English"
             }
             placement="auto-start"
           >

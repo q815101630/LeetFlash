@@ -1,6 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
+
+// Unused
+
 export interface settingsState {
   lang: "EN" | "CN";
 }
