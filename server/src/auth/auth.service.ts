@@ -106,10 +106,6 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException(`User #${email} not found`);
-    } else if (user.source != Source.WEB) {
-      throw new BadRequestException(
-        `User #${email} is not registered with local system`,
-      );
     }
 
     // console.log('Found user.');
