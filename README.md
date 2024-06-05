@@ -108,6 +108,9 @@ Fixed some open bugs: question format in daily review page and the problem about
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/q815101630/LeetFlash.svg?variant=adaptive)](https://starchart.cc/q815101630/LeetFlash)
+
 
 <!-- ABOUT THE PROJECT -->
 
