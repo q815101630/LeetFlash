@@ -45,7 +45,8 @@ function GoogleButton() {
           size="md"
           w="full"
           onClick={renderProps.onClick}
-          disabled={renderProps.disabled}
+          // disabled={renderProps.disabled}
+          disabled={true}
           colorScheme="teal"
           variant="outline"
           leftIcon={<AiFillGoogleCircle />}

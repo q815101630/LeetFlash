@@ -15,7 +15,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { AiFillWechat } from "react-icons/ai";
 import { BsGithub } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
@@ -228,6 +228,18 @@ const SignInVStack = ({
   const firstUpdate = useRef(true);
   let navigate = useNavigate();
 
+  useEffect(() => {
+    toast({
+      position: "top",
+      title: "Google login currently disabled.",
+      description:
+        "Please reset password and login with password if you used Google login before. 谷歌登录暂时关闭，请重置密码后使用密码登录。",
+      status: "success",
+      duration: 10000,
+      isClosable: true,
+    });
+  }, []);
+
   useLayoutEffect(() => {
     // forbids the first run at the time of mount
     if (firstUpdate.current) {
@@ -395,7 +407,15 @@ const ForgetPasswordVStack = ({
       setFormState("ready");
       toast({
         title: "Reset Password Request Sent",
-        description: `If an email is found, we will send an reset password request to your inbox. Thank you!`,
+        description: `If an email is found, we will send an reset password request to your inbox. Please check spam folder as well. Thank you!`,
+        status: "success",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
+      toast({
+        title: "Reset Password Request Sent",
+        description: `如果我们找到了您的邮箱，我们将向您的收件箱发送重置密码请求。 请检查垃圾邮件文件夹。 谢谢！`,
         status: "success",
         position: "top",
         duration: 3000,
@@ -443,8 +463,6 @@ const ForgetPasswordVStack = ({
     </ScaleFade>
   );
 };
-
-
 
 const LoginPage = () => {
   const [signUp, setSignUp] = React.useState<boolean>(false);

@@ -39,7 +39,7 @@
     <a href="https://leetflash.com"><strong>Explore the website »</strong></a>
     <br />
     <br />
-    <a href="https://lucheng.xyz/2022/04/14/leetflash/">View Tutorial</a>
+    <a href="https://lucheng.online/2022/04/14/leetflash/">View Tutorial</a>
     ·
     <a href="https://www.bilibili.com/video/BV1fg411f7aC/">Video Intro (Chinese)</a>
     ·
@@ -67,19 +67,19 @@
   </ol>
 </details>
 
-# 关于LeetFlash的通知 更新与 2023/10/20 
+# 关于 LeetFlash 的通知 更新与 2023/10/20
 
-首先，我要感谢大家选择使用LeetFlash。LeetFlash是我为数不多的开源项目，我很高兴能够帮助到大家。因为我刚刚毕业和找工作的原因，我今年没有什么机会开发新的功能，我感到十分的无奈和抱歉。不过，我也偶尔能够看见一些用户在我的博客提出建议并给我打赏，非常感谢你们给我的鼓励！
+首先，我要感谢大家选择使用 LeetFlash。LeetFlash 是我为数不多的开源项目，我很高兴能够帮助到大家。因为我刚刚毕业和找工作的原因，我今年没有什么机会开发新的功能，我感到十分的无奈和抱歉。不过，我也偶尔能够看见一些用户在我的博客提出建议并给我打赏，非常感谢你们给我的鼓励！
 
 然而，我需要与你们分享一个重要的事情：为了保证应用的正常运营，我个人每个月都需要承担服务器费用。尽管这个金额并不多，但是日积月累下来，这对于我来说变得越来越困难，也使得我必须考虑新的解决方案。
 
 为了继续提供优质的服务，我需要你们的帮助和支持。
 
-有两种方式可以帮助LeetFlash：
+有两种方式可以帮助 LeetFlash：
 
-1. 推荐更便宜的服务器供应商： 如果你了解一些经济实惠但性能稳定的服务器供应商，请务必在[Issue页面](https://github.com/q815101630/LeetFlash/issues/25)与我分享。你的建议将对我们的项目产生深远的影响。
+1. 推荐更便宜的服务器供应商： 如果你了解一些经济实惠但性能稳定的服务器供应商，请务必在[Issue 页面](https://github.com/q815101630/LeetFlash/issues/25)与我分享。你的建议将对我们的项目产生深远的影响。
 
-2. 每月捐款支持： 如果你愿意，你可以考虑每月向我们捐款，帮助我们承担服务器费用。关于具体的捐款数额和捐款方式，我还没有决定，不过我能够保证的是，这个费用只会用来cover服务器费用。如果愿意捐款的朋友不少，每个人分摊的金额将会很少（literally, 很少，几块人民币一个月）。
+2. 每月捐款支持： 如果你愿意，你可以考虑每月向我们捐款，帮助我们承担服务器费用。关于具体的捐款数额和捐款方式，我还没有决定，不过我能够保证的是，这个费用只会用来 cover 服务器费用。如果愿意捐款的朋友不少，每个人分摊的金额将会很少（literally, 很少，几块人民币一个月）。
 
 如果你有其他建议，欢迎留言！
 
@@ -87,9 +87,9 @@
 
 ## Updates
 
-5/4/2022： Allow users to set a custom review sequence. 
+5/4/2022： Allow users to set a custom review sequence.
 
-5/16/2022: 发现中文leetcode最近换域名了，已经适配新域名
+5/16/2022: 发现中文 leetcode 最近换域名了，已经适配新域名
 
 7/9/2022:
 
@@ -103,14 +103,13 @@ Allow users to perform Archive, Reset, Activate, Delete multiple questions at on
 2/6/2023:
 Fixed some open bugs: question format in daily review page and the problem about clicking Next stage has no effect.
 
-
-**请尽量通过Chrome Extension 商店下载插件**。如果因为网络原因，的确需要离线下载，[链接](https://github.com/q815101630/LeetFlash/releases/tag/offline-package)
+**请尽量通过 Chrome Extension 商店下载插件**。如果因为网络原因，的确需要离线下载，[链接](https://github.com/q815101630/LeetFlash/releases/tag/offline-package)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Stargazers over time
-[![Stargazers over time](https://starchart.cc/q815101630/LeetFlash.svg?variant=adaptive)](https://starchart.cc/q815101630/LeetFlash)
 
+[![Stargazers over time](https://starchart.cc/q815101630/LeetFlash.svg?variant=adaptive)](https://starchart.cc/q815101630/LeetFlash)
 
 <!-- ABOUT THE PROJECT -->
 
@@ -169,7 +168,7 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-If you have any questions on how to contribute to this project, please contact me at lqing3@illinois.edu 
+If you have any questions on how to contribute to this project, please contact me at lqing3@illinois.edu
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -185,7 +184,7 @@ Distributed under the GPL3.0 License. See `LICENSE` for more information.
 
 ## Contact
 
-Lucheng - [@blog](https://lucheng.xyz/) - q815101630@gmail.com
+Lucheng - [@blog](https://lucheng.online/) - q815101630@gmail.com
 
 Project Link: [https://github.com/q815101630/LeetFlash](https://github.com/q815101630/LeetFlash)
 

@@ -139,7 +139,8 @@ export const QuestionTableContainer: React.FC = () => {
       setQuestions(cards.sort(compareFn.current));
     });
 
-    user.lang === "EN" && user.display_sponsor_msg &&
+    user.lang === "EN" &&
+      user.display_sponsor_msg &&
       toast({
         position: "top",
         title: "Please Support LeetFlash!",
@@ -149,18 +150,19 @@ export const QuestionTableContainer: React.FC = () => {
         duration: 30000,
         isClosable: true,
       });
-    user.lang === "EN" && user.display_sponsor_msg &&
-    toast({
-      position: "top",
-      title: "Please Support LeetFlash!",
-      description:
-        "You can close this message permanently in the setting.",
-      status: "success",
-      duration: 30000,
-      isClosable: true,
-    });
+    user.lang === "EN" &&
+      user.display_sponsor_msg &&
+      toast({
+        position: "top",
+        title: "Please Support LeetFlash!",
+        description: "You can close this message permanently in the setting.",
+        status: "success",
+        duration: 30000,
+        isClosable: true,
+      });
 
-    user.lang === "CN" && user.display_sponsor_msg &&
+    user.lang === "CN" &&
+      user.display_sponsor_msg &&
       toast({
         position: "top",
         title: "请支持LeetFlash！",
@@ -170,30 +172,32 @@ export const QuestionTableContainer: React.FC = () => {
         duration: 30000,
         isClosable: true,
       });
-    user.lang === "CN" && user.display_sponsor_msg && 
+    user.lang === "CN" &&
+      user.display_sponsor_msg &&
       toast({
         position: "top",
         title: "请支持LeetFlash！",
-        description:
-          "您可以在设置中永久关闭此消息。",
+        description: "您可以在设置中永久关闭此消息。",
         status: "success",
         duration: 30000,
         isClosable: true,
       });
-    
+
     toast({
       position: "bottom-left",
       render: () => (
-        <Box >
+        <Box>
           <Button
-            color="white" bgColor="orange" 
+            color="white"
+            bgColor="orange"
             onClick={() => {
               window.open(
-                "https://lucheng.xyz/2022/04/14/leetflash/#%E5%85%B3%E4%BA%8ELeetFlash%F0%9F%98%8A"
+                "https://lucheng.online/2022/04/14/leetflash/#%E5%85%B3%E4%BA%8ELeetFlash%F0%9F%98%8A"
               );
             }}
           >
-            LeetFlash 赞助链接 / 给我留言 / Sponsorship Link / Leave me a message
+            LeetFlash 赞助链接 / 给我留言 / Sponsorship Link / Leave me a
+            message
           </Button>
         </Box>
       ),
