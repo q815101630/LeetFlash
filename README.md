@@ -157,6 +157,24 @@ See the [open issues](https://github.com/q815101630/LeetFlash/issues) for a full
 
 ## Contributing
 
+### Set up the project
+
+1. Clone the repo and install the dependencies
+2. Install the dependencies for the client and server
+
+```sh
+cd client
+npm install --force --prefix client --production=false
+npm install --prefix client react@latest react-dom@latest
+
+cd ../server
+npm install --prefix server --production=false
+```
+
+3. Create a `.env.development` file in the `server` folder and fill in the required fields
+4. Create a `.env` file in the `client` folder and fill in the required fields
+
+
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
