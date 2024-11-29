@@ -1,4 +1,17 @@
+
+
+# 2024 Update
+
+This open-source repository LeetFlash is now archived. 
+
+For the latest LeetFlash3.0, Please navigate to [LeetFlash3.0](https://github.com/q815101630/about-leetflash/)
+
+
+# Archived Below
+
+
 <div id="top"></div>
+
 
 <!-- PROJECT SHIELDS -->
 <!--
